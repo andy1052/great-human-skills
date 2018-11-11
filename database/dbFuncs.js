@@ -33,7 +33,7 @@ dbFunc.insert = async function(data, collection) {
 	try {
 		let db = await DbConnection.Get();
 		let result = await db.collection(collection).insertOne(data);
-		assert.strictEqual(1, r.insertedCount);
+		//assert.strictEqual(1, r.insertedCount);
 		return result;
 	} catch (e) {
 		console.log(e.stack);

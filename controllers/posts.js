@@ -15,34 +15,25 @@ exports = module.exports = function(app) {
 
 
 	//	Homepage route:
-	app.get('/', async (req, res, next) => {
-
-//	Test route to insert into database and render homepage:
-		const user =  {
-			name: "Henry"
-		};
-
+	app.get('/', async (req, res) => {
 		try{
-			// const up = await dbFuncs.update(user, {"name": "Henry"}, "test").then((result) => {
-
-			// 	 if ({"n": 1, "ok": 1}) {
-			// 	console.log('Added to database:');
-			// 		res.render('home');
-			// 	}
-			// });
-
-			const del = await dbFuncs.delete(user, "test").then((result) => {
-				if ({"n":1, "ok":1}) {
-					console.log('deleted from database');
-					res.render('home');
-				};
-			});
+			res.render('home');
 		} catch(e) {
 			console.err(e);
-			next(e);
+			return e;
 		};
 	});
-//	End of test route.
+
+
+	//	Another test route:
+	app.get('/blog', async(req, res) => {
+		try {
+			res.render('blog');
+		} catch(e) {
+			console.log(e.stack);
+			return e;
+		}
+	});
 
 
 

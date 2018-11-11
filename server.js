@@ -45,6 +45,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //	Connect Routes from posts.js, pass the app variable into the file as well:
 const posts = require('./controllers/posts')(app);
 
+//	Connect Routes from auths.js, pass the app variable into the file as well:
+const auths = require('./controllers/auths')(app);
+
 
 
 // app.listen(3000, () => {
