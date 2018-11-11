@@ -11,6 +11,7 @@ const express = require('express');
 const exphbs = require('express-handlebars');
 const bodyParser = require('body-parser');
 const database = require('./database/db');
+const dotenv = require('dotenv').config();
 
 //	Initialize app:
 const app = express();
