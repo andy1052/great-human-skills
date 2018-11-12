@@ -16,8 +16,12 @@ exports = module.exports = function(app) {
 
 	//	Homepage route:
 	app.get('/', async (req, res) => {
+
+		let currentUser = req.user;
+		console.log(currentUser);
+
 		try{
-			res.render('home');
+			res.render('home', {currentUser});
 		} catch(e) {
 			console.err(e);
 			return e;

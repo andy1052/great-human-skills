@@ -146,6 +146,13 @@ app.post('/login', async (req, res) => {
 				// console.log("token:", token);
 				return result;
 			});
+
+			//	Overkill check on c, if no result is returned, throw error:
+			if (!c) throw new Error({"Error": "No result returned from checking password, internal error"});
+
+			//	At this point, everything went well, and you should send the user to the homepage along with req.user
+			res.redirect('/');
+
 			} catch(e) {
 				console.log(e.stack);
 				return e;
@@ -160,8 +167,12 @@ app.post('/login', async (req, res) => {
 
 //	Logout Route:
 app.get('/logout', async (req, res) => {
+
+	//	make sure req.user object is also cleared to prevevent any sort of sorcery:
+	let currentUser = null;
+
 	res.clearCookie('nToken');
-	res.render('logout');
+	res.render('logout', {currentUser});
 });
 
 
