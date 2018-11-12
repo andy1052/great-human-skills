@@ -11,6 +11,7 @@
 const dbFuncs = require('../database/dbFuncs');
 const helpers = require('../lib/helpers');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 
 
@@ -74,9 +75,16 @@ app.post('/sign-up', async (req, res) => {
 
 		//	Then, save the user to the database in 'client' collection:
 		let save = await dbFuncs.insert(client, 'client').then((result) => {
+
 			//	If database confirms save redirect to homepage.
 			if({"n":1, "ok":1}) {
 			console.log("Saved to database!");
+
+			//	Generate web token:
+			let token = jwt.sign({_id: result._id}, process.env.SECRET, {expiresIn: "60 days"});
+			res.cookie('nToken', token, {maxAge: 900000, httpOnly: true});
+
+			//	Redirect to homepage:
 			res.redirect('/');
 		} else {
 			//	If the database does not save, redirect.
@@ -117,7 +125,8 @@ app.post('/login', async (req, res) => {
 			}
 			return result;
 		});
-			//	Otherwise, check the password:
+			//	If there is no check, throw error:
+			if (!check) throw new Error({"Error": "Cannot login, non-existent email."});
 
 			//	Compare entered password to hashed password:
 			let c = await helpers.compare(password, check.password).then((result) => {
@@ -128,20 +137,21 @@ app.post('/login', async (req, res) => {
 
 					return res.status(401).res.redirect('/login');
 				}
-				console.log("Password result: ", result);
+
+				//	Otherwise, create a new token:
+				let token = jwt.sign({"email": email}, process.env.SECRET, {expiresIn: "60 days"});
+				//	Then set a cookie and redirect to homepage:
+				res.cookie('nToken', token, {maxAge: 900000, httpOnly: true});
+				// console.log("Password result: ", result);
+				// console.log("token:", token);
 				return result;
 			});
+			} catch(e) {
+				console.log(e.stack);
+				return e;
+			}
 
-
-
-
-
-	} catch(e) {
-		console.log(e.stack);
-		return e;
-	}
-
-});
+		});
 
 
 
@@ -149,7 +159,10 @@ app.post('/login', async (req, res) => {
 
 
 //	Logout Route:
-
+app.get('/logout', async (req, res) => {
+	res.clearCookie('nToken');
+	res.render('logout');
+});
 
 
 

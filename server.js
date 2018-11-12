@@ -12,6 +12,9 @@ const exphbs = require('express-handlebars');
 const bodyParser = require('body-parser');
 const database = require('./database/db');
 const dotenv = require('dotenv').config();
+const cookieParser = require('cookie-parser');
+const jwt = require('jsonwebtoken');
+const helpers = require('./lib/helpers');
 
 //	Initialize app:
 const app = express();
@@ -38,9 +41,11 @@ app.set('view engine', 'handlebars');
 
 
 //	This middleware is for cookies, place AFTER you initialize express:
-// app.use(cookieParser());
+app.use(cookieParser());
 //	This line MUST appear AFTER app = express(), but BEFORE your routes!:
 app.use(bodyParser.urlencoded({ extended: true }));
+//	This is your custom middleware written in helpers module:
+app.use(helpers.checkAuth);
 
 
 //	Connect Routes from posts.js, pass the app variable into the file as well:
