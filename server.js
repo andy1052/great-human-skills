@@ -54,6 +54,9 @@ const posts = require('./controllers/posts')(app);
 //	Connect Routes from auths.js, pass the app variable into the file as well:
 const auths = require('./controllers/auths')(app);
 
+//	Connect Routes from blogs.js, pass the app variable into the file as well:
+const blogs = require('./controllers/blogs')(app);
+
 
 
 // app.listen(3000, () => {

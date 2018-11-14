@@ -5,5 +5,13 @@
 		<div class="col-lg">
 			<h1> Welcome to Great Human Skills!</h1>
 		</div>
+
+		<div class="col-md-8">
+			{{#if currentUser}}
+			<p>Hi, {{currentUser.email}}! Check out what's new!</p>
+			{{else}}
+			{{/if}}
+		</div>
+
 	</div>
 </div>

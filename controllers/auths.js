@@ -34,10 +34,14 @@ app.get('/sign-up', async (req, res) => {
 app.post('/sign-up', async (req, res) => {
 
 	//	Sanitize the data
+	let username = typeof(req.body.username) === "string" && req.body.username.trim().length > 0 && req.body.username.trim().length < 60 ? req.body.username.trim() : false;
 	let email = typeof(req.body.email) === "string" && req.body.email.trim().length > 0 && req.body.email.trim().length < 80 && req.body.email.trim().includes('@') ? req.body.email.trim() : false;
 	let password = typeof(req.body.password) === "string" && req.body.password.trim().length > 0 && req.body.password.trim().length < 60 ? req.body.password.trim() : false;
 
 	try{
+
+	//	Make sure that a username, an email and a password were entered:
+	if (username && email && password){
 
 		//	First hash the password:
 		let x = await helpers.salt(password).then((y) => {
@@ -49,6 +53,7 @@ app.post('/sign-up', async (req, res) => {
 		//	If password "x", was hashed, then make the client model/object:
 
 		const client = {
+			username,
 			email,
 			password: x
 		};
@@ -92,6 +97,12 @@ app.post('/sign-up', async (req, res) => {
 			res.redirect('/sign-up');
 		}
 		});
+
+	} else {
+		//	If !username, email, password.
+		console.log('Oops! Looks like you forgot to enter a field. Give it another shot.');
+		return res.render('unauthorized');
+	}
 	} catch(e) {
 		console.log(e.stack);
 		return e;
@@ -118,10 +129,7 @@ app.post('/login', async (req, res) => {
 		let check = await dbFuncs.find({"email": email}, 'client').then((result) => {
 			if (!result) {
 				//	User not found:
-
-	//	********** TODO *********** display a message on login page to try again!
-
-				return res.status(401).res.redirect('/login');
+				return res.status(401).res.redirect('/unauthorized');
 			}
 			return result;
 		});

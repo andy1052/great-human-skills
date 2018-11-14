@@ -1,2 +1,5 @@
 node_modules
 .env
+views/blog.js
+views/blog.handlebars
+views/adlog.handlebars
