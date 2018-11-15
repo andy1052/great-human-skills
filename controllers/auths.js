@@ -86,7 +86,9 @@ app.post('/sign-up', async (req, res) => {
 			console.log("Saved to database!");
 
 			//	Generate web token:
-			let token = jwt.sign({_id: result._id}, process.env.SECRET, {expiresIn: "60 days"});
+			// let token = jwt.sign({_id: result._id}, process.env.SECRET, {expiresIn: "60 days"});
+			let token = jwt.sign(client, process.env.SECRET, {expiresIn: "60 days"});
+
 			res.cookie('nToken', token, {maxAge: 900000, httpOnly: true});
 
 			//	Redirect to homepage:

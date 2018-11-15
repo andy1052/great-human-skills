@@ -28,6 +28,21 @@ dbFunc.find = async function(data, collection) {
 };
 
 
+//	Find All Operation:
+dbFunc.findAll = async function(data, collection) {
+	try {
+		let db = await DbConnection.Get();
+		 let result = await db.collection(collection).find(data).toArray();
+		return result;
+		console.log("result: ", result);
+	} catch(e) {
+		console.log(e.stack);
+		return e;
+	}
+};
+
+
+
 //	Insert operation:
 dbFunc.insert = async function(data, collection) {
 	try {

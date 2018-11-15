@@ -18,26 +18,33 @@ exports = module.exports = function(app) {
 	app.get('/', async (req, res) => {
 
 		let currentUser = req.user;
-		console.log(currentUser);
 
 		try{
-			res.render('home', {currentUser});
+			
+			//	Fetch all articles
+			let find = await dbFuncs.findAll({}, 'articles').then((result) => {
+				//console.log("result from app.get: ", result);
+				return result;
+			});
+
+			//	Render homepage and pass in currentUser and all articles returned by find:
+			res.render('home', {find, currentUser});
 		} catch(e) {
-			console.err(e);
+			console.log(e.stack);
 			return e;
 		};
 	});
 
 
 	//	Another test route:
-	app.get('/blog', async(req, res) => {
-		try {
-			res.render('blog');
-		} catch(e) {
-			console.log(e.stack);
-			return e;
-		}
-	});
+	// app.get('/blog', async(req, res) => {
+	// 	try {
+	// 		res.render('blog');
+	// 	} catch(e) {
+	// 		console.log(e.stack);
+	// 		return e;
+	// 	}
+	// });
 
 
 

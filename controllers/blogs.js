@@ -103,21 +103,20 @@ app.post('/blogSave', async (req, res) => {
 	let description = typeof(req.body.description) === "string" && req.body.description.length >0 && req.body.description.length < 500 ? req.body.description : false;
 	let blog = typeof(req.body.blog) === "string" && req.body.description.length > 0 ? req.body.blog : false;
 
-console.log(req.body);
-console.log("req.user from blogs.js", req.user);
 	try {
-	if (req.user) {
+		
+		if (req.user) {
 
-	//	Once data is sanitized, make object and save it to database:
-	if (title && author && description && blog) {
+		//	Once data is sanitized, make object and save it to database:
+		if (title && author && description && blog) {
 
-	//	Make object:
-	const article = {
-		title,
-		author,
-		description,
-		blog
-	};
+		//	Make object:
+		const article = {
+			title,
+			author,
+			description,
+			blog
+		};
 
 
 
