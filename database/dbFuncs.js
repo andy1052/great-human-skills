@@ -16,7 +16,7 @@ const assert = require('assert');
 const dbFunc = {};
 
 //	Find operation:
-dbFunc.find = async function(data, collection) {
+dbFunc.find = async function(data, collection) {	
 	try {
 		let db = await DbConnection.Get();
 		let result = await db.collection(collection).findOne(data);
