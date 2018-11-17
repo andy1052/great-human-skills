@@ -44,7 +44,7 @@ app.post('/adlog', async (req, res) => {
 
 			res.render('adlog', {admin});
 		} else {
-			res.redirect('/unauthorized');
+			return res.render('unauthorized');
 		}
 	} catch(e) {
 		console.log(e.stack);
@@ -65,7 +65,7 @@ app.post('/newBlog', async (req, res) => {
 
 			if (!result) {
 				//	User not found:
-				return res.status(401).res.redirect('/unauthorized');
+				return res.status(401).res.render('unauthorized');
 			}
 			return result;
 		});
@@ -82,7 +82,7 @@ app.post('/newBlog', async (req, res) => {
 			if (token) {
 				return res.render('blog', {token});
 			} else {
-				return res.status(401).res.redirect('/unauthorized');
+				return res.status(401).res.render('unauthorized');
 			};
 
 			} catch(e) {
@@ -115,7 +115,8 @@ app.post('/blogSave', async (req, res) => {
 			title,
 			author,
 			description,
-			blog
+			blog,
+			comments: []
 		};
 
 

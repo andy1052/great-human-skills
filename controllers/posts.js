@@ -47,7 +47,6 @@ exports = module.exports = function(app) {
 			try {
 			//	First find the post:
 			let post = await dbFuncs.find({_id: ObjectId(req.params.id)}, 'articles').then((result) => {
-				console.log("result: ", result);
 				return result;
 			});
 

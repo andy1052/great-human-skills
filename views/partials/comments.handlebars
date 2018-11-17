@@ -1,0 +1,21 @@
+<!-- views/partials/comments.handlebars -->
+
+<div class="col-lg-8 col-sm-offset-2">
+		<legend>Add A Comment</legend>
+			<form method="post" action="/newComment" autocomplete="off">
+			<!-- Hidden Field to pass article's id -->	
+			<input type="hidden"  name="articleId" value="{{post._id}}">
+
+	<!-- Comment -->
+	<div class="form-group">
+		<label for="comment" style="display:block;">Comment</label>
+		<textarea id="comment" name="comment" rows="4" placeholder="Leave A Comment..."></textarea>
+	</div>
+
+	<!-- Button -->
+	<div class="form-group">
+		<button type="submit" class="btn btn-success">Add Comment</button>
+	</div>
+
+</form>
+</div>

@@ -76,24 +76,24 @@ dbFunc.update = async function(data, update, collection) {
 };
 
 
-// //	General Update Function:
-// dbFuncs.update = async function(data, update, collection) {
-// console.log("NewInfo:", update);
+//	Update method to add to an array field:
+dbFunc.arrayUpdate = async function(data, update, collection) {
 
-// 	try {
-// 		let db = await DbConnection.Get();
-// 		let result = await db.collection(collection).updateOne(data, {$set:
-// 			{"first_name": update.first_name,
-// 			 "last_name": update.last_name,
-// 			 "password": update.password}}, 
-// 			{upsert: false});
+	console.log("data: ", data);
+	console.log("update: ", update);
+	console.log("collection: ", collection);
 
-// 		return result;
-// 	} catch(e) {
-// 		return e;
-// 	}
-// };
-
+	try {
+		let db = await DbConnection.Get();
+		let result = await db.collection(collection).updateOne(data, {$push: update});
+		// assert.strictEqual(1, matchedCount);
+		// assert.strictEqual(1, modifiedCount);
+		return result;
+	} catch(e) {
+		console.log(e.stack);
+		return e;
+	}
+};
 
 
 
