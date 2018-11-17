@@ -62,7 +62,8 @@ const ObjectId = require('mongodb').ObjectId;
 				 //	Check that the operation went through:
 				 if (!u) throw new Error({"Error": "Something went wrong while updating client 'comments' array"});
 
-
+				 //	Finally, re-render the page in order to show the comment:
+				 res.redirect(`/posts/${articleId}`);
 
 			} else {
 				return res.render('unauthorized');

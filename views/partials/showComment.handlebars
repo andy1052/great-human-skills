@@ -1,0 +1,14 @@
+<!-- views/partials/showComments.handlebars -->
+
+
+{{#if showComment}}
+	{{#each showComment}}
+
+<div class="card">
+	<div class="card-block">
+		<h5 class="card-title">{{this.userId}}</h5>
+		<p class="card-text">{{this.comment}}</p>
+	</div>
+</div>
+{{/each}}
+{{/if}}

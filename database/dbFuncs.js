@@ -41,6 +41,9 @@ dbFunc.findAll = async function(data, collection) {
 	}
 };
 
+// //	Find All IDs from an Array of ObjectIds:
+// dbFunc.findAllIds = async function(data)
+
 
 
 //	Insert operation:

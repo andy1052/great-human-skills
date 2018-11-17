@@ -26,6 +26,8 @@ exports = module.exports = function(app) {
 				return result;
 			});
 
+
+
 			//	Render homepage and pass in currentUser and all articles returned by find:
 			res.render('home', {find, currentUser});
 		} catch(e) {
@@ -46,12 +48,24 @@ exports = module.exports = function(app) {
 
 			try {
 			//	First find the post:
-			let post = await dbFuncs.find({_id: ObjectId(req.params.id)}, 'articles').then((result) => {
-				return result;
-			});
+			let post = await dbFuncs.find({_id: ObjectId(req.params.id)}, 'articles');
 
-			//	Now render the template, passing in the post data:
-			res.render('articleShow', {post});
+			//console.log("post: ", post.comments);
+
+			if (!post) throw new Error({"Error": "Could not fetch posts."});
+
+			//	Define an array to collect "comments" search results and persist to articleShow.handlebars:
+			let showComment = [];
+
+			//	Loop through comments ids contained in "articles", find the comments, and push them to showComment
+			//	array.
+			for (let i = 0; i < post.comments.length; i++) {
+				let x = await dbFuncs.find({_id: {$in: [ObjectId(post.comments[i])]}}, 'comments');
+				showComment.push(x);
+			};
+
+			//	Now render the template, passing in the post and showComment data:
+			res.render('articleShow', {post, "showComment": showComment});
 		} catch(e) {
 			console.log(e.stack);
 			return e;

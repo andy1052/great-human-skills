@@ -1,6 +1,6 @@
 <!-- views/partials/comments.handlebars -->
 
-<div class="col-lg-8 col-sm-offset-2">
+<div class="col-lg">
 		<legend>Add A Comment</legend>
 			<form method="post" action="/newComment" autocomplete="off">
 			<!-- Hidden Field to pass article's id -->	
@@ -9,7 +9,7 @@
 	<!-- Comment -->
 	<div class="form-group">
 		<label for="comment" style="display:block;">Comment</label>
-		<textarea id="comment" name="comment" rows="4" placeholder="Leave A Comment..."></textarea>
+		<textarea class="form-control" id="comment" name="comment" rows="4" placeholder="Leave A Comment..."></textarea>
 	</div>
 
 	<!-- Button -->
@@ -18,4 +18,4 @@
 	</div>
 
 </form>
-</div>
+ </div>
