@@ -38,7 +38,8 @@ const ObjectId = require('mongodb').ObjectId;
 				const words = {
 					userId,
 					comment,
-					articleId
+					articleId,
+					"postedOn": Date()
 				};
 
 				//	The save the words object in the "comments" collection:
@@ -66,12 +67,12 @@ const ObjectId = require('mongodb').ObjectId;
 				 res.redirect(`/posts/${articleId}`);
 
 			} else {
-				return res.render('unauthorized');
+				return res.redirect('/unauthorized');
 			}
 
 
 		} else {
-			return res.render('unauthorized');
+			return res.redirect('/unauthorized');
 		}
 	} catch(e) {
 		console.log(e.stack);

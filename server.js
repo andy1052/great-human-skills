@@ -15,6 +15,8 @@ const dotenv = require('dotenv').config();
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 const helpers = require('./lib/helpers');
+const path = require('path');
+const config = require('./config/config');
 
 //	Initialize app:
 const app = express();
@@ -22,8 +24,8 @@ const app = express();
 //	Initialize database:
 (async function() {
 	try {
-		let con = await database.Get().then(() => app.listen(3000, () => {
-			console.log('Server running on port 3000');
+		let con = await database.Get().then(() => app.listen(config.port, () => {
+			console.log(`Server running on port ${config.port}`);
 		}));
 		if (!con) throw err;
 
@@ -39,7 +41,8 @@ const app = express();
 app.engine('handlebars', exphbs({defaultLayout: 'default'}));
 app.set('view engine', 'handlebars');
 
-
+//	This is to serve static files:
+app.use(express.static(path.join(__dirname, '/public')));
 //	This middleware is for cookies, place AFTER you initialize express:
 app.use(cookieParser());
 //	This line MUST appear AFTER app = express(), but BEFORE your routes!:
@@ -59,6 +62,9 @@ const blogs = require('./controllers/blogs')(app);
 
 //	Connect Routes from comments.js, pass the app variable into the file as well:
 const comments = require('./controllers/comments')(app);
+
+//	Connect Routes from landings.js, pass the app variable into the file as well:
+const landings = require('./controllers/landings')(app);
 
 
 

@@ -73,5 +73,10 @@ exports = module.exports = function(app) {
 	});
 
 
+	//	"Unauthorized" Get Route:
+	app.get('/unauthorized', async (req, res) => {
+		res.render('unauthorized');
+	});
+
 
 };	//	End of module exports

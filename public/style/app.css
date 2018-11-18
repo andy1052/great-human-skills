@@ -1,0 +1,78 @@
+@import url('https://fonts.googleapis.com/css?family=Diplomata+SC');
+
+
+#section-1 {
+	margin: 0px;
+	padding: 0px;
+	background-image: url("/images/win.jpg");
+	background-repeat: no-repeat;
+	background-size: 100% 100%;
+}
+
+#ul {
+	color: #c70000;
+	width: 100%;
+	margin: 30px;
+	/*text-shadow:1px 0px #000;*/
+	font-size: 16px;
+}
+
+
+#blurb {
+	color: #000;
+	font-size: 18px;
+	font-family: Arial, Helvetica, sans-serif;
+	width: 50%;
+	margin: 5px 0px;
+	padding: 5px;
+}
+
+#background {
+	/*background-color: rgba(255, 255, 255, 0.3); /*rgba is to apply opacity to element and avoid inheritance by child elements.*/
+	width: 100%;
+	padding: 3px;
+	border-radius: 1%;
+}
+
+#headline {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 22px;
+	color: #000;
+	width: 100%;
+	margin: 5px 0px 50px 0px;
+	padding: 5px;
+}
+
+#title {
+	color: #000;
+	width: 100%;
+	margin:15px 5px 5px 15px;
+	text-align: center;
+	font-size: 18px;
+	font-family: Arial, helvetica, sans-serif;
+	text-decoration: underline;
+}
+
+#cover {
+	width: 200px;
+	height: 290px;
+	margin: 10px 10px 0px 50px;
+ 	border: 1px solid black;
+	border-radius: 1.5%;
+}
+
+#horizontal-break {
+	height: 340px;
+	width: 1px;
+	margin: 25px 15px;
+	border: 1px solid #bbb;
+}
+
+#act {
+	color: #000;
+	font-size: 16px;
+	font-family: Arial, Helvetica, sans-serif;
+	width: 90%;
+	margin: 40px 5px 10px 0px;
+	background-color: rgba(255, 255, 255, 0.4);
+

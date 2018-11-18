@@ -55,7 +55,8 @@ app.post('/sign-up', async (req, res) => {
 		const client = {
 			username,
 			email,
-			password: x
+			password: x,
+			"createdAt": Date()
 		};
 
 		//	Then, before saving the client, check to see if the email address already exists:
@@ -103,7 +104,7 @@ app.post('/sign-up', async (req, res) => {
 	} else {
 		//	If !username, email, password.
 		console.log('Oops! Looks like you forgot to enter a field. Give it another shot.');
-		return res.render('unauthorized');
+		return res.redirect('/unauthorized');
 	}
 	} catch(e) {
 		console.log(e.stack);
@@ -149,7 +150,7 @@ app.post('/login', async (req, res) => {
 				}
 
 				//	Otherwise, create a new token:
-				let token = jwt.sign({"email": email}, process.env.SECRET, {expiresIn: "60 days"});
+				let token = jwt.sign({"username": check.username}, process.env.SECRET, {expiresIn: "60 days"});
 				//	Then set a cookie and redirect to homepage:
 				res.cookie('nToken', token, {maxAge: 900000, httpOnly: true});
 				// console.log("Password result: ", result);
