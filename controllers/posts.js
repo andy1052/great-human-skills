@@ -14,7 +14,7 @@ exports = module.exports = function(app) {
 
 
 	//	Homepage route:
-	app.get('/', async (req, res) => {
+	app.get('/', async (req, res, next) => {
 
 		let currentUser = req.user;
 
@@ -32,14 +32,14 @@ exports = module.exports = function(app) {
 			res.render('home', {find, currentUser});
 		} catch(e) {
 			console.log(e.stack);
-			return e;
+			next(e);
 		};
 	});
 
 
 
 	//	Display single post route:
-	app.get('/posts/:id', async (req, res) => {
+	app.get('/posts/:id', async (req, res, next) => {
 
 		//	This ObjectId is NECESSARY if you want to search mongoDb by _id. _id is an ObjectId format
 		//	Therefore, in order to pass it, you need to use mongoDb's ObjectId Constructor, as demonstrated 
@@ -68,13 +68,13 @@ exports = module.exports = function(app) {
 			res.render('articleShow', {post, "showComment": showComment});
 		} catch(e) {
 			console.log(e.stack);
-			return e;
+			next(e);
 		};
 	});
 
 
 	//	"Unauthorized" Get Route:
-	app.get('/unauthorized', async (req, res) => {
+	app.get('/unauthorized', (req, res) => {
 		res.render('unauthorized');
 	});
 

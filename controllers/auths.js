@@ -16,22 +16,22 @@ const jwt = require('jsonwebtoken');
 
 
 //	Routes:
-module.exports = function(app) {
+exports = module.exports = function(app) {
 
 
 //	Sign-up route:
-app.get('/sign-up', async (req, res) => {
+app.get('/sign-up', async (req, res, next) => {
 	try {
 		res.render('sign-up');
 	} catch(e) {
 		console.log(e.stack);
-		return e;
+		next(e);
 	}
 });
 
 
 //	Sign-up Route:
-app.post('/sign-up', async (req, res) => {
+app.post('/sign-up', async (req, res, next) => {
 
 	//	Sanitize the data
 	let username = typeof(req.body.username) === "string" && req.body.username.trim().length > 0 && req.body.username.trim().length < 60 ? req.body.username.trim() : false;
@@ -108,7 +108,7 @@ app.post('/sign-up', async (req, res) => {
 	}
 	} catch(e) {
 		console.log(e.stack);
-		return e;
+		next(e);
 	}
 });
 
@@ -121,7 +121,7 @@ app.get('/login', async (req, res) => {
 
 
 //	Login Post Route:
-app.post('/login', async (req, res) => {
+app.post('/login', async (req, res, next) => {
 
 		//	Sanitize the data
 	let email = typeof(req.body.email) === "string" && req.body.email.trim().length > 0 && req.body.email.trim().length < 80 && req.body.email.trim().includes('@') ? req.body.email.trim() : false;
@@ -166,7 +166,7 @@ app.post('/login', async (req, res) => {
 
 			} catch(e) {
 				console.log(e.stack);
-				return e;
+				next(e);
 			}
 
 		});

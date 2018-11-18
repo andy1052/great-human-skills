@@ -17,7 +17,7 @@ exports = module.exports = function (app) {
 
 
 //	Add A New Comment Route:
-app.post('/newComment', async (req, res) => {
+app.post('/newComment', async (req, res, next) => {
 
 //	Require the mongodb ObjectId Type in order to find article in "v" variable below:
 const ObjectId = require('mongodb').ObjectId;
@@ -76,7 +76,7 @@ const ObjectId = require('mongodb').ObjectId;
 		}
 	} catch(e) {
 		console.log(e.stack);
-		return e;
+		next(e);
 	};
 
 });

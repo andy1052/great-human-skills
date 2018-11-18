@@ -1,22 +1,25 @@
 <!-- views/home.handlebars -->
 
-<!-- <div class="container"> -->
 	<div class="row">
 		<div class="col-12">
-			<h1>Great Human Skills!</h1>
+			<h1 class="text-center">Great Human Skills!</h1>
 		</div>
 
 		<div class="col-12">
 			{{#if currentUser}}
-			<p>Hi, {{currentUser.username}}! Check out what's new!</p>
+			<p class="text-center">Hi, {{currentUser.username}}! Check out what's new!</p>
 			{{else}}
 			{{/if}}
 		</div>
 
+
+<!-- Blogs Preview Display -->
+		<div class="row justify-content-center">
 			{{#each find}}
-			<div class="col-lg">
+			
+			<div class="col-lg-8 m-3">
 			<div class="card">
-				<div class="card-header">
+				<div class="card-header p-3 text-white" style="background-color: #e84417;">
 					Featured
 				</div>
 				<div class="card-body">
@@ -28,21 +31,8 @@
 			</div>
 		</div>
 			{{/each}}
+		</div>
 
-
-
-				<!--<ul>
-					{{#each find}}
-					<li class="list-group-item">
-						<div class="lead">{{this.title}}</div>
-						<div class="lead">{{this.author}}</div>
-						<div class="lead">{{this.description}}</div>
-					</li>
-					{{/each}}
-				</ul>
-			</div>
-		</div> -->
-
+	<!-- End of blog display preview -->
 
 	</div>
-<!-- </div> -->

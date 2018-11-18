@@ -34,7 +34,7 @@ app.get('/word', (req, res) => {
 
 
 //	Admin Login:
-app.post('/adlog', async (req, res) => {
+app.post('/adlog', async (req, res, next) => {
 
 	console.log(req.body);
 
@@ -48,13 +48,13 @@ app.post('/adlog', async (req, res) => {
 		}
 	} catch(e) {
 		console.log(e.stack);
-		return e;
+		next(e);
 	}
 });
 
 
 //	New Blog LOGIN Post Route:
-app.post('/newBlog', async (req, res) => {
+app.post('/newBlog', async (req, res, next) => {
 	//	Sanitize the data
 	let username = typeof(req.body.username) === "string" && req.body.username.trim().length > 0 && req.body.username.trim().length < 80 ? req.body.username.trim() : false;
 	let password = typeof(req.body.password) === "string" && req.body.password.trim().length > 0 && req.body.password.trim().length < 60 ? req.body.password.trim() : false;
@@ -87,7 +87,7 @@ app.post('/newBlog', async (req, res) => {
 
 			} catch(e) {
 				console.log(e.stack);
-				return e;
+				next(e);
 			}
 
 		});
@@ -95,7 +95,7 @@ app.post('/newBlog', async (req, res) => {
 
 
 //	Save New Blog To The Database Route:
-app.post('/blogSave', async (req, res) => {
+app.post('/blogSave', async (req, res, next) => {
 
 	//	First sanitize the data:
 	let title = typeof(req.body.title) === "string" && req.body.title.trim().length >0 && req.body.title.trim().length < 60 ? req.body.title.trim() : false;
@@ -151,7 +151,7 @@ app.post('/blogSave', async (req, res) => {
 };
 } catch(e){
 	console.log(e);
-	return e;
+	next(e);
 }
 
 });

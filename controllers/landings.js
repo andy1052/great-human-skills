@@ -16,7 +16,7 @@ exports = module.exports = function(app) {
 
 
 //	Get Words are all you've got landing page:
-app.get('/allYouveGot', async (req, res) => {
+app.get('/allYouveGot', (req, res) => {
 	res.render('allYouveGot');
 });
 

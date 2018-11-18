@@ -17,6 +17,7 @@ const jwt = require('jsonwebtoken');
 const helpers = require('./lib/helpers');
 const path = require('path');
 const config = require('./config/config');
+const helmet = require('helmet');
 
 //	Initialize app:
 const app = express();
@@ -41,6 +42,8 @@ const app = express();
 app.engine('handlebars', exphbs({defaultLayout: 'default'}));
 app.set('view engine', 'handlebars');
 
+//	This is for helmet module to help secure the app against outside attacks:
+app.use(helmet());
 //	This is to serve static files:
 app.use(express.static(path.join(__dirname, '/public')));
 //	This middleware is for cookies, place AFTER you initialize express:
