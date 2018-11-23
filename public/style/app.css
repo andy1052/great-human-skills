@@ -1,10 +1,12 @@
 @import url('https://fonts.googleapis.com/css?family=Diplomata+SC');
+@import url('https://fonts.googleapis.com/css?family=Ultra');
+
 
 /*body {
 	background-color: #f7bc5d;
 }*/
 
-
+/* css for allYouveGot page */
 #section-1 {
 	margin: 0px;
 	padding: 0px;
@@ -79,4 +81,46 @@
 	width: 90%;
 	margin: 40px 5px 10px 0px;
 	background-color: rgba(255, 255, 255, 0.4);
+}
+
+.con {
+	position: relative;
+	text-align: center;
+}
+
+#back {
+	height: 350px;
+	width: 100%;
+	margin: 20px auto;
+	border: 1px solid #000;
+	border-radius: 1%;
+}
+
+.centered {
+	position: absolute;
+	height: 350px;
+	margin: auto;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	font-size: 24px;
+	text-shadow: 1px 0px 0px #000;
+	font-family: Times, sans-serif;
+}
+
+
+/* css for homepage */
+
+#head-text {
+	width: 100%;
+	margin: 18% auto;
+	font-size: 36px;
+	font-family: times;
+}
+
+#user-text {
+	text-decoration: underline;
+	font-size: 20px;
+	font-family: times;
+}
 
