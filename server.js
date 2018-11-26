@@ -50,6 +50,7 @@ app.use(express.static(path.join(__dirname, '/public')));
 app.use(cookieParser());
 //	This line MUST appear AFTER app = express(), but BEFORE your routes!:
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 //	This is your custom middleware written in helpers module:
 app.use(helpers.checkAuth);
 
