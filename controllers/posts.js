@@ -22,7 +22,7 @@ exports = module.exports = function(app) {
 		try{
 
 			//	Fetch all articles
-			let find = await dbFuncs.findAll({}, 'articlesMeta').then((result) => {
+			let find = await dbFuncs.findAll({"state": "published"}, 'articlesMeta').then((result) => {
 				//console.log("result from app.get: ", result);
 				return result;
 			});
@@ -69,7 +69,8 @@ exports = module.exports = function(app) {
 				let x = await dbFuncs.find({_id: {$in: [ObjectId(post.comments[i])]}}, 'comments');
 				showComment.push(x);
 			};
-console.log("showComments: ", showComment);
+
+
 			//	Now render the template, passing in the post and showComment data:
 			res.render('articleShow', {data, post, "showComment": showComment, currentUser});
 		} catch(e) {

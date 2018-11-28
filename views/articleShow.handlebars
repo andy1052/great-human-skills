@@ -1,34 +1,46 @@
 <!-- views/articleShow.handlebars -->
 
-<div class="row">
-	<div class="col-lg">
-		<div class="lead">
+<div class="container">
+<div class="row justify-content-center">
+	<div class="col-lg-10 m-2 p-2">
 			<h1>{{post.title}}</h1>
 		</div>
 
-		<div class="lead">
+		<div class="col-lg-10 m-2 p-2">
 			<h3>{{post.description}}</h3>
 		</div>
+	</div>
 
-		<div class="container">
-			<div class="row justify-content-center">
-				<div class="col m-auto">
+		
+			<div class="row align-items-center">
+				<div class="col-lg-8 m-auto p-2">
 			{{{data}}}
 				</div>
 			</div>
-		</div>
-
-		<div>
+		
+			<div class="row">
+				<div class="col-lg m-2 p-2">
 			<p>Article by: {{post.author}}</p>
 		</div>
+	</div>
 
-		<div>
+		<div class="row">
+			<div class="col-lg m-2 p-2">
 			{{post.createdOn}}
 		</div>
 	</div>
 </div>
 
-
+<div class="container">
+	<div class="row">
+		<div class="col-lg p-3">
 {{> comments}}
+</div>
+</div>
 
+<div class="row">
+	<div class="col-lg p-3">
 {{> showComment}}
+</div>
+</div>
+</div>

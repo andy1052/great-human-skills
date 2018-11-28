@@ -102,6 +102,7 @@ app.post('/blogSave', async (req, res, next) => {
 	let author = typeof(req.body.author) === "string" && req.body.author.trim().length >0 && req.body.author.trim().length < 60 ? req.body.author.trim() : false;
 	let description = typeof(req.body.description) === "string" && req.body.description.length >0 && req.body.description.length < 500 ? req.body.description : false;
 //	let blog = typeof(req.body.blog) === "string" && req.body.description.length > 0 ? req.body.blog : false;
+	let state = typeof(req.body.state) === "string" && req.body.state.trim().length > 0 && req.body.state.trim().length <= 20 ? req.body.state.trim() : false;
 
 	try {
 		
@@ -115,6 +116,7 @@ app.post('/blogSave', async (req, res, next) => {
 			title,
 			author,
 			description,
+			state,
 	//		blog,
 			"createdOn": Date(),
 			comments: []
@@ -175,8 +177,8 @@ app.post('/blogSave', async (req, res, next) => {
 });
 
 
-	//	Route to practice post quill editor form:
-	app.post("/quillForm", async (req, res, next) => {
+//	Route to practice post quill editor form:
+app.post("/quillForm", async (req, res, next) => {
 
 		console.log("QuillForm req.body: ", req.body);
 
@@ -214,6 +216,100 @@ app.post('/blogSave', async (req, res, next) => {
 			next(e);
 		}
 	});
+
+
+
+//	Route for article search by Admin only:
+app.post("/artSearch", async (req, res, next) => {
+
+	console.log("From new artSearch: ", req.body.artSearch);
+	console.log("From new artSearch user: ", req.user);
+
+	//	Sanitize the data:
+
+	try {
+
+		if (req.user) {
+			let admin = req.user;
+
+
+			let findMetaArt = await dbFuncs.find({"title": req.body.artSearch}, 'articlesMeta');
+
+console.log("FindMetaArt results: ", findMetaArt);
+
+			if (!findMetaArt) throw new Error({"Error": "Could not find requested article in db"});
+
+		let article = findMetaArt.articleId;
+
+console.log("Article: ", article);
+
+			let findArt = await dbFuncs.find({_id: article}, 'articleContent');
+
+console.log("findArt results: ", findArt.data.ops);
+
+			if (!findArt) throw new Error({"Error": "Could not find requested article content from db"});
+
+		//	res.json(findArt.data.ops);
+
+// let showArt = [];
+
+// 		let x = findArt.data.ops.forEach((e, i) => {
+
+//  				let r = e.insert.toString();
+
+// 			//	console.log("Results of r: ", r);
+// 				return showArt.push(r);
+
+				// if (e.includes('insert')) {
+				// 	return e.insert;
+				// }
+
+				// if (e.attributes.includes('bold' || 'italic')) {
+				// 	return showArt.push(e.attributes);
+				// }
+
+				// // if (e.attributes.includes('italic' && 'bold')) {
+				// // 	return e.attributes.insert
+				// // }
+
+				// else {
+				// 	console.log("Something went wrong!");
+				// 	return;
+				// }
+		//	});
+
+// console.log("showArt: ", showArt.splice(","));
+
+// let g = showArt.splice(",");
+
+	//	const art = JSON.stringify(showArt);
+
+//console.log("Result of forEach: ", x);
+
+// let b = showArt;
+
+// console.log("Show art to send to editor: ", b);
+let art = findArt.data.ops;
+
+
+			res.render('quill', [art]);
+
+		} else {
+
+			return res.redirect('/unauthorized');
+		}
+
+
+
+	} catch(e) {
+		console.log(e.stack);
+		next(e);
+	};
+
+});
+
+
+
 
 
 };	//	End of module exports.

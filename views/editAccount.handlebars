@@ -1,0 +1,60 @@
+<!-- views/editAccount.handlebars -->
+
+<div class="row justify-content-center">
+	<div class="col-sm-6 col-sm-offset-3">
+		<legend>Edit Your Account</legend>
+
+		{{#if confirmed}}
+
+<p>Hello There {{confirmed.username}}!</p>
+<form method="POST" action="/changeSave" autocomplete="off">
+
+	<fieldset>
+
+	<!-- New Email -->		
+	<div class="form-group">
+		<label for="newEmail">What is your new email address?</label>
+		<small id="newEmailHelp" class="form-text text-muted">Leave it blank if you're not changing it.</small>
+		<input class="form-control" id="newEmail" type="email" name="newEmail" placeholder="newEmail@example.com"/>
+	</div>
+
+	<!-- New Password -->
+	<div class="form-group">
+		<label for="newPass">What is your new password?</label>
+		<small id="newPassHelp" class="form-text text-muted">Leave it blank if you're not changing it.</small>
+		<input class="form-control" id="newPass" type="password" name="newPass" placeholder="Password"/>
+	</div> 
+
+	<!-- Hidden input field to pass confirmed info to changeSave Route -->
+	<input id="confirmed" type="hidden" name="confirmed" value={{confirmed._id}}>
+
+	<!-- Button -->
+	<div class="form-group">
+		<button type="submit" class="btn btn-success">Save Changes</button>
+	</div>
+
+</fieldset>
+	
+
+{{else}}
+
+<form method="POST" action="/accountChange" autocomplete="off">
+
+	<fieldset>
+
+	<!-- Confirm email -->		
+	<div class="form-group">
+		<label for="oldEmail">What is your current email address?</label>
+		<input class="form-control" id="oldEmail" type="email" name="oldEmail" placeholder="Email@example.com"/>
+	</div>
+
+	<!-- Button -->
+	<div class="form-group">
+		<button type="submit" class="btn btn-success">Confirm Email</button>
+	</div>
+
+</fieldset>
+
+		{{/if}}
+	</div>
+</div>

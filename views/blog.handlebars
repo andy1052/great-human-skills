@@ -4,10 +4,32 @@
 <div class="row">
 	<div class="col-md-10 justify-content-center">
 
+<!-- If admin logged in, provide functionality -->
 		{{#if token}}
-		<h3>Let's Do This!</h3>
-		{{/if}}
+		<form method="POST" action="/artSearch" autocomplete="off">
+			<fieldset>
+				
+				<!-- Article search bar -->
+				<div class="form-group">
+					<label for="artSearch">Article Search</label>
+					<input type="text" class="form-control" name="artSearch" placeholder="Title" autocomplete="off">
+				</div>
 
+				<!-- Pass in admin for security-->
+				<input type="hidden" value="{{admin}}">
+
+				<!-- Button -->
+				<div class="form-group" style="text-align: right">
+					<button type="submit" class="btn btn-dark">Search</button>
+				</div>
+
+
+			</fieldset>
+		</form>
+		{{/if}}
+<!-- End of Admin Search form -->
+
+<!-- Beginning of new articlesMeta form -->
 
 		<legend>Login</legend>
 <form method="post" action="/blogSave" autocomplete="off">
@@ -29,11 +51,13 @@
 	<textarea class="form-control" name="description" rows="2" placeholder="This week we'll take a look at..." ></textarea>
 </div>
 
-<!--
 <div class="form-group">
-	<label for="blog">Blog</label>
-	<textarea class="form-control" name="blog" rows="10" placeholder="Blog. Blog. Blog. All day long."></textarea>
-</div> -->
+	<select name="state">
+		<option value="draft" selected>Draft</option>
+		<option value="published">Publish</option>
+	</select>
+</div>
+
 
 <div class="form-group" style="text-align: right;">
 	<button class="btn btn-dark" type="submit">Post!</button>
