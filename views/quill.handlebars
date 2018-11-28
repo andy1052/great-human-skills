@@ -1,20 +1,15 @@
-<!-- practice/quill.handlebars -->
+<!-- views/quill.handlebars -->
 
 
-
-
-
-<!-- Create the editor container -->
-<!-- <div id="editor-container">
-  <p>Hello World!</p>
-  <p>Some initial <strong>bold</strong> text</p>
-  <p><br></p>
-</div> -->
-
+<h3 style="text-align: center"> {{#if admin}}
+	Welcome Blogger, Please Enter Your Blog Below!
+{{/if}}</h3>
 
 
 <div id="form-container" class="container">
   <form id="quill-form">
+
+  	<input id="articleId" type="hidden"  name="articleId" value="{{articleMetaId}}">
 
     <div class="row form-group">
       <label for="about">About me</label>
@@ -23,14 +18,11 @@
         <p></p>
       </div>
     </div>
+    
     <div class="row">
       <button class="btn btn-primary" type="submit">Save Profile</button>
     </div>
   </form>
-</div>
-
-
-<div id="blog-post-show">
 </div>
 
 

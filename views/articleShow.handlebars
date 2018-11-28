@@ -3,11 +3,25 @@
 <div class="row">
 	<div class="col-lg">
 		<div class="lead">
-			{{post.description}}
+			<h1>{{post.title}}</h1>
 		</div>
+
+		<div class="lead">
+			<h3>{{post.description}}</h3>
+		</div>
+
+		<div class="container">
+			<div class="row justify-content-center">
+				<div class="col m-auto">
+			{{{data}}}
+				</div>
+			</div>
+		</div>
+
 		<div>
-			{{post.blog}}
+			<p>Article by: {{post.author}}</p>
 		</div>
+
 		<div>
 			{{post.createdOn}}
 		</div>

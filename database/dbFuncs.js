@@ -34,7 +34,6 @@ dbFunc.findAll = async function(data, collection) {
 		let db = await DbConnection.Get();
 		 let result = await db.collection(collection).find(data).toArray();
 		return result;
-		console.log("result: ", result);
 	} catch(e) {
 		console.log(e.stack);
 		return e;

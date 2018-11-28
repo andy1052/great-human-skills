@@ -101,28 +101,28 @@ app.post('/blogSave', async (req, res, next) => {
 	let title = typeof(req.body.title) === "string" && req.body.title.trim().length >0 && req.body.title.trim().length < 60 ? req.body.title.trim() : false;
 	let author = typeof(req.body.author) === "string" && req.body.author.trim().length >0 && req.body.author.trim().length < 60 ? req.body.author.trim() : false;
 	let description = typeof(req.body.description) === "string" && req.body.description.length >0 && req.body.description.length < 500 ? req.body.description : false;
-	let blog = typeof(req.body.blog) === "string" && req.body.description.length > 0 ? req.body.blog : false;
+//	let blog = typeof(req.body.blog) === "string" && req.body.description.length > 0 ? req.body.blog : false;
 
 	try {
 		
 		if (req.user) {
 
 		//	Once data is sanitized, make object and save it to database:
-		if (title && author && description && blog) {
+		if (title && author && description) {
 
 		//	Make object:
 		const article = {
 			title,
 			author,
 			description,
-			blog,
+	//		blog,
 			"createdOn": Date(),
 			comments: []
 		};
 
 
 
-		let x = await dbFuncs.insert(article, "articles").then((result) => {
+		let x = await dbFuncs.insert(article, "articlesMeta").then((result) => {
 
 			//	If database confirms save.
 			if({"n":1, "ok":1}) {
@@ -137,11 +137,29 @@ app.post('/blogSave', async (req, res, next) => {
 		//	Overkill check:
 		if (!x) throw new Error({"Error": "Something failed in blogSave"});
 
+
 		// ************ TODO ************************
 		// Should you be automatically logged out right here????
 
+		console.log("This is x passed to quill: ", x.ops[0]._id);
 
-		res.redirect('/');
+	try {
+		if (req.user) {
+			let admin = req.user;
+
+			console.log("Admin object: ", admin);
+
+			res.render('quill', {"articleMetaId": x.ops[0]._id, admin});
+		} else {
+			return res.redirect('/unauthorized');
+		}
+	} catch(e) {
+		console.log(e.stack);
+		next(e);
+	}
+
+		//res.render('quill', {x, currentUser});
+		//res.redirect('/');
 
 	} else {
 		return res.status(401).res.send("Oops! Something went wrong. Cannot save to database");
@@ -155,6 +173,47 @@ app.post('/blogSave', async (req, res, next) => {
 }
 
 });
+
+
+	//	Route to practice post quill editor form:
+	app.post("/quillForm", async (req, res, next) => {
+
+		console.log("QuillForm req.body: ", req.body);
+
+		//	This ObjectId is NECESSARY if you want to search mongoDb by _id. _id is an ObjectId format
+		//	Therefore, in order to pass it, you need to use mongoDb's ObjectId Constructor, as demonstrated 
+		//	below. Very interesting and important lesson to remember. Now everything works!
+		const ObjectId = require('mongodb').ObjectId;
+
+		try {
+
+//**********************			//	Sanitize data 	********************************************
+
+			//	Save Data:
+			const saveIt = await dbFuncs.insert(req.body, "articleContent");
+
+			//	Throw error if it doesn't save
+			if (!saveIt) throw new Error({"Error": "no save it"});
+			
+			// Otherwise:
+			// console.log("saved it!");
+			// console.log("saveIt id: ", saveIt.ops[0]._id);
+
+			// Now find the articleMeta and update it with this article's articleId:
+			const updateArticleMeta = await dbFuncs.update({_id: ObjectId(req.body.articleId)}, {"articleId": saveIt.ops[0]._id}, "articlesMeta");
+
+			if (!updateArticleMeta) throw new Error({"Error": "Could not update articlesMeta"});
+
+		// const saveArticleId = await dbFuncs.insert({"articleId": saveIt.ops[0]._id}, ); 
+
+
+			res.status(200).redirect('/');
+
+		} catch (e) {
+			console.log(e.stack);
+			next(e);
+		}
+	});
 
 
 };	//	End of module exports.

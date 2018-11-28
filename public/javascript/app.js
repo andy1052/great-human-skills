@@ -14,6 +14,8 @@ console.log("I'm here!");
 
 //	Logic for Quill editor:
 
+
+
 /* Initialize Quill editor */
 let quill = new Quill('#editor-container', {
   modules: {
@@ -24,8 +26,19 @@ let quill = new Quill('#editor-container', {
     ]
   },
   placeholder: 'Compose an epic...',
-  theme: 'snow'
+  theme: 'snow',
 });
+
+// *******************************************************************
+//	Keyboard Stuff:
+
+// const Keyboard = Quill.import('modules/keyboard');
+
+// let keyB = quill.keyboard.addBinding({key: Keyboard.keys.ENTER}, function(range, context) {
+// 	console.log('Enter Key!');
+// });
+
+//	********************************************************************
 
 //	Grab form element:
 let form = document.querySelector('#quill-form');
@@ -39,14 +52,34 @@ form.onsubmit = function(e) {
   let about = document.querySelector('input[name=about]');
 
  //	Get content of form using quill's getContent() function:
-  about.value = JSON.stringify(quill.getContents());
+	 about.value = JSON.stringify(quill.getContents());
 
-  let data = about.value;
+//	Because about.value is now stringified, the array is also now a string, so parse back into an object:
+	 let t = JSON.parse(about.value);
 
-console.log("about.value (data): ", data);
+	 // console.log("t: ", t);
+	 // console.log("t.ops: ", t.ops[0]);
 
-  //	console.log("Submitted", $(form).serialize(), $(form).serializeArray());
+  //	Get articleId from quill:
+  let articleId = document.getElementById("articleId").value;
 
+  // console.log("articleId: ", articleId);
+
+
+//	****************************************************************************************************
+/*	Build an object and then stringify it. It's the only way to send more than 1 value at a time
+using Fetch api */
+//	Note: t.ops[0] gets into the array for the values you want!
+//	****************************************************************************************************
+
+  let b = {
+  	"data": t,
+  	"articleId": articleId
+  };
+
+  let a = JSON.stringify(b);
+
+//	*****************************************************************************************************
 
   //*************** Fetch Post To Server Here *********************
 
@@ -59,17 +92,19 @@ console.log("about.value (data): ", data);
   	 },
   	//redirect: "/quillHtml",
   	// Referrer: "no-referrer",
-  	body: data	//JSON.stringify(data)
+  	body: a	//JSON.stringify(data)
   }).then((res) => {
-  	if (res.ok) {
-  	return res.json();
-  } else {
-  	console.log("Error");
-  }
-  }).then((json) => {
-  	console.log("Response from server: ", json);
 
-  	let elem = document.getElementById("blog-post-show").innerHTML = json;
+  	console.log("res from app.js: ", res);
+  // 	if (res.ok) {
+  // 	return res.json();
+  // } else {
+  // 	console.log("Error");
+  // }
+  // }).then((json) => {
+  // 	console.log("Response from server: ", json);
+
+  //	let elem = document.getElementById("blog-post-show").innerHTML = json;
 
 
   }).catch((e) => {
