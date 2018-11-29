@@ -248,48 +248,13 @@ console.log("Article: ", article);
 			let findArt = await dbFuncs.find({_id: article}, 'articleContent');
 
 console.log("findArt results: ", findArt.data);
-// let showArt = {};
 
-//	let x = findArt.data.ops.forEach((e, i) => {
+const data = {
+	article: findArt.data,
+	meta: findMetaArt
+};
 
-// 				let r = e.insert.toString();
-
-// 			//	console.log("Results of r: ", r);
-//				return showArt.data += e;
-
-				// if (e.includes('insert')) {
-				// 	return e.insert;
-				// }
-
-				// if (e.attributes.includes('bold' || 'italic')) {
-				// 	return showArt.push(e.attributes);
-				// }
-
-				// // if (e.attributes.includes('italic' && 'bold')) {
-				// // 	return e.attributes.insert
-				// // }
-
-				// else {
-				// 	console.log("Something went wrong!");
-				// 	return;
-				// }
-//		});
-// console.log("Type Of:", typeof(findArt));
-
-// let art = JSON.stringify(findArt);
-
-
-// console.log("ARt: ", art);
-res.json(findArt.data)
-
-		//res.render('quill', {"art": art});
-
-		// } else {
-
-		// 	return res.redirect('/unauthorized');
-		// }
-
-
+		res.json(data);
 
 	} catch(e) {
 		console.log(e.stack);
@@ -298,7 +263,7 @@ res.json(findArt.data)
 
 });
 
-
+	//	Route to get to quill "edit" editor:
 app.post('/getEdit', (req, res, next) => {
 
 	console.log("REq.user: ", req.user);
@@ -306,6 +271,54 @@ app.post('/getEdit', (req, res, next) => {
 	let admin = req.user;
 
 	res.render('editArticle', {admin});
+});
+
+
+
+	//	Route to update edits made in "/getEdit":
+
+/* When the "save changes" button is clicked in "/getEdit" the data first has to go back to the 
+front end, because quill needs to pull the data again and make a new Delta object, and then it can
+be sent to this route to be saved to the database. */
+
+app.post("/saveArtEdit", async (req, res, next) => {
+
+	//	SANITIZE THE FUCKING DATA HERE!
+	console.log("Req.user from /saveArtEdit: ", req.user);
+	console.log("Req.body from /saveArtEdit: ", req.body);
+
+	const ObjectId = require('mongodb').ObjectId;
+
+	try {
+		if(req.user) {
+
+			//	ArticleId:
+			let articleId = req.body.meta.articleId;
+			let updates = req.body.edits;
+
+			console.log("Updates from /saveArtEdit: ", updates);
+
+			let f = await dbFuncs.update({_id: ObjectId(articleId)}, {"data": updates}, 'articleContent');
+
+			if (!f) throw new Error({"Error": "Could not save updates!"});
+
+		
+
+			res.json({"msg": "Thank you!"});
+
+
+		} else {
+			throw new Error({"Error": "Admin is not logged in!"});
+		}
+
+		//	Now you need to find the original article, then update it. 
+
+
+
+	} catch(e) {
+		console.log(e);
+		next(e);
+	};
 });
 
 

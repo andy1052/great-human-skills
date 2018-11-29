@@ -8,15 +8,18 @@
 			<div class="col-lg-10">
 			<form>
 				<fieldset>
+
+		<!-- A hidden field to send Admin data back to server -->			
 				<div class="form-group">
 			<input type="hidden" name="admin" value="{{admin}}">
 		</div>
 
+		<!-- Search bar -->
 				<div class="form-group">
 					<label for="artSearch">Article Search</label>
 					<input  id="testForm" type="text" class="form-control" name="artSearch" placeholder="Title" autocomplete="off">
 				</div>
-
+		<!-- This button calls eventListener in app.js front end -->
 		<div class="form-group">
 			<button id="test-button" type="click" class="btn btn-dark">
 				Search!
@@ -27,21 +30,45 @@
 </div>
 </div>
 
-<div class="row justify-content-center">
-	<div class="col-lg-10">
-<div class="form-group">
+		<!-- this is the actual editor that appears only if a matche document is found! -->
+	<div class="row justify-content-center">
+		<div class="col-lg-10">
+
+		<!-- In order to save your changes, a POST request must be made, so you need a form element -->
+<!--		<form method="POST" action="/saveArtEdit" autocomplete="off"> -->
+	<form id="edit-form">
+
+			<fieldset>
+
+	<div class="form-group">
+		<input id="edit" name="edit" type="hidden">
 		<!-- Quill edit editor will appear here -->
-		<div id="editor"></div>
+			<div id="editor"></div>
+		</div>
+
+		<!-- This is to change the article's state -->
+		<div class="form-group">
+	<select name="state">
+		<option value="draft" selected>Draft</option>
+		<option value="published">Publish</option>
+	</select>
+</div>
+
+		<!-- This is the button that will update the document in database -->
+		<div class="form-group">
+			<button id="edit-button" type="click" class="btn btn-dark">Save Changes</button>
+		</div>
+
+</fieldset>
 	</div>
-</div>
-</div>
+	</div>
 
 
 
 {{else}}
 <div class="row">
 	<div class="col">
-		<h1>Whoa, hang on! You're not supposed to be here.</h1>
+		<h1>Whoa, hang on a sec! You're not supposed to be here.</h1>
 		<h3>If you stay here for longer than thirty seconds, your computer will be fucked</h3>
 	</div>
 </div>

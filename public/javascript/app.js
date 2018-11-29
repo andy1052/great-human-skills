@@ -11,12 +11,11 @@
 console.log("I'm here!");
 
 
-//  ***************** TEST FOR DELTA FROM FRONT END *****************************
+//  ***************** DELTA FROM DB TO FRONT END *****************************
 const butt = document.querySelector("#test-button");
 
 butt.addEventListener("click", async function(e) {
   e.preventDefault();
-  console.log("What's up?! I fucking work!");
 
 let form = document.querySelector("#testForm");
 
@@ -34,8 +33,7 @@ let formVal = form.value;
   });
   const content = await response.json();
 
-console.log("Content.ops: ", content.ops);
-console.log("Type of: ", typeof(content));
+  console.log("Response from artSearch: ", content);
 
 var quill = new Quill('#editor', {
   modules: {
@@ -55,7 +53,59 @@ var quill = new Quill('#editor', {
 //     ]
 // });
 
-quill.setContents(content.ops);
+quill.setContents(content.article.ops);
+
+
+
+//**************************** Here we have a function within a function **************************
+let editButton = document.querySelector("#edit-button");
+
+console.log("Editbutton: ", editButton);
+
+editButton.addEventListener("click", async function(e) {
+
+     e.preventDefault();
+
+     console.log("I was fucking clicked!");
+
+   // Populate hidden form on submit
+   let editForm = document.querySelector('input[name=edit]');
+
+  // Get content of form using quill's getContent() function:
+   edit.value = JSON.stringify(quill.getContents());
+
+   console.log("Edit Value: ", edit.value);
+
+   let x = JSON.parse(edit.value);
+
+
+   // Make object:
+   let obj = {
+    edits: x,
+    meta: content.meta
+   }
+
+   let o = JSON.stringify(obj);
+
+
+   // Make a fetch call to save edits to db:
+    const saveEdit = await fetch('/saveArtEdit', {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+   // body: JSON.stringify({a: 1, b: 'Textual content'})
+   body: o
+  });
+  const saveArtEdit = await saveEdit.json();
+
+console.log('SaveArtEdit response: ', saveArtEdit);
+
+
+}, false);
+
+//  *************************** END OF FUNCTION WITHIN FUNCTION *****************************************
 
 }, false);
 
@@ -82,6 +132,45 @@ let quill = new Quill('#editor-container', {
   placeholder: 'Compose an epic...',
   theme: 'snow',
 });
+
+
+
+//  ****************** THIS IS TO UPDATE DELTA OBJECT AND SAVE TO DB /getEdit ************************
+
+
+
+// let editButton = document.querySelector("#edit-button");
+
+// console.log("Editbutton: ", editButton);
+
+//  Add event listener:
+// editButton.addEventListener("click", function(e) {
+
+//   e.preventDefault();
+
+//   //  Grab form element:
+// let editForm = document.querySelector('#edit-form');
+
+//   // Populate hidden form on submit
+//   let editForm = document.querySelector('input[name=edit]');
+
+//  // Get content of form using quill's getContent() function:
+//    edit.value = JSON.stringify(quill.getContents());
+
+//    console.log("Edit Value: ", edit.value);
+
+
+// }, false);
+
+
+
+
+
+
+
+
+
+
 
 // *******************************************************************
 //	Keyboard Stuff:
@@ -179,29 +268,5 @@ using Fetch api */
 
 
 
-//  *************************** This is to render the editor view ******************************
-// let edit = document.getElementById('editor-container');
 
-// let html = document.querySelector(".ql-editor").innerHTML;
-
-// // edit.value = JSON.stringify(quill.getContents());
-
-// console.log("HTML: ", html);
-
-// console.log(typeof(html));
-
-
-// //let source = document.querySelector("#editor-container");
-// //console.log("Source: ", source);
-
-// const delta = quill.setContents({html});
-
-// console.log("Delta: ", delta);
-
-// //let sendToEditor = document.getElementById("the-grand-return").innerHtml = delta;
-// console.log("Quill root.innerhtml:", quill.root.innerHTML);
-
-// const terminus = quill.root.innerHTML;
-
-// terminus.innerText = delta;
 
