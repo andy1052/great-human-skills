@@ -223,15 +223,10 @@ app.post("/accountChange", async (req, res, next) => {
 //	changeSave Post Route from editAccount after confirmation is established:
 app.post("/changeSave", async (req, res, next) => {
 
-	console.log("Req.user from changeSave: ", req.user);
-	console.log("Req.body from changeSave: ", req.body);
-
 	//	SANITIZE THE DATA!!!!
 	let newEmail = typeof(req.body.newEmail) === "string" && req.body.newEmail.trim().length > 0 && req.body.newEmail.trim().length < 60 && req.body.newEmail.trim().includes('@') ? req.body.newEmail.trim() : false;
 	let newPass = typeof(req.body.newPass) === 'string' && req.body.newPass.trim().length > 0 && req.body.newPass.trim().length < 60 ? req.body.newPass.trim() : false;
 	let confirmed = typeof(req.body.confirmed) === 'string' && req.body.confirmed.trim().length > 0 && req.body.confirmed.trim().length < 60 ? req.body.confirmed.trim() : false;
-
-console.log("Variables: ", newEmail, newPass, confirmed);
 
 	//	Object Id:
 	const ObjectId = require('mongodb').ObjectId;
@@ -244,14 +239,12 @@ console.log("Variables: ", newEmail, newPass, confirmed);
 		//	Find this email in the database:
 		let check = await dbFuncs.find({_id: ObjectId(confirmed)}, 'client');
 
-console.log("Check: ", check);		
-
 		//	If there is no check, throw error:
 		if (!check) throw new Error({"Error": "Cannot login, non-existent email."});
 
-
 		if (newEmail && newPass) {
-			// If Both the email and password have been passed, save them both, but first check them:
+
+		// If Both the email and password have been passed, save them both, but first check them:
 
 		//	Compare entered password to hashed password:
 		let c = await helpers.compare(newPass, check.password);
@@ -280,8 +273,6 @@ console.log("Check: ", check);
 			//	If no password was passed, skip checking the hash, and update the email:
 			let email = await dbFuncs.update({_id: ObjectId(confirmed)}, {"email": newEmail}, 'client');
 
-console.log("Email: ", email);
-
 console.log("no newPass");
 
 			return;
@@ -294,7 +285,7 @@ console.log("no newPass");
 		//	Check the password first, update if necessary:
 		if (c) {
 			//If the password already exists, just leave it and return
-console.log("No C");			
+console.log("Sorry, this password already exists");			
 			return;
 		} else {
 
@@ -302,8 +293,6 @@ console.log("No C");
 			let x = await helpers.salt(newPass).then((y) => {
 			return y;
 			});
-
-console.log("X: ", x);
 
 			//	then update database:
 			let pass = await dbFuncs.update({_id: ObjectId(confirmed)}, {"password": x}, 'client');
@@ -321,22 +310,19 @@ console.log("X: ", x);
 		//	Check the password first, update if necessary:
 		if (c) {
 			//If the password already exists, just leave it and return
-console.log("No C");			
+console.log("Sorry, this password already exists");			
 			return;
 		} else {
 
 			//	First hash the password:
 			let x = await helpers.salt(newPass).then((y) => {
 			return y;
-			});
-
-console.log("X: ", x);
+		});
 
 			//	then update database:
 			let pass = await dbFuncs.update({_id: ObjectId(confirmed)}, {"password": x}, 'client');
 			console.log('Password has been updated!');
 		}
-			return;
 
 		} else {
 		//	Now check the email:
@@ -347,8 +333,6 @@ console.log("X: ", x);
 			//	Otherwise, update the database:
 			let email = await dbFuncs.update({_id: ObjectId(confirmed)}, {"email": newEmail}, 'client');
 			console.log("Email has been updated!");	
-
-console.log("Email: ", email);	
 		}
 	};
 
@@ -372,7 +356,7 @@ console.log("Email: ", email);
 
 
 //	Logout Route:
-app.get('/logout', async (req, res) => {
+app.get('/logout', (req, res) => {
 
 	//	make sure req.user object is also cleared to prevevent any sort of sorcery:
 	let currentUser = null;

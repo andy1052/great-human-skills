@@ -222,18 +222,20 @@ app.post("/quillForm", async (req, res, next) => {
 //	Route for article search by Admin only:
 app.post("/artSearch", async (req, res, next) => {
 
-	console.log("From new artSearch: ", req.body.artSearch);
+	//console.log("req Object: ", req);
+
+	console.log("From new artSearch: ", req.body);
 	console.log("From new artSearch user: ", req.user);
 
 	//	Sanitize the data:
 
 	try {
 
-		if (req.user) {
-			let admin = req.user;
+	//	if (req.user) {
+		//	let admin = req.user;
 
 
-			let findMetaArt = await dbFuncs.find({"title": req.body.artSearch}, 'articlesMeta');
+			let findMetaArt = await dbFuncs.find({"title": req.body.data}, 'articlesMeta');
 
 console.log("FindMetaArt results: ", findMetaArt);
 
@@ -245,20 +247,15 @@ console.log("Article: ", article);
 
 			let findArt = await dbFuncs.find({_id: article}, 'articleContent');
 
-console.log("findArt results: ", findArt.data.ops);
+console.log("findArt results: ", findArt.data);
+// let showArt = {};
 
-			if (!findArt) throw new Error({"Error": "Could not find requested article content from db"});
+//	let x = findArt.data.ops.forEach((e, i) => {
 
-		//	res.json(findArt.data.ops);
-
-// let showArt = [];
-
-// 		let x = findArt.data.ops.forEach((e, i) => {
-
-//  				let r = e.insert.toString();
+// 				let r = e.insert.toString();
 
 // 			//	console.log("Results of r: ", r);
-// 				return showArt.push(r);
+//				return showArt.data += e;
 
 				// if (e.includes('insert')) {
 				// 	return e.insert;
@@ -276,28 +273,21 @@ console.log("findArt results: ", findArt.data.ops);
 				// 	console.log("Something went wrong!");
 				// 	return;
 				// }
-		//	});
+//		});
+// console.log("Type Of:", typeof(findArt));
 
-// console.log("showArt: ", showArt.splice(","));
-
-// let g = showArt.splice(",");
-
-	//	const art = JSON.stringify(showArt);
-
-//console.log("Result of forEach: ", x);
-
-// let b = showArt;
-
-// console.log("Show art to send to editor: ", b);
-let art = findArt.data.ops;
+// let art = JSON.stringify(findArt);
 
 
-			res.render('quill', [art]);
+// console.log("ARt: ", art);
+res.json(findArt.data)
 
-		} else {
+		//res.render('quill', {"art": art});
 
-			return res.redirect('/unauthorized');
-		}
+		// } else {
+
+		// 	return res.redirect('/unauthorized');
+		// }
 
 
 
@@ -309,10 +299,21 @@ let art = findArt.data.ops;
 });
 
 
+app.post('/getEdit', (req, res, next) => {
 
+	console.log("REq.user: ", req.user);
+
+	let admin = req.user;
+
+	res.render('editArticle', {admin});
+});
 
 
 };	//	End of module exports.
+
+
+
+
 
 
 

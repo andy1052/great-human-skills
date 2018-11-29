@@ -11,6 +11,60 @@
 console.log("I'm here!");
 
 
+//  ***************** TEST FOR DELTA FROM FRONT END *****************************
+const butt = document.querySelector("#test-button");
+
+butt.addEventListener("click", async function(e) {
+  e.preventDefault();
+  console.log("What's up?! I fucking work!");
+
+let form = document.querySelector("#testForm");
+
+let formVal = form.value;
+
+
+  const response = await fetch('/artSearch', {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+   // body: JSON.stringify({a: 1, b: 'Textual content'})
+   body: JSON.stringify({data: formVal})
+  });
+  const content = await response.json();
+
+console.log("Content.ops: ", content.ops);
+console.log("Type of: ", typeof(content));
+
+var quill = new Quill('#editor', {
+  modules: {
+    toolbar: [
+      [{ header: [1, 2, false] }],
+      ['bold', 'italic', 'underline'],
+      ['image', 'code-block']
+    ]
+  },
+  placeholder: 'Compose an epic...',
+  theme: 'snow' // or 'bubble'
+});
+
+// quill.setContents({
+//     "ops":[
+//         {"insert":"this is a test bit of text\n"}
+//     ]
+// });
+
+quill.setContents(content.ops);
+
+}, false);
+
+
+
+
+
+
+
 
 //	Logic for Quill editor:
 
@@ -55,7 +109,7 @@ form.onsubmit = function(e) {
 	 about.value = JSON.stringify(quill.getContents());
 
 //	Because about.value is now stringified, the array is also now a string, so parse back into an object:
-	 let t = JSON.parse(about.value);
+  let t = JSON.parse(about.value);
 
 	 // console.log("t: ", t);
 	 // console.log("t.ops: ", t.ops[0]);
@@ -118,8 +172,36 @@ using Fetch api */
   // No back end to actually submit to!
   //alert('Open the console to see the submit data!')
 
-
   //return false;
 };
 // End of Quill editor logic
+
+
+
+
+//  *************************** This is to render the editor view ******************************
+// let edit = document.getElementById('editor-container');
+
+// let html = document.querySelector(".ql-editor").innerHTML;
+
+// // edit.value = JSON.stringify(quill.getContents());
+
+// console.log("HTML: ", html);
+
+// console.log(typeof(html));
+
+
+// //let source = document.querySelector("#editor-container");
+// //console.log("Source: ", source);
+
+// const delta = quill.setContents({html});
+
+// console.log("Delta: ", delta);
+
+// //let sendToEditor = document.getElementById("the-grand-return").innerHtml = delta;
+// console.log("Quill root.innerhtml:", quill.root.innerHTML);
+
+// const terminus = quill.root.innerHTML;
+
+// terminus.innerText = delta;
 

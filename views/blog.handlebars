@@ -4,23 +4,27 @@
 <div class="row">
 	<div class="col-md-10 justify-content-center">
 
+
+
+
+
 <!-- If admin logged in, provide functionality -->
 		{{#if token}}
-		<form method="POST" action="/artSearch" autocomplete="off">
+		<form method="POST" action="/getEdit" autocomplete="off">
 			<fieldset>
 				
 				<!-- Article search bar -->
-				<div class="form-group">
+			<!--	<div class="form-group">
 					<label for="artSearch">Article Search</label>
 					<input type="text" class="form-control" name="artSearch" placeholder="Title" autocomplete="off">
-				</div>
+				</div> -->
 
 				<!-- Pass in admin for security-->
 				<input type="hidden" value="{{admin}}">
 
 				<!-- Button -->
-				<div class="form-group" style="text-align: right">
-					<button type="submit" class="btn btn-dark">Search</button>
+				<div class="form-group">
+					<button type="submit" class="btn btn-dark">Edit An Article</button>
 				</div>
 
 
