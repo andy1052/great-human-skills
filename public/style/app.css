@@ -83,6 +83,7 @@
 	background-color: rgba(255, 255, 255, 0.4);
 }
 
+/*
 .con {
 	position: relative;
 	text-align: center;
@@ -106,7 +107,7 @@
 	font-size: 24px;
 	text-shadow: 1px 0px 0px #000;
 	font-family: Times, sans-serif;
-}
+}*/
 
 
 /* css for homepage */
@@ -178,3 +179,49 @@ img {
 #editor {
 	height: 375px;
 }
+
+
+#the-great-header {
+	height: 200px;
+	width: 100%;
+}
+
+#pic {
+	height: 100%;
+	width: 150px;
+}
+
+#first {
+	width: 100%;
+	margin: 100px auto;
+}
+
+#carousel-back {
+	background-image: url("/images/green-background.jpg");
+	background-repeat: no-repeat;
+	background-size: 100% 100%;
+}
+
+#header-img {
+	text-align: center;
+}
+
+.carousel-inner {
+	width: 100%;
+	max-height: 200px !important;
+}
+
+/* Smaller than standard 960px */
+@media only screen and (max-width: 959px) {};
+
+/* Standard 960px: */
+@media only screen and (min-width 768px) and (max-widthL 959px) {};
+
+/* All mobile sizes */
+@media only screen and (max-width: 767px) {};
+
+/* Mobile lanscape size */
+@media only screen and (min-width: 480px) and (max-width: 767px) {};
+
+/* Mobile portrait size */
+@media only screen and (max-width: 479px) {};

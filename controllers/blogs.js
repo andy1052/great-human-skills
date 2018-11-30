@@ -118,7 +118,7 @@ app.post('/blogSave', async (req, res, next) => {
 			description,
 			state,
 	//		blog,
-			"createdOn": Date(),
+			"createdOn": new Date().toDateString(),
 			comments: []
 		};
 

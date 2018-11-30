@@ -1,29 +1,30 @@
 <!-- views/home.handlebars -->
 
-
-	<!--	<div class="container">
-			<div class="row justify-content-center border border-dark bg-secondary rounded mt-4 mb-4 p-0">
-				<div class="col-md p-0 mt-5 mb-5 h-100">
-			<div class="border border-dark rounded bg-white" style="height: 300px; width: 100%;">
-				<p class="text-dark text-center" id="head-text">Great<br>Human<br>Skills</p>
-			</div>
-		</div>
-
-		<div class="col-8 p-0 mt-5 mb-5 h-100">
-			<img class="border border-dark rounded" style="height: 300px; width: 100%;" id="back" src="images/ghs-head.jpg" alt="abstract green background image">
-			<div class="centered text-success">Great Human Skills</div> -->
-	<!--	</div>
-	</div>
-</div> -->
-
-<div class="container">
+<!-- Failed Carousel -->
+<!--<div class="container"> 
 	<div class="row">
 	<img src="/images/green-background.jpg" alt="green background" class="img-responsive black" id="back">
 	<div class="centered flex">
-{{> carousel}}
+
 </div>
 </div>
-</div>
+</div>-->
+
+<!-- Header/carousel -->
+
+	<div class="container ">
+		<div class="row w-100 border border-dark bg-dark justify-content-center" id="the-great-header">
+			<div class="col-md-4 m-0 p-0" id="header-img">
+				<img src="/images/words2-cover.jpg" alt="words cover" class="img-responsive" id="pic"/>
+			</div>
+			<div class="col-md-8 m-0 p-0">
+				{{> carousel}}
+			</div>
+		</div>
+	</div>
+
+
+
 
 		<div class="col-12">
 			{{#if currentUser}}
@@ -36,7 +37,7 @@
 		<!-- Welcome Text -->
 		<div class="row justify-content-center m-3 p-3">
 			<div class="col-md-12">
-				<p class="text-left text-dark">Yes, we're new! It's been a long journey here, but we made it! Don't worry, though, there will be plenty of content added here on a regular basis. If you want to join the community early and be the first to know when new content is added, <a href="/sign-up">Sign up here</a>. Otherwise, this entire project is being launched because of a <a href="/allYouveGot">book</a> that, like this site, aims to help get the absolute best out of you. Don't wait, <a href="/allYouveGot">Check It Out Now!</a></p>
+				<p class="text-left text-dark">Yes, we're new! It's been a long journey here, but we made it out of sheer arrogance. Don't worry, though, there will be plenty of content added here on a regular basis. Join the mail list and be the first to know when new content is added, <a href="/sign-up">Sign up here</a>. Othewise, here's a <a href="/allYouveGot">book</a> that you should give me all your money for, you fucking fuckers. Don't wait! <a href="/allYouveGot">Check It Out Now!</a></p>
 			</div>
 		</div>
 	

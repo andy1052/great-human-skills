@@ -14,6 +14,9 @@ console.log("I'm here!");
 //  ***************** DELTA FROM DB TO FRONT END *****************************
 const butt = document.querySelector("#test-button");
 
+//  First check that this editor is present:
+if (butt) {
+  
 butt.addEventListener("click", async function(e) {
   e.preventDefault();
 
@@ -110,6 +113,8 @@ console.log('SaveArtEdit response: ', saveArtEdit);
 }, false);
 
 
+//  Next Check if the primary editor is available:
+} else if (document.querySelector("#editor-container")) {
 
 
 
@@ -122,66 +127,19 @@ console.log('SaveArtEdit response: ', saveArtEdit);
 
 /* Initialize Quill editor */
 let quill = new Quill('#editor-container', {
-  modules: {
+ modules: {
     toolbar: [
-      ['bold', 'italic'],
-      ['link', 'blockquote', 'code-block', 'image'],
-      [{ list: 'ordered' }, { list: 'bullet' }]
+      [{ header: [1, 2, false] }],
+      ['bold', 'italic', 'underline'],
+      ['image', 'code-block']
     ]
   },
   placeholder: 'Compose an epic...',
-  theme: 'snow',
+  theme: 'snow' // or 'bubble'
 });
 
 
 
-//  ****************** THIS IS TO UPDATE DELTA OBJECT AND SAVE TO DB /getEdit ************************
-
-
-
-// let editButton = document.querySelector("#edit-button");
-
-// console.log("Editbutton: ", editButton);
-
-//  Add event listener:
-// editButton.addEventListener("click", function(e) {
-
-//   e.preventDefault();
-
-//   //  Grab form element:
-// let editForm = document.querySelector('#edit-form');
-
-//   // Populate hidden form on submit
-//   let editForm = document.querySelector('input[name=edit]');
-
-//  // Get content of form using quill's getContent() function:
-//    edit.value = JSON.stringify(quill.getContents());
-
-//    console.log("Edit Value: ", edit.value);
-
-
-// }, false);
-
-
-
-
-
-
-
-
-
-
-
-// *******************************************************************
-//	Keyboard Stuff:
-
-// const Keyboard = Quill.import('modules/keyboard');
-
-// let keyB = quill.keyboard.addBinding({key: Keyboard.keys.ENTER}, function(range, context) {
-// 	console.log('Enter Key!');
-// });
-
-//	********************************************************************
 
 //	Grab form element:
 let form = document.querySelector('#quill-form');
@@ -199,9 +157,6 @@ form.onsubmit = function(e) {
 
 //	Because about.value is now stringified, the array is also now a string, so parse back into an object:
   let t = JSON.parse(about.value);
-
-	 // console.log("t: ", t);
-	 // console.log("t.ops: ", t.ops[0]);
 
   //	Get articleId from quill:
   let articleId = document.getElementById("articleId").value;
@@ -239,33 +194,19 @@ using Fetch api */
   }).then((res) => {
 
   	console.log("res from app.js: ", res);
-  // 	if (res.ok) {
-  // 	return res.json();
-  // } else {
-  // 	console.log("Error");
-  // }
-  // }).then((json) => {
-  // 	console.log("Response from server: ", json);
-
-  //	let elem = document.getElementById("blog-post-show").innerHTML = json;
 
 
   }).catch((e) => {
   	console.log(e.stack);
   });
-
-  // const content = rawResponse.json();
-
-  // console.log("content: ", content);
-
-  // No back end to actually submit to!
-  //alert('Open the console to see the submit data!')
-
-  //return false;
 };
 // End of Quill editor logic
 
 
+//  Otherwise, just send back nothing:
+} else {
+  console.log("No editor detected!");
+}//End of overarching if statement
 
 
 
