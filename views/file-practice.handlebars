@@ -1,0 +1,25 @@
+<!-- File Manipulation Practice Page -->
+
+
+
+<div class="container" style="height: 100%; width: 100%;">
+<div class="row justify-content-center">
+<div class="col-lg-8 mt-5 border border-dark rounded">
+
+<form method="post" action="/imgPractice" enctype="multipart/form-data" autocomplete="off">
+<div class="form-group m-3">
+	<label for="img">Upload Image</label>
+	<input type="file" id="up" class="form-control" name="img" accept="image/*" onchange="handleFiles(this.files)">
+	<button type="submit" class="btn btn-success mt-3">Send</button>
+</div>
+</form>
+</div>
+
+<div class="col-lg-8 m-3">
+<div id="preview" class="rounded">
+</div>
+</div>
+
+
+</div>
+</div>

@@ -21,7 +21,7 @@ exports = module.exports = function(app) {
 
 		try{
 
-			//	Fetch all articles
+			//	Fetch all articles based on "published" state:
 			let find = await dbFuncs.findAll({"state": "published"}, 'articlesMeta').then((result) => {
 				//console.log("result from app.get: ", result);
 				return result;

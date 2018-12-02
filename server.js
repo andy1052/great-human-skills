@@ -70,10 +70,9 @@ const comments = require('./controllers/comments')(app);
 //	Connect Routes from landings.js, pass the app variable into the file as well:
 const landings = require('./controllers/landings')(app);
 
+//	Connect Routes from practices.js, pass the app variable into the file as well:
+const practices = require('./controllers/practices')(app);
 
 
-// app.listen(3000, () => {
-// 	console.log('Server running on port 3000');
-// });
 
 

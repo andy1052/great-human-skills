@@ -14,15 +14,6 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 
-//	Get Route:
-// app.get('/blog', async (req, res) => {
-// 	let admin = req.user;
-// 	if (admin.password !== process.env.ADMIN) {
-// 		return res.send("Stop! What you're doing is unauthorized and comes with severe consequences for your computer.");
-// 	}
-// 	res.render('blog', {admin});
-// }); 
-
 //	Export module, passing in the app variable:
 exports = module.exports = function(app) {
 
@@ -97,19 +88,24 @@ app.post('/newBlog', async (req, res, next) => {
 //	Save New Blog To The Database Route:
 app.post('/blogSave', async (req, res, next) => {
 
+	console.log("req.body from /blogSave: ", req.body);
+
 	//	First sanitize the data:
 	let title = typeof(req.body.title) === "string" && req.body.title.trim().length >0 && req.body.title.trim().length < 60 ? req.body.title.trim() : false;
 	let author = typeof(req.body.author) === "string" && req.body.author.trim().length >0 && req.body.author.trim().length < 60 ? req.body.author.trim() : false;
 	let description = typeof(req.body.description) === "string" && req.body.description.length >0 && req.body.description.length < 500 ? req.body.description : false;
-//	let blog = typeof(req.body.blog) === "string" && req.body.description.length > 0 ? req.body.blog : false;
+	let artImage = typeof(req.body.artImage) === "string" && req.body.artImage.trim().length > 0 && req.body.artImage.trim().length < 60 ? req.body.artImage : false;
 	let state = typeof(req.body.state) === "string" && req.body.state.trim().length > 0 && req.body.state.trim().length <= 20 ? req.body.state.trim() : false;
+	let category = typeof(req.body.category) === "string" && req.body.category.trim().length > 0 && req.body.category.trim().length <= 20 ? req.body.category.trim() : false;
 
 	try {
+
+console.log("/blogSave variables", title, author, description, artImage, state, category);
 		
 		if (req.user) {
 
 		//	Once data is sanitized, make object and save it to database:
-		if (title && author && description) {
+		if (title && author && description && state && category && artImage) {
 
 		//	Make object:
 		const article = {
@@ -117,7 +113,8 @@ app.post('/blogSave', async (req, res, next) => {
 			author,
 			description,
 			state,
-	//		blog,
+			category,
+			artImage,
 			"createdOn": new Date().toDateString(),
 			comments: []
 		};
@@ -132,18 +129,21 @@ app.post('/blogSave', async (req, res, next) => {
 			return result;
 		} else {
 			//	Else, send error
-			res.status(400).res.send("Something went wrong when trying to save to database");
+			res.status(400).res.json("Something went wrong when trying to save to database");
 		}
 	});
 
 		//	Overkill check:
 		if (!x) throw new Error({"Error": "Something failed in blogSave"});
 
-
-		// ************ TODO ************************
-		// Should you be automatically logged out right here????
-
 		console.log("This is x passed to quill: ", x.ops[0]._id);
+
+
+		//	Upload the image to file system here:
+		
+
+
+
 
 	try {
 		if (req.user) {
@@ -180,8 +180,6 @@ app.post('/blogSave', async (req, res, next) => {
 //	Route to practice post quill editor form:
 app.post("/quillForm", async (req, res, next) => {
 
-		console.log("QuillForm req.body: ", req.body);
-
 		//	This ObjectId is NECESSARY if you want to search mongoDb by _id. _id is an ObjectId format
 		//	Therefore, in order to pass it, you need to use mongoDb's ObjectId Constructor, as demonstrated 
 		//	below. Very interesting and important lesson to remember. Now everything works!
@@ -196,20 +194,13 @@ app.post("/quillForm", async (req, res, next) => {
 
 			//	Throw error if it doesn't save
 			if (!saveIt) throw new Error({"Error": "no save it"});
-			
-			// Otherwise:
-			// console.log("saved it!");
-			// console.log("saveIt id: ", saveIt.ops[0]._id);
 
 			// Now find the articleMeta and update it with this article's articleId:
 			const updateArticleMeta = await dbFuncs.update({_id: ObjectId(req.body.articleId)}, {"articleId": saveIt.ops[0]._id}, "articlesMeta");
 
 			if (!updateArticleMeta) throw new Error({"Error": "Could not update articlesMeta"});
 
-		// const saveArticleId = await dbFuncs.insert({"articleId": saveIt.ops[0]._id}, ); 
-
-
-			res.status(200).redirect('/');
+			res.status(200).json({"msg": "All Is Well!"});
 
 		} catch (e) {
 			console.log(e.stack);
@@ -219,15 +210,12 @@ app.post("/quillForm", async (req, res, next) => {
 
 
 
+
 //	Route for article search by Admin only:
 app.post("/artSearch", async (req, res, next) => {
 
-	//console.log("req Object: ", req);
 
-	console.log("From new artSearch: ", req.body);
-	console.log("From new artSearch user: ", req.user);
-
-	//	Sanitize the data:
+	//	*********************** Sanitize the data:
 
 	try {
 
@@ -237,31 +225,29 @@ app.post("/artSearch", async (req, res, next) => {
 
 			let findMetaArt = await dbFuncs.find({"title": req.body.data}, 'articlesMeta');
 
-console.log("FindMetaArt results: ", findMetaArt);
-
 			if (!findMetaArt) throw new Error({"Error": "Could not find requested article in db"});
 
-		let article = findMetaArt.articleId;
-
-console.log("Article: ", article);
+			let article = findMetaArt.articleId;
 
 			let findArt = await dbFuncs.find({_id: article}, 'articleContent');
 
-console.log("findArt results: ", findArt.data);
 
-const data = {
-	article: findArt.data,
-	meta: findMetaArt
-};
+			const data = {
+				article: findArt.data,
+				meta: findMetaArt
+			};
 
-		res.json(data);
+					res.json(data);
 
-	} catch(e) {
-		console.log(e.stack);
-		next(e);
-	};
+				} catch(e) {
+					console.log(e.stack);
+					next(e);
+				};
 
-});
+			});
+
+
+
 
 	//	Route to get to quill "edit" editor:
 app.post('/getEdit', (req, res, next) => {
@@ -323,12 +309,4 @@ app.post("/saveArtEdit", async (req, res, next) => {
 
 
 };	//	End of module exports.
-
-
-
-
-
-
-
-//	Sanitize the data:
 

@@ -1,32 +1,38 @@
 <!-- views/articleShow.handlebars -->
 
-<div class="container">
+<div class="container bg-light">
 <div class="row justify-content-center">
-	<div class="col-lg-10 m-2 p-2 bg-success">
-			<h1 class="text-center">{{post.title}}</h1>
+
+	<div class="col-lg-10 mt-4 p-2 bg-info rounded border border-dark">
+			<h1 class="text-center text-white">{{post.title}}</h1>
+		</div>
+
+		<!-- Image upload from server here -->
+		<div class="col-lg-10 p-0" id="artImageContainer">
+			<img src="{{post.artImage}}" alt="{{post.title}} image" class="img-responsive"  id="articleImage"/>
 		</div>
 
 		<div class="col-lg-10" id="postDes">
-			<h3>{{post.description}}</h3>
+			<h3 class="mt-3">{{post.description}}</h3>
 		</div>
 	</div>
 
 		
 			<div class="row align-items-center">
-				<div class="col-lg-8" id="article-data">
-			{{{data}}}
+				<div class="col-lg-10 border border-info rounded" id="article-data">
+			<p class="text-center">{{{data}}}</p>
 				</div>
 			</div>
 		
 			<div class="row">
-				<div class="col-lg m-2">
-			<p>Article by: {{post.author}}</p>
+				<div class="col-lg mt-2">
+			<p class="text-dark">Article by: {{post.author}}</p>
 		</div>
 	</div>
 
 		<div class="row">
-			<div class="col-lg m-2">
-			{{post.createdOn}}
+			<div class="col-lg mt-0">
+			<p class="text-dark">Posted on: {{post.createdOn}}</p>
 		</div>
 	</div>
 </div>

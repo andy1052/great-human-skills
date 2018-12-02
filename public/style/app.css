@@ -213,23 +213,49 @@ img {
 }
 
 #article-data {
-	background-color: #b0b8c4;
-	border: 1px solid #eee;
-	width: 80%;
+	background-color: #fff;
+	/*border: 1px solid #bbb;*/
+	height: 400px;
+	width: 100%;
 	margin: 5px auto;
+	padding-top: 10px;
 }
 
 #postDes {
 	height: 50px;
 	font-size: 24px;
 	color: #000;
-	background-color: ;
+	text-align: center;
 }
 
 #cardtemp {
 	border: 1px solid #bbb;
 }
 
+#articleImage {
+	height: 100%;
+	width: 100%;
+	border: 1px solid black;
+	border-radius: 5px;
+}
+
+#artImageContainer {
+	height: 200px;
+	width: 100%;
+	margin: 5px auto;
+}
+
+
+#incoming {
+	height: 200px;
+	width: 300px;
+}
+
+#preview {
+	height: 200px;
+	width: 300px;
+	margin: 10px auto;
+}
 
 /* Smaller than standard 960px */
 @media only screen and (max-width: 959px) {};

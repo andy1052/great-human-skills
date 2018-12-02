@@ -49,6 +49,30 @@
 	<textarea class="form-control" name="description" rows="2" placeholder="This week we'll take a look at..." ></textarea>
 </div>
 
+
+<div class="form-group">
+	<label for="artImage">Image</label>
+	<input type="text" class="form-control" name="artImage" placeholder="/artImages/{image-name}{file-type}" autocomplete="off">
+</div>
+
+<!--
+<div class="form-group">
+	<label for="artImage">Upload Image</label>
+	<input  type="file" class="form-control" name="artImage" accept="image/*">
+</div> -->
+
+
+<div class="form-group">
+	<label for="category" class="d-block">Category</label>
+	<select name="category">
+		<option class="text-muted" value="none">Choose One</option>
+		<option value="Writing">Writing</option>
+		<option value="Lifestyle">Lifestyle</option>
+		<option value="Tips And Tricks">Tips And Tricks</option>
+		<option value="Communication">Communication</option>
+	</select>
+</div>
+
 <div class="form-group">
 	<select name="state">
 		<option value="draft" selected>Draft</option>

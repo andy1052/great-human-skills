@@ -69,8 +69,6 @@ editButton.addEventListener("click", async function(e) {
 
      e.preventDefault();
 
-     console.log("I was fucking clicked!");
-
    // Populate hidden form on submit
    let editForm = document.querySelector('input[name=edit]');
 
@@ -104,6 +102,12 @@ editButton.addEventListener("click", async function(e) {
   const saveArtEdit = await saveEdit.json();
 
 console.log('SaveArtEdit response: ', saveArtEdit);
+
+if (saveArtEdit) {
+  window.location.href = "/";
+} else {
+  console.log("No response received from server");
+}
 
 
 }, false);
@@ -193,8 +197,16 @@ using Fetch api */
   	body: a	//JSON.stringify(data)
   }).then((res) => {
 
-  	console.log("res from app.js: ", res);
+    return res.json();
 
+  }).then((json) => {
+    console.log("Response from server: ", json);
+
+if (json) {
+  window.location.href = "/";
+} else {
+  console.log("No response received from the server!");
+}
 
   }).catch((e) => {
   	console.log(e.stack);

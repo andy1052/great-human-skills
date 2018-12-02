@@ -3,3 +3,4 @@ node_modules
 views/blog.js
 views/blog.handlebars
 views/adlog.handlebars
+public/artImages
