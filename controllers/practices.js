@@ -11,6 +11,7 @@ const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
 const crypto = require('crypto');
+const dbFuncs = require('../database/dbFuncs');
 
 
 
@@ -18,9 +19,17 @@ const crypto = require('crypto');
 exports = module.exports = function(app,) {
 
 //	Get route for "file-practice.handlebars":
-app.get('/file-practice', (req, res, next) => {
-	res.render('file-practice');
-});
+// app.get('/artImage', (req, res, next) => {
+
+// 	console.log("Data passed from app.js after quillForm submit: ", req.user, req.body);
+
+// 	//console.log("Req.user: ", req.user);
+// if (req.user) {
+// 	res.render('artImage');
+// } else {
+// 	res.redirect('/unauthorized');
+// }
+// });
 
 //	************* IMG UPLOAD ***********************************************
 
@@ -50,16 +59,42 @@ let upload = multer({storage: storage,
 
 
 //	Post Route for /imgPractice:
-app.post('/imgPractice', upload.single('img'), (req, res, next) => {
+app.post('/imgPractice', upload.single('img'), async (req, res, next) => {
 
 		//	Sanitize Data:
+let filename = req.file.filename;
 
 		try {
+
+			//	Initiate ObjectId:
+			const ObjectId = require('mongodb').ObjectId;
+
 
 			console.log("Req.Body from /imgPractice: ", req.body);
 			console.log("Req.file from /imgPractice: ", req.file);
 
-return false;
+		//	Here you can place size restrictions:
+			let stats = fs.statSync(req.file.path);
+			let fileSizeInBytes = stats["size"];
+
+			console.log("Stats: ", stats);
+			console.log("fileSizeInMegabytes: ", fileSizeInBytes / 1000000.0);
+
+			//	Save the path of this image file to the article id in articleContent.
+
+			//	First you have to pass the articleId through req.body from hidden field in form.
+
+			let articleMetaId = req.body.articleMetaId;
+
+			//	Update articlesMeta with the image path so it can be recalled on init:
+			const up = await dbFuncs.update({_id: ObjectId(articleMetaId)}, {"imagePath": filename}, 'articlesMeta');
+
+			//	Throw error if update throws error:
+			if (!up) throw new Error({"Error": "Path did not save to database"});
+
+			//	Now that you have the meta data and an image, move on to the article content/ quill editor:
+			//	Pass in articleMetaId
+			res.render('quill', {"articleMetaId":  req.body.articleMetaId} );
 
 		} catch(e) {
 			console.log(e.stack);

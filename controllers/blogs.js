@@ -94,18 +94,15 @@ app.post('/blogSave', async (req, res, next) => {
 	let title = typeof(req.body.title) === "string" && req.body.title.trim().length >0 && req.body.title.trim().length < 60 ? req.body.title.trim() : false;
 	let author = typeof(req.body.author) === "string" && req.body.author.trim().length >0 && req.body.author.trim().length < 60 ? req.body.author.trim() : false;
 	let description = typeof(req.body.description) === "string" && req.body.description.length >0 && req.body.description.length < 500 ? req.body.description : false;
-	let artImage = typeof(req.body.artImage) === "string" && req.body.artImage.trim().length > 0 && req.body.artImage.trim().length < 60 ? req.body.artImage : false;
 	let state = typeof(req.body.state) === "string" && req.body.state.trim().length > 0 && req.body.state.trim().length <= 20 ? req.body.state.trim() : false;
 	let category = typeof(req.body.category) === "string" && req.body.category.trim().length > 0 && req.body.category.trim().length <= 20 ? req.body.category.trim() : false;
 
 	try {
-
-console.log("/blogSave variables", title, author, description, artImage, state, category);
 		
 		if (req.user) {
 
 		//	Once data is sanitized, make object and save it to database:
-		if (title && author && description && state && category && artImage) {
+		if (title && author && description && state && category) {
 
 		//	Make object:
 		const article = {
@@ -114,7 +111,6 @@ console.log("/blogSave variables", title, author, description, artImage, state, 
 			description,
 			state,
 			category,
-			artImage,
 			"createdOn": new Date().toDateString(),
 			comments: []
 		};
@@ -136,22 +132,13 @@ console.log("/blogSave variables", title, author, description, artImage, state, 
 		//	Overkill check:
 		if (!x) throw new Error({"Error": "Something failed in blogSave"});
 
-		console.log("This is x passed to quill: ", x.ops[0]._id);
-
-
-		//	Upload the image to file system here:
-		
-
-
-
+		console.log("This is x passed to artImage: ", x.ops[0]._id);
 
 	try {
 		if (req.user) {
 			let admin = req.user;
 
-			console.log("Admin object: ", admin);
-
-			res.render('quill', {"articleMetaId": x.ops[0]._id, admin});
+			res.render('artImage', {"articleMetaId": x.ops[0]._id, admin});
 		} else {
 			return res.redirect('/unauthorized');
 		}
@@ -164,7 +151,7 @@ console.log("/blogSave variables", title, author, description, artImage, state, 
 		//res.redirect('/');
 
 	} else {
-		return res.status(401).res.send("Oops! Something went wrong. Cannot save to database");
+		return res.status(401).send("Oops! Something went wrong. Cannot save to database");
 	};
 }else {
 	return res.send("Sorry, there is no user present.");
@@ -200,7 +187,7 @@ app.post("/quillForm", async (req, res, next) => {
 
 			if (!updateArticleMeta) throw new Error({"Error": "Could not update articlesMeta"});
 
-			res.status(200).json({"msg": "All Is Well!"});
+			res.status(200).json({"articleId" : req.body.articleId});
 
 		} catch (e) {
 			console.log(e.stack);

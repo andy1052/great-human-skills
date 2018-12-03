@@ -24,11 +24,12 @@
 
 			</fieldset>
 		</form>
+	</div>
 		{{/if}}
 <!-- End of Admin Search form -->
 
 <!-- Beginning of new articlesMeta form -->
-
+<div class="col-md-10 justify-content-center">
 		<legend>Login</legend>
 <form method="post" action="/blogSave" autocomplete="off">
 
@@ -48,19 +49,6 @@
 	<label for="description">Description</label>
 	<textarea class="form-control" name="description" rows="2" placeholder="This week we'll take a look at..." ></textarea>
 </div>
-
-
-<div class="form-group">
-	<label for="artImage">Image</label>
-	<input type="text" class="form-control" name="artImage" placeholder="/artImages/{image-name}{file-type}" autocomplete="off">
-</div>
-
-<!--
-<div class="form-group">
-	<label for="artImage">Upload Image</label>
-	<input  type="file" class="form-control" name="artImage" accept="image/*">
-</div> -->
-
 
 <div class="form-group">
 	<label for="category" class="d-block">Category</label>

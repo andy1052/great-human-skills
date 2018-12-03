@@ -7,8 +7,11 @@
 <div class="col-lg-8 mt-5 border border-dark rounded">
 
 <form method="post" action="/imgPractice" enctype="multipart/form-data" autocomplete="off">
+
+	<input type="hidden" name="articleMetaId" value="{{articleMetaId}}"
+
 <div class="form-group m-3">
-	<label for="img">Upload Image</label>
+	<label for="img">Upload An Image For The Article Header</label>
 	<input type="file" id="up" class="form-control" name="img" accept="image/*" onchange="handleFiles(this.files)">
 	<button type="submit" class="btn btn-success mt-3">Send</button>
 </div>

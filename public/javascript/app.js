@@ -203,7 +203,11 @@ using Fetch api */
     console.log("Response from server: ", json);
 
 if (json) {
-  window.location.href = "/";
+
+  //YOU NEED TO SEND THIS BACK TO FILE-PRACTICE PAGE {{ARTICLEID}} SO THAT IT CAN BE PASSED BACK 
+  //TO /imgPractice
+
+    window.location.href = "/";
 } else {
   console.log("No response received from the server!");
 }
