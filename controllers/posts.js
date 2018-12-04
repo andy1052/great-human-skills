@@ -69,7 +69,6 @@ exports = module.exports = function(app) {
 				showComment.push(x);
 			};
 
-
 			//	Now render the template, passing in the post and showComment data:
 			res.render('articleShow', {data, post, "showComment": showComment, currentUser});
 		} catch(e) {

@@ -20,9 +20,6 @@ exports = module.exports = function (app) {
 app.post('/newComment', async (req, res, next) => {
 
 
-	console.log("/newComment req.body: ", req.body);
-	console.log("/newComment req.user: ", req.user);
-
 //	Require the mongodb ObjectId Type in order to find article in "v" variable below:
 const ObjectId = require('mongodb').ObjectId;
 
@@ -36,7 +33,6 @@ const ObjectId = require('mongodb').ObjectId;
 			let articleId = typeof(req.body.articleId) === "string" && req.body.articleId.length > 0 && req.body.articleId.length < 100 ? req.body.articleId : false;
 
 
-console.log("SANITIZED DATA: ", userId, comment, articleId);
 
 			// If all fields are present:
 			if (userId && comment && articleId) {
@@ -48,11 +44,12 @@ console.log("SANITIZED DATA: ", userId, comment, articleId);
 					articleId,
 					"postedOn": Date()
 				};
-console.log("CONST WORDS: ", words);
+
+console.log("words: ", words);
+console.log("req.user :", req.user);
 
 				//	The save the words object in the "comments" collection:
 				let w = await dbFuncs.insert(words, 'comments');
-console.log("W AWAIT: ", w);				
 
 				// Check that the operation went through:
 				if (!w) throw new Error({"Error": "Something went wrong while trying to save comments"});
@@ -62,25 +59,32 @@ console.log("W AWAIT: ", w);
 
 				//	Otherwise, update the article.comment array in the "articles" collection with the comment.
 				 let v = await dbFuncs.arrayUpdate({"articleId": articleId}, {"comments": commentId}, 'articleContent');
-console.log("V AWAIT: ", v);
+	
 				 //	Check that the operation went through:
 				 if (!v) throw new Error({"Error": "Something went wrong while updating articleId array"});
 
 				 //	Now, add the commentId to an array attached to the client profile as well as the articleId that were commented on:
 				 let u = await dbFuncs.arrayUpdate({"email": req.user.email}, {"comments": commentId, "articlesCommentedOn": articleId}, 'client');
-console.log("U AWAIT: ", u);
+
 				 //	Check that the operation went through:
 				 if (!u) throw new Error({"Error": "Something went wrong while updating client 'comments' array"});
 
 				 //	Now add the comment id to articleMeta:
 				 let o = await dbFuncs.arrayUpdate({"_id" : ObjectId(articleId)}, {"comments": commentId}, 'articlesMeta').then((res) => {
-				 	console.log("res: ", res);
 				 	return res;
 				 });
-console.log("O AWAIT: ", o);
 
 				 //	Check that the operation went through:
 				 if (!o) throw new Error({"Error": "Something went wrong saving comments to articleMeta"});
+
+				 //	Find the user in the client document:
+				 let f = await dbFuncs.find({"email": req.user.email}, 'client');
+
+				 //	Now update the 'comments' document with user's image from articlesMeta:
+				 let n = await dbFuncs.update({"_id": ObjectId(commentId)}, {"image": f.image}, 'comments');
+
+				 //	Check that the operation went through:
+				 if (!n) throw new Error({"Error": "Something wrong with updating comments"});
 
 				 //	Finally, re-render the page in order to show the comment:
 				 res.redirect(`/posts/${articleId}`);

@@ -4,18 +4,32 @@
 <div class="row justify-content-center">
 	<div class="col-sm-6 col-sm-offset-3">
 		<legend>Sign Up!</legend>
-<form method="post" action="/sign-up" autocomplete="off">
+<form method="post" action="/sign-up" enctype="multipart/form-data" autocomplete="off">
 
 <fieldset>
+	<!-- Photo/image -->
+	<div class="form-group d-inline m-1">
+	<label for="profilePic">Upload A Profile Pic</label>
+	<input type="file" id="prof" class="form-control" name="profilePic" accept="image/*" onchange="showPic(this.files)">
+
+	<!-- Preview of Profile Pic -->
+	<div class="form-group d-inline">
+		<div id="profile" class="rounded"></div>
+	</div>
+
+
+	</div>
+
+
 	<!-- Username -->
 	<div class="form-group">
-		<label for="username" style="display:block;">Username</label>
+		<label for="username" style="display:block;">Choose A Username</label>
 		<input class="form-control" id="username" type="text" name="username" placeholder="The Dude"/>
 	</div>
 
 	<!-- Email -->
 	<div class="form-group">
-		<label for="email" style="display:block;">Email</label>
+		<label for="email" style="display:block;">Enter Your Email</label>
 		<input class="form-control" id="email" type="email" name="email" placeholder="email@example.com"/>
 	</div>
 
@@ -25,7 +39,7 @@
 
 	<!-- Password -->
 	<div class="form-group">
-		<label for="password" style="display:block;">Password</label>
+		<label for="password" style="display:block;">Make It A Good Password</label>
 		<input class="form-control" id="password" type="password" name="password" placeholder="Password"/>
 	</div>
 

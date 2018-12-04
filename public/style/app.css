@@ -257,6 +257,25 @@ img {
 	margin: 10px auto;
 }
 
+
+#profile {
+	height: 200px;
+	width: 300px;
+	margin: 10px auto;
+	display: none;
+}
+
+#pic {
+	height: 150px;
+	width: 100px;
+	text-align: center;
+}
+
+#cardPic {
+	height: 75px;
+	width: 50px;
+}
+
 /* Smaller than standard 960px */
 @media only screen and (max-width: 959px) {};
 

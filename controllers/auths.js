@@ -12,6 +12,9 @@ const dbFuncs = require('../database/dbFuncs');
 const helpers = require('../lib/helpers');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const multer = require('multer');
+const crypto = require('crypto');
+const path = require('path');
 
 
 
@@ -30,18 +33,52 @@ app.get('/sign-up', async (req, res, next) => {
 });
 
 
+
+//	************* IMG UPLOAD ****************************************************************************
+
+//	Multer Function:
+let storage = multer.diskStorage({
+	destination: function(req, file, cb) {
+		cb(null, '/home/andy/Desktop/great-human-skills/public/profiles');
+	},
+	filename: function(req, file, cb) {
+		//	Create a random 31 character string: 
+		crypto.randomBytes(31, (err, buf) => {
+			cb(null, buf.toString("hex") + path.extname(file.originalname));
+		});
+		//cb(null, file.fieldname + '-' + Date.now() + '.jpg')
+	}
+});
+
+
+//	Multer Function:
+let upload = multer({storage: storage,
+	onFileUploadStart: function(file) {
+		console.log(file.originalname + ' is starting ...');
+	}
+});
+
+
+
+//	*************************************************************************************************
+
+
 //	Sign-up Route:
-app.post('/sign-up', async (req, res, next) => {
+app.post('/sign-up', upload.single('profilePic'), async (req, res, next) => {
+
+console.log('Req.Body: ', req.body);
+console.log('Req.File: ', req.file);
 
 	//	Sanitize the data
 	let username = typeof(req.body.username) === "string" && req.body.username.trim().length > 0 && req.body.username.trim().length < 60 ? req.body.username.trim() : false;
 	let email = typeof(req.body.email) === "string" && req.body.email.trim().length > 0 && req.body.email.trim().length < 80 && req.body.email.trim().includes('@') ? req.body.email.trim() : false;
 	let password = typeof(req.body.password) === "string" && req.body.password.trim().length > 0 && req.body.password.trim().length < 60 ? req.body.password.trim() : false;
+	let image = typeof(req.file.filename) === "string" && req.file.filename.trim().length > 0 && req.file.filename.trim().length < 80 ? req.file.filename.trim() : false;
 
 	try{
 
 	//	Make sure that a username, an email and a password were entered:
-	if (username && email && password){
+	if (username && email && password && image){
 
 		//	First hash the password:
 		let x = await helpers.salt(password).then((y) => {
@@ -56,6 +93,7 @@ app.post('/sign-up', async (req, res, next) => {
 			username,
 			email,
 			password: x,
+			image,
 			"createdAt": Date()
 		};
 
@@ -150,7 +188,7 @@ app.post('/login', async (req, res, next) => {
 				}
 
 				//	Otherwise, create a new token:
-				let token = jwt.sign({"username": check.username}, process.env.SECRET, {expiresIn: "60 days"});
+				let token = jwt.sign({"username": check.username, "email": check.email}, process.env.SECRET, {expiresIn: "60 days"});
 				//	Then set a cookie and redirect to homepage:
 				res.cookie('nToken', token, {maxAge: 900000, httpOnly: true});
 				// console.log("Password result: ", result);

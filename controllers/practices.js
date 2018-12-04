@@ -74,8 +74,12 @@ let filename = req.file.filename;
 			console.log("Req.file from /imgPractice: ", req.file);
 
 		//	Here you can place size restrictions:
+
 			let stats = fs.statSync(req.file.path);
 			let fileSizeInBytes = stats["size"];
+			let sizeInMegaBytes = fileSizeInBytes / 1000000.0;
+
+		if (sizeInMegaBytes <= 2.000000) {
 
 			console.log("Stats: ", stats);
 			console.log("fileSizeInMegabytes: ", fileSizeInBytes / 1000000.0);
@@ -95,6 +99,10 @@ let filename = req.file.filename;
 			//	Now that you have the meta data and an image, move on to the article content/ quill editor:
 			//	Pass in articleMetaId
 			res.render('quill', {"articleMetaId":  req.body.articleMetaId} );
+
+		} else {
+			res.render('artImage', {"imageSize": "Sorry, Images must be below 2mb in size."});
+		}
 
 		} catch(e) {
 			console.log(e.stack);

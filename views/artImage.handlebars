@@ -4,11 +4,17 @@
 
 <div class="container" style="height: 100%; width: 100%;">
 <div class="row justify-content-center">
+
+{{#if imageSize}}
+<div class="text-center text-dark">{{imageSize}}</div>
+{{/if}}
+
+
 <div class="col-lg-8 mt-5 border border-dark rounded">
 
 <form method="post" action="/imgPractice" enctype="multipart/form-data" autocomplete="off">
 
-	<input type="hidden" name="articleMetaId" value="{{articleMetaId}}"
+	<input type="hidden" name="articleMetaId" value="{{articleMetaId}}">
 
 <div class="form-group m-3">
 	<label for="img">Upload An Image For The Article Header</label>
@@ -20,9 +26,5 @@
 
 <div class="col-lg-8 m-3">
 <div id="preview" class="rounded">
-</div>
-</div>
-
-
 </div>
 </div>
