@@ -1,33 +1,30 @@
 <!-- views/partials/showComments.handlebars -->
 
-
-<div class="row">
-<!--	<div class="col-md-4" style="display:inline;"> -->
-		<!-- Profile Image -->
-<!--		{{#if images}}
-		{{#each images}}
-				<img src="/profiles/{{this}}" alt="profile pic"/>
-		{{/each}}
-		{{/if}}
-	</div> -->
-
-<div class="col-md-10">
 {{#if showComment}}
 	{{#each showComment}}
+
+<div class="container m-2 p-2" id="card-container">
+<div class="row w-100 justify-content-center">
+
+<div class="col-md-4 m-1 mt-3 p-0" id="comment-profile-pic">
 		<!-- Image -->
-	<div style="display: inline">
+	<div>
 	<img src="/profiles/{{this.image}}" alt="profile picture">
 </div>
-	
+</div>
+
+<div class="col-md-7 m-1 p-0">
 <div class="card">
-	<div class="card-block" style="display: inline;">
-		<h5 class="card-title">{{this.userId}}</h5>
+	<div class="card-block p-2">
+		<h5 class="card-title">{{this.userId}} posted:</h5>
 		<p class="card-text">{{this.comment}}</p>
-		<small>{{this.postedOn}}</small>
+		<small>Posted on: {{this.postedOn}}</small>
 	</div>
 </div>
-{{/each}}
-{{/if}}
 
 </div>
 </div>
+</div>
+
+{{/each}}
+{{/if}}

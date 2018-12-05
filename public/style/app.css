@@ -2,9 +2,9 @@
 @import url('https://fonts.googleapis.com/css?family=Ultra');
 
 
-/*body {
-	background-color: #f7bc5d;
-}*/
+body {
+	min-height: 100vh;
+}
 
 /* css for allYouveGot page */
 #section-1 {
@@ -271,9 +271,15 @@ img {
 	text-align: center;
 }
 
-#cardPic {
-	height: 75px;
-	width: 50px;
+#card-container {
+	border: 1px solid #AAA;
+	background-color: #aaa;
+}
+
+#comment-profile-pic {
+	height: 100%;
+	width: 80%;
+	text-align: center;
 }
 
 /* Smaller than standard 960px */

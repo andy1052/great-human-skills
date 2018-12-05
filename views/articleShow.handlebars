@@ -4,22 +4,22 @@
 <div class="row justify-content-center">
 
 	<div class="col-lg-10 mt-4 p-2 bg-info rounded border border-dark">
-			<h1 class="text-center text-white">{{post.title}}</h1>
+			<h1 class="text-center text-white m-2">{{post.title}}</h1>
 		</div>
 
 		<!-- Image upload from server here -->
-		<div class="col-lg-10 p-0" id="artImageContainer">
+		<div class="col-lg-10 p-0 m-2" id="artImageContainer">
 			<img src="/artImages/{{post.imagePath}}" alt="{{post.title}} image" class="img-responsive"  id="articleImage"/>
 		</div>
 
-		<div class="col-lg-10" id="postDes">
+		<div class="col-lg-10 m-2" id="postDes">
 			<h3 class="mt-3">{{post.description}}</h3>
 		</div>
 	</div>
 
 		
 			<div class="row align-items-center">
-				<div class="col-lg-10 border border-info rounded" id="article-data">
+				<div class="col-lg-10 mt-5 border border-info rounded" id="article-data">
 			<p class="text-center">{{{data}}}</p>
 				</div>
 			</div>
