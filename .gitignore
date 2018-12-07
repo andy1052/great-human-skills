@@ -5,3 +5,4 @@ views/blog.handlebars
 views/adlog.handlebars
 public/artImages
 public/profiles
+public/tempImages
