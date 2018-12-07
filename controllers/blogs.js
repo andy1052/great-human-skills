@@ -186,7 +186,10 @@ app.post("/quillForm", async (req, res, next) => {
 
 			if (!updateArticleMeta) throw new Error({"Error": "Could not update articlesMeta"});
 
-			res.status(200).json({"articleId" : req.body.articleId});
+			//	make sure req.user object is also cleared to prevevent any sort of sorcery:
+				let currentUser = null;
+
+			res.clearCookie('nToken').status(200).json({"articleId" : req.body.articleId});
 
 		} catch (e) {
 			console.log(e.stack);
