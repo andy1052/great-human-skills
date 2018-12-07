@@ -33,8 +33,6 @@ exports = module.exports = function(app,) {
 
 //	************* IMG UPLOAD ***********************************************
 
-// console.log("Dirname: ", process.cwd() + '/public/artImages');
-
 //	Multer Function:
 let storage = multer.diskStorage({
 	destination: function(req, file, cb) {

@@ -1,0 +1,32 @@
+<!-- views/editProfilePic.handlebars -->
+
+<div class="row justify-content-center">
+	<div class="col-sm-6 col-sm-offset-3">
+		<legend>Edit Your Profile Pic</legend>
+
+	<form method="post" action="/changeProfPic" enctype="multipart/form-data" id="newUp" autocomplete="off">
+
+		<fieldset>
+
+	<!-- Photo/image -->
+	<div class="form-group d-inline mt-5 mb-1">
+	<label for="changedPro mt-5">Upload New Profile Pic</label>
+	<input type="file" id="changedPro" class="form-control" name="changedProf" accept="image/jpg, image/png, image/jpeg" onchange="showChangedPic(this.files)">
+
+	<!-- Button -->
+	<div class="form-group mt-3">
+		<button type="submit" class="btn btn-success">Upload</button>
+	</div>
+
+
+</fieldset>
+</form>
+
+	<!-- Preview of Profile Pic -->
+	<div class="form-group d-inline mt-3">
+		<div id="newProfile" class="rounded"></div>
+	</div>
+	</div>
+
+</div>
+</div>

@@ -54,6 +54,36 @@ function handleFiles(files) {
 };
 
 
+} else if (document.querySelector("#newUp")) {
+
+  //  Logic to display profile pic on editAccount page:
+
+  let newProfile = document.querySelector("#newProfile");
+
+  function showChangedPic(files) {
+
+  for (var i = 0; i < files.length; i++) {
+    var file = files[i];
+    
+    if (!file.type.startsWith('image/')){ continue }
+    
+    var img = document.createElement("img");
+  //  img.classList.add("obj");
+    newProfile.style.display = "block";
+    img.file = file;
+    img.id = "pic";
+    newProfile.appendChild(img); // Assuming that "newProfile" is the div output where the content will be displayed.
+    
+    var reader = new FileReader();
+    reader.onload = (function(aImg) { return function(e) { aImg.src = e.target.result; }; })(img);
+    reader.readAsDataURL(file);
+  }
+};
+
+
+
+
+
 } else {
 	console.log("Nothing to display from uploads");
 }

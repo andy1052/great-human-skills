@@ -15,6 +15,7 @@ const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const crypto = require('crypto');
 const path = require('path');
+const fs = require('fs');
 
 
 
@@ -39,7 +40,7 @@ app.get('/sign-up', async (req, res, next) => {
 //	Multer Function:
 let storage = multer.diskStorage({
 	destination: function(req, file, cb) {
-		cb(null, '/home/andy/Desktop/great-human-skills/public/profiles');
+		cb(null, '/home/andy/Desktop/great-human-skills/public/tempImages');
 	},
 	filename: function(req, file, cb) {
 		//	Create a random 31 character string: 
@@ -232,7 +233,6 @@ app.get("/editAccount", (req, res, next) => {
 //	Post accountChange from editAccount page:
 app.post("/accountChange", async (req, res, next) => {
 
-	console.log("Req.body from accountChange: ", req.body);
 
 	//	Sanitize data!
 
@@ -280,51 +280,49 @@ app.post("/changeSave", async (req, res, next) => {
 		//	If there is no check, throw error:
 		if (!check) throw new Error({"Error": "Cannot login, non-existent email."});
 
-		if (newEmail && newPass) {
+// ************** Case 1: newEmail && newPass && newImage ********************************:
 
-		// If Both the email and password have been passed, save them both, but first check them:
+		if (newEmail && newPass && newImage) {
+
+		// If the email, password, and image have been passed, save them, but first check them:
 
 		//	Compare entered password to hashed password:
 		let c = await helpers.compare(newPass, check.password);
 
-			if (newEmail === check.email || c) {
-				return console.log("one or both fields match the database");
+			if (newEmail === check.email || c || newImage === check.image) {
+				return console.log("one of these fields match the database");
 			}
 
-			//	But first hash and compare the password:
-
+			//	Now hash and compare the password:
 			let x = await helpers.salt(newPass).then((y) => {
 			return y;
 			});
 
 			//	then save them
+			let both = await dbFuncs.update({_id: ObjectId(confirmed)}, {"email": newEmail, "password": x, "image": newImage}, 'client');
+	
 
-			let both = await dbFuncs.update({_id: ObjectId(confirmed)}, {"email": newEmail, "password": x}, 'client');
-		}
+			if (!both) throw new Error({"Error": "could not update client account"});
+
+			console.log("Email, Password, and Image have been updated!");
+
+			//	Then redirect home:
+			res.redirect('/');
 
 
+//	***************** Case 2: if email and password were passed, but no Image *******************:
 
-
-
-		if (newPass === false) {
-
-			//	If no password was passed, skip checking the hash, and update the email:
-			let email = await dbFuncs.update({_id: ObjectId(confirmed)}, {"email": newEmail}, 'client');
-
-console.log("no newPass");
-
-			return;
-
-		} else {
+			} else if (newEmail && newPass && newImage === false) {
 
 		//	Compare entered password to hashed password:
 		let c = await helpers.compare(newPass, check.password);
 
 		//	Check the password first, update if necessary:
-		if (c) {
-			//If the password already exists, just leave it and return
-console.log("Sorry, this password already exists");			
-			return;
+		if (c || newEmail === check.email) {
+
+			//If the password and or email already exist:
+			return console.log("Case 2: One of these fields matches the database");
+
 		} else {
 
 			//	First hash the password:
@@ -333,62 +331,222 @@ console.log("Sorry, this password already exists");
 			});
 
 			//	then update database:
-			let pass = await dbFuncs.update({_id: ObjectId(confirmed)}, {"password": x}, 'client');
-			console.log('Password has been updated!');
+			let pass = await dbFuncs.update({_id: ObjectId(confirmed)}, {"email": newEmail, "password": x}, 'client');
+			console.log('Password and Email have been updated!');
+
+			//	Then redirect home:
+			res.redirect('/');			
 		}
-	};
+
+//	*************** Case 3: if email and image are passed, but no password ****************************:
+
+	} else if (newEmail && newImage && newPass === false) {
+
+			//	First make sure these values don't already exist:
+			if (newEmail === check.email || newImage === check.image) {
+				return console.log("Case 3: One of these fields matches the database");
+			}
+
+			//	Otherwise save them:
+			let pass = await dbFuncs.update({_id: ObjectId(confirmed)}, {"email": newEmail, "image": newImage}, 'client');
+			console.log('Email and Image have been updated!');
+
+			//	Check to make sure operation was successful:
+			if (!pass) throw new Error({"Error": "Email and/or image were not saved to database"});
+
+			//	Then redirect home:
+			res.redirect('/');
+
+//	*****************Case 4: if only the email was passed, not the password or image *********************:
+	} else if (newEmail && newPass === false && newImage === false) {
+
+			//	First make sure these values don't already exist:
+			if (newEmail === check.email) {
+				return console.log("Case 4: One of these fields matches the database");
+			}
+
+			//	Otherwise save if:
+			let pass = await dbFuncs.update({_id: ObjectId(confirmed)}, {"email": newEmail}, 'client');
+			console.log('Email only has been updated!');
+
+			//	Check to make sure operation was successful:
+			if (!pass) throw new Error({"Error": "Email and/or image were not saved to database"});
+
+			//	Then redirect home:
+			res.redirect('/');			
 
 
-		if (newEmail === false) {
-			// If no email was passed, save the password and return:
+//	******************* Case 5: if password and image were passed, but not the email ****************:
 
-			//	Compare entered password to hashed password:
+	} else if (newPass && newImage && newEmail === false) {
+
+			//	First Compare entered password to hashed password:
 		let c = await helpers.compare(newPass, check.password);
 
-		//	Check the password first, update if necessary:
-		if (c) {
-			//If the password already exists, just leave it and return
-console.log("Sorry, this password already exists");			
-			return;
+		//	Check the password and image first, update if necessary:
+		if (c || newImage === check.image) {
+			//If the password or image already exist, return
+			return console.log("Case 5: One of these fields matches the database");
 		} else {
 
-			//	First hash the password:
+			//	Otherwise hash the new password:
+			let x = await helpers.salt(newPass).then((y) => {
+			return y;
+		});
+
+			//	then update database:
+			let pass = await dbFuncs.update({_id: ObjectId(confirmed)}, {"password": x, "image": newImage}, 'client');
+			console.log('Password and image only have been updated!');
+
+			//	Then redirect home:
+			res.redirect('/');
+		}
+
+//	***************** Case 6: if password only is passed, and no image or email ***********************:
+
+	} else if (newPass && newImage === false && newEmail === false) {
+
+			//	First check to make sure the values don't already exist:
+			let c = await helpers.compare(newPass, check.password);
+
+			//	Check the password first, update if necessary:
+			if (c) {
+			//If the password or image already exist, return
+			return console.log("Case 6: One of these fields matches the database");
+		} else {
+
+			//	Otherwise hash the new password:
 			let x = await helpers.salt(newPass).then((y) => {
 			return y;
 		});
 
 			//	then update database:
 			let pass = await dbFuncs.update({_id: ObjectId(confirmed)}, {"password": x}, 'client');
-			console.log('Password has been updated!');
+
+			//	Check that the operation went through:
+			if (!pass) throw new Error({"Error": "Case 6 database was not updated"});
+
+			console.log("Password only has been updated!");
+
+			//	Then redirect home:
+			res.redirect('/');
 		}
 
-		} else {
-		//	Now check the email:
-		if (newEmail === check.email) {
-			//	If the email is the same, just leave it and return:
-			return;
-		} else {
+
+//	********************** Case 7: If image only is passed, and no password or email *********************:
+		} else if (newImage && newEmail === false && newPass === false) {
+
+			//	First check if the values exist:
+			if (newImage === check.image) {
+				return console.log("Case 7: One of these values matches the database");
+			}
+
 			//	Otherwise, update the database:
-			let email = await dbFuncs.update({_id: ObjectId(confirmed)}, {"email": newEmail}, 'client');
-			console.log("Email has been updated!");	
+			let pass = await dbFuncs.update({_id: ObjectId(confirmed)}, {"image": newImage}, 'client');
+
+			//	Check that the operation went through:
+			if (!pass) throw new Error({"Error": "Case 7 database was not updated"});
+
+			console.log("Image only has been updated!");
+
+			//	Then redirect home:
+			res.redirect('/');
 		}
-	};
-
-
-
-		//	Then redirect home:
-		res.redirect('/');
 
 		} else {
 			res.redirect('/unauthorized');
 		}
-
 	} catch(e) {
 		console.log(e.stack);
 		next(e);
 	};
 });
 
+
+//	Route for editProfilePic:
+app.get('/editProfilePic', async (req, res, next) => {
+
+
+	try {
+
+		if (req.user) {
+
+		let currentUser = req.user;
+
+		res.render('editProfilePic', {currentUser});
+		} else {
+		res.redirect('/unauthorized');
+		}
+	} catch(e) {
+		console.log(e.message);
+		next(e);
+	};
+});
+
+
+//	Route for Post changeProfPic:
+app.post('/changeProfPic', upload.single("changedProf"), async (req, res, next) => {
+
+console.log("req.file: ", req.file);
+console.log("req.user: ", req.user);
+
+	//	Sanitize Data:
+	let newImage = typeof(req.file.filename) === "string" && req.file.filename.trim().length > 0 && req.file.filename.trim().length < 80 ? req.file.filename.trim() : false;
+
+	//	Object Id:
+	const ObjectId = require('mongodb').ObjectId;
+
+	//	req.user:
+	let userEmail = req.user.email;
+
+	try {
+		if (req.user) {
+
+			//	If user is logged in, check to make sure the data is in:
+			if (!newImage) throw new Error("No profile pic was uploaded");
+
+			//	Otherwise, make sure the file is new and not the one that already exists in the database:
+			let check = await dbFuncs.find({"email": userEmail}, 'client');
+
+			//	If there is no check, throw error:
+			if (!check) throw new Error({"Error": "Cannot login, non-existent email."});
+
+			//	If the image is the same, throw error:
+			if (newImage === check.image) throw new Error("Image is already assigned to this account");
+
+
+//************** After all of this, you're going to want to delete this image from the filesystem *******8
+
+			let location = '/home/andy/Desktop/great-human-skills/public/tempImages/' + newImage;
+
+			fs.readFile(location, function(err, data) {
+				if (err) throw err;
+
+				//	First determine the files type by checking its binary magic number (first 4 bytes):
+				const magic = data.readUIntBE(0,4).toString(16);
+
+console.log("Magic Number????: ", magic);
+
+				//	Check the results against a list, perfect for a helper function here:
+
+				helpers.checkFiletype(magic);
+
+				//	Then, if it passes, check the file's size in megabytes:
+				const size = data.length / 1000000;
+
+console.log("File's size in megabytes is: ", size);
+
+
+			});
+
+		} else {
+			res.redirect('/unauthorized');
+		}
+	} catch(e) {
+
+	};
+
+});
 
 
 

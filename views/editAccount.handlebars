@@ -7,9 +7,7 @@
 		{{#if confirmed}}
 
 <p>Hello There {{confirmed.username}}!</p>
-<form method="POST" action="/changeSave" autocomplete="off">
-
-	<fieldset>
+	<form method="POST" action="/changeSave" autocomplete="off">
 
 	<!-- New Email -->		
 	<div class="form-group">
@@ -29,8 +27,16 @@
 	<input id="confirmed" type="hidden" name="confirmed" value={{confirmed._id}}>
 
 	<!-- Button -->
-	<div class="form-group">
+	<div class="form-group mb-5">
 		<button type="submit" class="btn btn-success">Save Changes</button>
+	</div>
+
+
+	<hr>
+
+	<div class="form-group mt-5">
+	<label for="editProfilePic">Want To Change Your Profile Pic?</label>
+	<a href="/editProfilePic" class="btn btn-success">Click Here</a>
 	</div>
 
 </fieldset>

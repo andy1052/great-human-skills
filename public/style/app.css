@@ -282,6 +282,14 @@ img {
 	text-align: center;
 }
 
+
+#newProfile {
+	height: 200px;
+	width: 300px;
+	margin: 10px auto;
+	display: none;
+}
+
 /* Smaller than standard 960px */
 @media only screen and (max-width: 959px) {};
 

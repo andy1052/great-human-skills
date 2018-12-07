@@ -88,7 +88,6 @@ app.post('/newBlog', async (req, res, next) => {
 //	Save New Blog To The Database Route:
 app.post('/blogSave', async (req, res, next) => {
 
-	console.log("req.body from /blogSave: ", req.body);
 
 	//	First sanitize the data:
 	let title = typeof(req.body.title) === "string" && req.body.title.trim().length >0 && req.body.title.trim().length < 60 ? req.body.title.trim() : false;
@@ -218,6 +217,7 @@ app.post("/artSearch", async (req, res, next) => {
 
 			let findArt = await dbFuncs.find({_id: article}, 'articleContent');
 
+			if (!findArt) throw new Error({"Error": "Could not find article"});
 
 			const data = {
 				article: findArt.data,
