@@ -238,7 +238,7 @@ app.post('/login', async (req, res, next) => {
 		let check = await dbFuncs.find({"email": email}, 'client').then((result) => {
 			if (!result) {
 				//	User not found:
-				return res.status(401).res.redirect('/unauthorized');
+				return res.status(401).redirect('/unauthorized');
 			}
 			return result;
 		});
@@ -252,7 +252,7 @@ app.post('/login', async (req, res, next) => {
 
 					//*********** TODO ************* display a message on login page to try again.
 
-					return res.status(401).res.redirect('/login');
+					return res.status(401).redirect('/login');
 				}
 
 				//	Otherwise, create a new token:
@@ -565,6 +565,65 @@ app.post('/changeProfPic', upload.single("changedProf"), async (req, res, next) 
 			next(e);
 		};
 	});
+
+
+
+
+
+//	Route for account-delete:
+app.get('/account-delete', async (req, res, next) => {
+
+	try {
+
+		if (req.user) {
+
+			console.log("req.user from /account-delete: ", req.user);
+
+		let currentUser = req.user;
+
+		res.render('account-delete', {currentUser});
+		} else {
+		res.redirect('/unauthorized');
+		}
+	} catch(e) {
+		console.log(e.message);
+		next(e);
+	};
+});
+
+
+//	Route for Client to Delete account:
+app.post('/accountDelete', async (req, res, next) => {
+
+	try {
+		if (req.user) {
+
+	console.log("req.user from /accountDelete Post: ", req.user);
+
+			//	Get the logged in user's email:
+			let userEmail = req.user.email;
+
+			//	delete the user:
+			let del = await dbFuncs.delete({"email": userEmail}, 'client');
+
+			//	If operation did not happen, throw an error.
+			if (!del) throw new Error({"Error": "Could not delete user!"});
+
+			//	make sure req.user object is also cleared to prevevent any sort of sorcery:
+			let currentUser = null;
+
+			res.clearCookie('nToken').redirect('/');
+
+		} else {
+			res.redirect('/unauthorized');
+		};
+	} catch(e) {
+		console.log(e.message);
+		next(e);
+	};
+});
+
+
 
 
 

@@ -1,0 +1,24 @@
+<!-- views/account-delete.handlebars -->
+
+<div class="row justify-content-center">
+	<div class="col-lg-10 col-sm-offset-2">
+		<legend>Delete Your Account</legend>
+
+		<div class="col-lg-10 col-sm-offset-2">
+			<p>Are you really, really sure you want to delete your account?</p>
+			<p>All right, but just for your information, once you click the delete button below, your account, meaning your username, email address, password, and profile image will be removed from our database and will no longer be available for future use.<br>Be aware, however, that any comments you've made on articles will remain visible along with the profile image, username, and date which was current at the time of posting.</p>
+		</div>
+
+
+		<form method="POST" action="/accountDelete" autocomplete="off">
+
+	<!-- Hidden input field to pass confirmed info to changeSave Route -->
+	<input id="current" type="hidden" name="currentUser" value={{currentUser}}>
+
+			<div class="form-group">
+				<label for="delete">Click to permanently delete your account:</label>
+				<button type="submit" class="btn btn-success">Delete</button>
+			</div>
+		</form>
+	</div>
+</div>

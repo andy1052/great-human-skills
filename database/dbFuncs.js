@@ -101,6 +101,9 @@ dbFunc.arrayUpdate = async function(data, update, collection) {
 
 //	Delete operation:
 dbFunc.delete = async function(data, collection) {
+
+console.log("Data from delete: ", data);
+
 	try{
 		let db = await DbConnection.Get();
 		let result = await db.collection(collection).deleteOne(data);
