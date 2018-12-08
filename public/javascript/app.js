@@ -40,11 +40,7 @@ let formVal = form.value;
 
 var quill = new Quill('#editor', {
   modules: {
-    toolbar: [
-      [{ header: [1, 2, false] }],
-      ['bold', 'italic', 'underline'],
-      ['image', 'code-block']
-    ]
+    toolbar: true
   },
   placeholder: 'Compose an epic...',
   theme: 'snow' // or 'bubble'
@@ -132,11 +128,7 @@ if (saveArtEdit) {
 /* Initialize Quill editor */
 let quill = new Quill('#editor-container', {
  modules: {
-    toolbar: [
-      [{ header: [1, 2, false] }],
-      ['bold', 'italic', 'underline'],
-      ['image', 'code-block']
-    ]
+     toolbar: true
   },
   placeholder: 'Compose an epic...',
   theme: 'snow' // or 'bubble'
@@ -161,6 +153,8 @@ form.onsubmit = function(e) {
 
 //	Because about.value is now stringified, the array is also now a string, so parse back into an object:
   let t = JSON.parse(about.value);
+
+  console.log("Article data: ", t);
 
   //	Get articleId from quill:
   let articleId = document.getElementById("articleId").value;
@@ -203,9 +197,6 @@ using Fetch api */
     console.log("Response from server: ", json);
 
 if (json) {
-
-  //YOU NEED TO SEND THIS BACK TO FILE-PRACTICE PAGE {{ARTICLEID}} SO THAT IT CAN BE PASSED BACK 
-  //TO /imgPractice
 
     window.location.href = "/";
 } else {

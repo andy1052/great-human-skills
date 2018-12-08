@@ -493,6 +493,9 @@ app.post('/changeProfPic', upload.single("changedProf"), async (req, res, next) 
 		//	Locate the file that was updated:
 		let location = '/home/andy/Desktop/great-human-skills/public/tempImages/' + newImage;
 
+		//	locate existing file in /profiles:
+		let existing = '/home/andy/Desktop/great-human-skills/public/profiles/' + check.image;
+
 		//	Analyze the file and perform various checks on the data:
 		fs.readFile(location, function(err, data) {
 
@@ -542,9 +545,20 @@ app.post('/changeProfPic', upload.single("changedProf"), async (req, res, next) 
 											console.log("Err in unlink: ", err.message);
 											return err;
 										} else {
-
 											//	Otherwise, confirm that all went well:
 											console.log("File was deleted from tempImages!");
+
+											//	Then remove the existing file from Profiles:
+											fs.unlink(existing, (err) => {
+
+												//	If err, return it:
+												if (err) {
+													console.log("Err in unlink/profiles: ", err.message);
+													return err;
+												} else {
+												console.log("Existing Profile Image has been removed!");
+											};
+											});
 										};
 									});
 								};
