@@ -444,5 +444,66 @@ app.post("/editImage", (req, res, next) => {
 });
 
 
+//	Route to find article searched from "editArticleImage":
+app.post('/artImageEdit', async (req, res, next) => {
+
+	//	Sanitize Data:
+	let articleSearch = typeof(req.body.articleSearch) === "string" && req.body.articleSearch.trim().length > 0 && req.body.articleSearch.trim().length < 80 ? req.body.articleSearch.trim() : false;
+
+console.log("articleSearch: ", articleSearch);
+
+	try {
+		if (req.user) {
+
+			//	Fetch the article by title from articlesMeta:
+			let found = await dbFuncs.find({"title": articleSearch}, 'articlesMeta');
+
+			//	If no result, throw error:
+			if (!found) throw new Error("Could not find specified article!");
+
+console.log("found: ", found);
+
+			//	Otherwise, re-render page with info:
+			res.render('editArticleImage', {found});
+
+		} else {
+			res.redirect('/unauthorized');
+		};
+	} catch(e) {
+		console.log(e.message);
+		next(e);
+	};
+});
+
+
+//	Route to save artImageEditSave sent from "editArticleImage.handlebars":
+app.post("/artImageEditSave", async (req, res, next) => {
+
+	//	Sanitize the data:
+
+	try {
+		if (req.user) {
+
+
+			//	This is where the multer magic happens!
+
+
+
+
+		} else {
+			res.redirect('/unauthorized');
+		};
+	} catch(e) {
+		console.log(e.message);
+		next(e);
+	};
+});
+
+
+
+
+
+
+
 };	//	End of module exports.
 

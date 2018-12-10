@@ -1,0 +1,53 @@
+<!-- views/editArticleImage.handlebars -->
+
+<div class="container">
+<div class="row justify-content-center">
+
+		<div class="col-lg-8 justify-content-center">
+
+			<form method="POST" action="/artImageEdit" autocomplete="off">
+				<fieldset>
+
+		<!-- Search bar -->
+				<div class="form-group">
+					<label for="articleSearch">Article Search</label>
+					<input  id="artSearch" type="text" class="form-control" name="articleSearch" placeholder="Title" autocomplete="off">
+				</div>
+
+		<div class="form-group">
+			<button type="submit" class="btn btn-dark mb-3">Search!</button>
+		</div>
+	</fieldset>
+	</form>
+</div>
+
+
+	<!-- End of search bar -->
+
+{{#if found}}
+<div class="col-lg-8 mt-5 border border-dark rounded justify-content-center">
+
+<form method="post" action="/artImageEditSave" enctype="multipart/form-data" autocomplete="off">
+
+	<input type="hidden" name="articleId" value="{{found._id}}">
+
+<div class="form-group m-3">
+	<label for="img">Upload An Image For The Article Header</label>
+	<input type="file" id="up" class="form-control" name="img" accept="image/jpg, image/png, image/jpeg" onchange="handleFiles(this.files)">
+	<button type="submit" class="btn btn-success mt-3">Send</button>
+</div>
+</form>
+</div>
+
+
+<!-- "Preview" id needs to be changed, logic added to "upload.js" -->
+
+<div class="col-lg-8 m-3">
+<div id="preview" class="rounded">
+</div>
+</div>
+
+{{/if}}
+
+</div>
+</div>
