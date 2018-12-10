@@ -33,7 +33,7 @@
 
 <div class="form-group m-3">
 	<label for="img">Upload An Image For The Article Header</label>
-	<input type="file" id="up" class="form-control" name="img" accept="image/jpg, image/png, image/jpeg" onchange="handleFiles(this.files)">
+	<input type="file" id="newUpload" class="form-control" name="newImg" accept="image/jpg, image/png, image/jpeg" onchange="newUploadImage(this.files)">
 	<button type="submit" class="btn btn-success mt-3">Send</button>
 </div>
 </form>
@@ -43,7 +43,7 @@
 <!-- "Preview" id needs to be changed, logic added to "upload.js" -->
 
 <div class="col-lg-8 m-3">
-<div id="preview" class="rounded">
+<div id="newArticleImage" class="rounded">
 </div>
 </div>
 

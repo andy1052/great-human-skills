@@ -10,18 +10,18 @@ let preview = document.querySelector('#preview');
 
 
 function handleFiles(files) {
-  for (var i = 0; i < files.length; i++) {
-    var file = files[i];
+  for (let i = 0; i < files.length; i++) {
+    let file = files[i];
     
     if (!file.type.startsWith('image/')){ continue }
     
-    var img = document.createElement("img");
+    let img = document.createElement("img");
     img.classList.add("obj");
     img.file = file;
     img.id = "incoming";
     preview.appendChild(img); // Assuming that "preview" is the div output where the content will be displayed.
     
-    var reader = new FileReader();
+    let reader = new FileReader();
     reader.onload = (function(aImg) { return function(e) { aImg.src = e.target.result; }; })(img);
     reader.readAsDataURL(file);
   }
@@ -35,19 +35,19 @@ function handleFiles(files) {
 
 	function showPic(files) {
 
-	for (var i = 0; i < files.length; i++) {
-    var file = files[i];
+	for (let i = 0; i < files.length; i++) {
+    let file = files[i];
     
     if (!file.type.startsWith('image/')){ continue }
     
-    var img = document.createElement("img");
+    let img = document.createElement("img");
   //  img.classList.add("obj");
   	profile.style.display = "block";
     img.file = file;
     img.id = "pic";
     profile.appendChild(img); // Assuming that "preview" is the div output where the content will be displayed.
     
-    var reader = new FileReader();
+    let reader = new FileReader();
     reader.onload = (function(aImg) { return function(e) { aImg.src = e.target.result; }; })(img);
     reader.readAsDataURL(file);
   }
@@ -62,19 +62,19 @@ function handleFiles(files) {
 
   function showChangedPic(files) {
 
-  for (var i = 0; i < files.length; i++) {
-    var file = files[i];
+  for (let i = 0; i < files.length; i++) {
+    let file = files[i];
     
     if (!file.type.startsWith('image/')){ continue }
     
-    var img = document.createElement("img");
+    let img = document.createElement("img");
   //  img.classList.add("obj");
     newProfile.style.display = "block";
     img.file = file;
     img.id = "pic";
     newProfile.appendChild(img); // Assuming that "newProfile" is the div output where the content will be displayed.
     
-    var reader = new FileReader();
+    let reader = new FileReader();
     reader.onload = (function(aImg) { return function(e) { aImg.src = e.target.result; }; })(img);
     reader.readAsDataURL(file);
   }
@@ -84,6 +84,33 @@ function handleFiles(files) {
 
 
 
+} else if (document.querySelector("#newUpload")) {
+
+  //  Logic to display new Article pic on editArticleImage.handlebars:
+
+  let editArticleImg = document.querySelector("#newArticleImage");
+
+  function newUploadImage(files) {
+
+    for (let i = 0; i < files.length; i++) {
+    let file = files[i];
+
+    if (!file.type.startsWith('image/')){ continue }
+    
+    let img = document.createElement("img");
+  //  img.classList.add("obj");
+    editArticleImg.style.display = "block";
+    img.file = file;
+    img.id = "pic";
+    editArticleImg.appendChild(img); // Assuming that "newProfile" is the div output where the content will be displayed.
+    
+    let reader = new FileReader();
+    reader.onload = (function(aImg) { return function(e) { aImg.src = e.target.result; }; })(img);
+    reader.readAsDataURL(file);
+  };
+  };
+
+
 } else {
 	console.log("Nothing to display from uploads");
-}
+};

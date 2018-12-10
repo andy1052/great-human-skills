@@ -444,6 +444,9 @@ app.post("/editImage", (req, res, next) => {
 });
 
 
+
+
+
 //	Route to find article searched from "editArticleImage":
 app.post('/artImageEdit', async (req, res, next) => {
 
@@ -474,31 +477,6 @@ console.log("found: ", found);
 		next(e);
 	};
 });
-
-
-//	Route to save artImageEditSave sent from "editArticleImage.handlebars":
-app.post("/artImageEditSave", async (req, res, next) => {
-
-	//	Sanitize the data:
-
-	try {
-		if (req.user) {
-
-
-			//	This is where the multer magic happens!
-
-
-
-
-		} else {
-			res.redirect('/unauthorized');
-		};
-	} catch(e) {
-		console.log(e.message);
-		next(e);
-	};
-});
-
 
 
 
