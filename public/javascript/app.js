@@ -46,12 +46,6 @@ var quill = new Quill('#editor', {
   theme: 'snow' // or 'bubble'
 });
 
-// quill.setContents({
-//     "ops":[
-//         {"insert":"this is a test bit of text\n"}
-//     ]
-// });
-
 quill.setContents(content.article.ops);
 
 

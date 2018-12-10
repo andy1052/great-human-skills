@@ -1,8 +1,8 @@
 <!-- views/blog.handlebars -->
 
 <div class="container">
-<div class="row">
-	<div class="col-md-10 justify-content-center">
+<div class="row mt-5 mb-3">
+	<!--<div class="col justify-content-center d-inline"> -->
 
 
 
@@ -10,23 +10,60 @@
 
 <!-- If admin logged in, provide functionality -->
 		{{#if token}}
-		<form method="POST" action="/getEdit" autocomplete="off">
+<!-- form in order to change article image -->
+		<div class="col d-inline">
+		<form method="POST" action="/editMeta" autocomplete="off">
 			<fieldset>
-
-				<!-- Pass in admin for security-->
-				<input type="hidden" value="{{admin}}">
-
 				<!-- Button -->
 				<div class="form-group">
-					<button type="submit" class="btn btn-dark">Edit An Article</button>
+					<button type="submit" class="btn btn-dark">Edit An Article's Meta</button>
 				</div>
 
 
 			</fieldset>
 		</form>
 	</div>
-		{{/if}}
+<!-- End of change article image form -->
+
+<!-- Edit Article Meta Data -->
+		<div class="col d-inline">
+		<form method="POST" action="/editImage" autocomplete="off">
+			<fieldset>
+
+				<!-- Button -->
+				<div class="form-group">
+					<button type="submit" class="btn btn-dark">Edit An Article's Image</button>
+				</div>
+
+
+			</fieldset>
+		</form>
+	</div>
+<!-- End of article meta data -->
+
+<!-- Article content edit link -->
+		<div class="col d-inline">
+		<form method="POST" action="/getEdit" autocomplete="off">
+			<fieldset>
+
+				<!-- Pass in admin for security-->
+		<!--		<input type="hidden" value="{{admin}}"> -->
+
+				<!-- Button -->
+				<div class="form-group">
+					<button type="submit" class="btn btn-dark">Edit An Article's Content</button>
+				</div>
+
+
+			</fieldset>
+		</form>
+	</div>
+</div>
+<!-- </div> -->
 <!-- End of Admin Search form -->
+		{{/if}}
+
+<hr style="background-color: #bbb">
 
 <!-- Beginning of new articlesMeta form -->
 <div class="col-md-10 justify-content-center">
@@ -75,6 +112,5 @@
 
 </fieldset>
 </form>
-</div>
 </div>
 </div>

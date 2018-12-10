@@ -298,5 +298,151 @@ app.post("/saveArtEdit", async (req, res, next) => {
 });
 
 
+
+//	Route to edit an article's meta data:
+app.post("/editMeta", (req, res, next) => {
+
+	let admin = req.user;
+
+	res.render('editArticleMeta', {admin});
+
+});	
+
+
+//	Route to find article from submission from "editMeta":
+app.post("/metaEdit", async (req, res, next) => {
+
+	//	Sanitize data:
+	let search = typeof(req.body.artMetaSearch) === 'string' && req.body.artMetaSearch.trim().length > 0 && req.body.artMetaSearch.trim().length < 60 ? req.body.artMetaSearch.trim() : false;
+
+	try {
+		if (req.user) {
+
+			//	Find the article by title:
+			let info = await dbFuncs.find({"title": search}, 'articlesMeta');
+
+			//	If no results are returned, throw error:
+			if (!info) throw new Error({"Error": "Could not find article."});
+
+			res.render("editArticleMeta", {info});
+
+
+		} else {
+			res.redirect('/unauthorized');
+		};
+	} catch(e) {
+		console.log(e.message);
+		next(e);
+	};
+
+});
+
+
+//	Route to save newMeta Data from editArticleMeta.handlebars:
+app.post("/newMetaSave", async (req, res, next) => {
+
+	// Sanitize data:
+	let title = typeof(req.body.title) === "string" && req.body.title.trim().length > 0 && req.body.title.trim().length < 50 ? req.body.title.trim() : false;
+	let author = typeof(req.body.title) === "string" && req.body.author.trim().length > 0 && req.body.author.trim().length < 60 ? req.body.author.trim() : false;
+	let description = typeof(req.body.description) === "string" && req.body.description.trim().length > 0 && req.body.description.trim().length < 500 ? req.body.description.trim() : false;
+	let category = typeof(req.body.category) === "string" && req.body.category.trim().length > 0 && req.body.category.trim().length < 30 ? req.body.category.trim() : false;
+	let state = typeof(req.body.state) === "string" && req.body.state.trim().length > 0 && req.body.state.trim().length < 20 ? req.body.state.trim() : false;
+	let searched = typeof(req.body.searched) === "string" && req.body.searched.trim().length > 0 && req.body.searched.trim().length < 80 ? req.body.searched.trim() : false;
+
+	//	Req.User:
+	let admin = req.user;
+
+	const ObjectId = require('mongodb').ObjectId;
+
+	try {
+
+		//	If admin is logged in:
+		if (req.user) {
+
+			//	Create new Meta Object:
+			let newMeta = {};
+
+			if (title !== false) {
+				newMeta.title = title;
+			}
+
+			if (author !== false) {
+				newMeta.author = author;
+			}
+
+			if (description !== false) {
+				newMeta.description = description;
+			}
+
+			if (category !== false && category !== "none") {
+				newMeta.category = category;
+			}
+
+			if (state !== false) {
+				newMeta.state = state;
+			}
+
+			//	Fetch current Meta Data from database using searched variable passed in from editArticleMeta:
+			let dbMeta = await dbFuncs.find({_id: ObjectId(searched)}, 'articlesMeta');
+
+			//	If no results, throw error:
+			if (!dbMeta) throw new Error({"Error": "Could not find requested article meta data."});
+
+			//	Now create a temporary object to hold results of for loop below:
+			let a = {};
+
+			//	Loop through object using Objec.keys & forEach, adding key and value to "a" object
+			//	if property from newMeta doesn't match property from dbMeta.
+			let x = Object.keys(newMeta).forEach((k) => {
+
+				if (newMeta[k] !== dbMeta[k]) {
+
+				//	Add key and value to "a" object:
+				a[k] = newMeta[k];
+				};
+			});
+
+			//  Now iterate through this object and make an update call to database for each key/value pair:
+			//	Yes, it seems expensive, but it's the only way to get it done, and only admin has access to this
+			//	Not users, so the frequency is rare. Still though, a better solution must exist.
+			for (x in a) {
+
+			//	Update each kye/value pair as they are iterated:	
+			let updateObj = await dbFuncs.update({_id: ObjectId(dbMeta._id)}, {[x]: a[x]}, 'articlesMeta');
+
+			//	If no update, throw error:
+			if (!updateObj) throw new Error({"Error": "Something went wrong with the update!"});
+		};
+
+			//	Now log admin out of the system:
+			//	make sure req.user object is also cleared to prevevent any sort of sorcery:
+			admin = null;
+
+			// At this point, re-render editArticleMeta page with confirmation of operation:
+			res.clearCookie('nToken').render('confirmMetaEdit');
+
+
+		} else {
+			res.redirect('/unauthorized');
+		};
+	} catch(e) {
+		console.log(e.message);
+		next(e);
+	};
+});
+
+
+
+
+
+//	Route to edit an article's existing image:
+app.post("/editImage", (req, res, next) => {
+
+	let admin = req.user;
+
+	res.render('editArticleImage', {admin});
+});
+
+
 };	//	End of module exports.
 

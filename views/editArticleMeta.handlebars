@@ -1,0 +1,99 @@
+<!-- views/editArticleMeta.handlebars -->
+
+<div class="container">
+<div class="row mt-5 mb-3">
+
+	<div class="col-md-10 justify-content-center">
+
+			<form method="POST" action="/metaEdit" autocomplete="off">
+				<fieldset>
+
+	<!--			<div class="form-group">
+			<input type="hidden" name="admin" value="{{admin}}">
+		</div> -->
+
+		<!-- Search bar -->
+				<div class="form-group">
+					<label for="artMetaSearch">Article Search</label>
+					<input  id="artMetaSearch" type="text" class="form-control" name="artMetaSearch" placeholder="Title" autocomplete="off">
+				</div>
+
+		<div class="form-group">
+			<button type="submit" class="btn btn-dark mb-3">Search!</button>
+		</div>
+	</fieldset>
+	</form>
+</div>
+
+<!-- Once the above search returns info, show the edit form: -->
+{{#if info}}
+
+<!-- Beginning of new articlesMeta form -->
+<div class="col-md-10 justify-content-center">
+		<legend>Article Meta Edit</legend>
+
+<p class="text-muted">What appears in the fields are the current values for each</p>
+
+	<form method="post" action="/newMetaSave" autocomplete="off">
+
+<fieldset>
+
+<div class="form-group">
+	<label for="title">Title</label>
+	<input type="text" class="form-control" name="title" placeholder="{{info.title}}" autocomplete="off">
+	</div>
+
+	<div class="form-group">
+	<label for="author">Author</label>
+	<input type="text" class="form-control" name="author" placeholder="{{info.author}}" autocomplete="off">
+</div>
+
+<div class="form-group">
+	<label for="description">Description</label>
+	<textarea class="form-control" name="description" rows="2" placeholder="{{info.description}}"></textarea>
+</div>
+
+<div class="form-group">
+	<label for="category" class="d-block">Category</label>
+
+	<p>Current Category: <strong>{{info.category}}</strong></p>
+
+	<select name="category">
+		<option class="text-muted" value="none">Choose One</option>
+		<option value="Writing">Writing</option>
+		<option value="Lifestyle">Lifestyle</option>
+		<option value="Tips And Tricks">Tips And Tricks</option>
+		<option value="Communication">Communication</option>
+	</select>
+</div>
+
+<div class="form-group">
+
+	<p> Current State: <strong>{{info.state}}</strong></p>
+
+	<select name="state">
+		<option value="draft" selected>Draft</option>
+		<option value="published" selected>Publish</option>
+	</select>
+</div>
+
+
+			<div class="form-group">
+			<input type="hidden" name="searched" value="{{info._id}}">
+		</div>
+
+
+
+<div class="form-group" style="text-align: right;">
+	<button class="btn btn-dark" type="submit">Save!</button>
+</div>
+
+</fieldset>
+</form>
+</div>
+
+
+{{/if}}
+
+</div>
+</div>
