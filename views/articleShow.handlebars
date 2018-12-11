@@ -1,52 +1,119 @@
 <!-- views/articleShow.handlebars -->
 
-<div class="container bg-light">
-<div class="row justify-content-center">
-
-	<div class="col-lg-10 mt-4 p-2 bg-info rounded border border-dark">
-			<h1 class="text-center text-white m-2">{{post.title}}</h1>
-		</div>
-
-		<!-- Image upload from server here -->
-		<div class="col-lg-10 p-0 m-2" id="artImageContainer">
-			<img src="/artImages/{{post.imagePath}}" alt="{{post.title}} image" class="img-responsive"  id="articleImage"/>
-		</div>
-
-		<div class="col-lg-10 m-2" id="postDes">
-			<h3 class="mt-3">{{post.description}}</h3>
-		</div>
-	</div>
-
-		
-			<div class="row align-items-center">
-				<div class="col-lg-10 mt-5 border border-info rounded" id="article-data">
-			<p class="text-center">{{{data}}}</p>
-				</div>
-			</div>
-		
-			<div class="row">
-				<div class="col-lg mt-2">
-			<p class="text-dark">Article by: {{post.author}}</p>
-		</div>
-	</div>
-
-		<div class="row">
-			<div class="col-lg mt-0">
-			<p class="text-dark">Posted on: {{post.createdOn}}</p>
-		</div>
-	</div>
-</div>
-
 <div class="container">
-	<div class="row">
-		<div class="col-lg p-3">
-{{> comments}}
-</div>
+<div class="row">
+
+<!-- Post Content Column -->
+	<div class="col-lg-8">
+
+		<!-- Title -->
+			<h1 class="mt-4">{{post.title}}</h1>
+
+		<!-- Author -->
+			<p class="lead">
+				by
+				<a href="#">{{post.author}}</a>
+			</p>
+
+		<hr>
+
+		<!-- Date/Time -->
+		<p>Posted on: {{post.createdOn}}</p>
+
+		<hr>
+
+		<!-- Preview Image -->
+		<img src="/artImages/{{post.imagePath}}" alt="{{post.title}} image" class="img-fluid rounded"  id="articleImage"/>
+		
+		<hr>
+
+		<!-- Post Content -->
+		<p class="text-center">{{{data}}}</p>
+
+
+		<!-- Comments Form -->
+		<div class="card my-4">
+			<div class="card-body">
+				{{> comments}}
+			</div>
+		</div>
+
+
+		<!-- Show Comments -->
+		<div class="media mb-4">
+			<div class="media-body">
+				{{> showComment}}
+			</div>
+		</div>
+
+	</div>
+
+
+<!-- Sidebar Widgets Column -->
+<div class="col-md-4">
+
+	<!-- Search Widget -->
+	<div class="card my-4">
+		<h5 class="card-header">Search</h5>
+		<div class="card-body">
+			<div class="input-group">
+				<input type="text" class="form-control" placeholder="Search for...">
+				<span class="input-group-btn">
+					<button class="btn btn-success" type="button">Go!</button>
+				</span>
+			</div>
+		</div>
+	</div>
+
+
+
+<!-- Categories Widget -->
+<div class="card my-4">
+	<h5 class="card-header">Categories</h5>
+	<div class="card-body">
+		<div class="row">
+			<div class="col-lg-6">
+				<ul class="list-unstyled mb-0">
+					<li>
+						<a href="#">Writing</a>
+					</li>
+					<li>
+						<a href="#">Lifestyle</a>
+					</li>
+					<li>
+						<a href="#">Tips And Tricks</a>
+					</li>
+				</ul>
+			</div>
+			<div class="col-lg-6">
+				<ul class="list-unstyled mb-0">
+					<li>
+						<a href="#">Communication</a>
+					</li>
+					<li>
+						<a href="#">Who knows?</a>
+					</li>
+					<li>
+						<a href="#">Somethind else</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
 </div>
 
-<div class="row">
-	<div class="col-lg p-3">
-{{> showComment}}
+<!-- Side Widget -->
+<div class="card my-4">
+	<h5 class="card-header">Side Widget</h5>
+	<div class="card-body">
+		You can put anything you want inside of these side widgets!
+	</div>
 </div>
+
 </div>
+
 </div>
+<!-- /.row -->
+
+</div>
+<!-- /.container -->
