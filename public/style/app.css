@@ -303,6 +303,16 @@ img {
 	display: none;
 }
 
+.btn-link {
+	background: none !important;
+	/* color: inherit;*/
+	color: #0275d8; /* This is bootstrap's "primary" color */
+	border: none;
+	padding: 0 !important;
+	font: inherit;
+	cursor: pointer;
+}
+
 /* Smaller than standard 960px */
 @media only screen and (max-width: 959px) {};
 

@@ -85,129 +85,36 @@ exports = module.exports = function(app) {
 
 
 
+	//	Route to search for all articles matching specified category from homepage/articleshow Widget:
+	app.post("/getCategory", async (req, res, next) => {
+
+		//	Sanitize data:
+		let catSearch = typeof(req.body.category) === "string" && req.body.category.trim().length > 0 && req.body.category.trim().length < 20 ? req.body.category.trim() : false;
+
+		try {
+
+			let currentUser = req.user;
+
+console.log("catSearch from /getCategory: ", catSearch);
+
+			//	Find the articles which match the search.
+			let catFind = await dbFuncs.findAll({"category": catSearch}, 'articlesMeta');
+
+console.log("catFind: ", catFind);
+
+			if (!catFind) {
+
+			} else {
+				res.render('home', {catFind});
+			}	
+
+		} catch(e) {
+			console.log(e.message);
+			next(e);
+		};
+	});
 
 
-
-
-
-
-
-/***************************************************************************/
-
-
-
-	// //	Route to practice post quill editor form:
-	// app.post("/quillForm", async (req, res, next) => {
-	// 	try {
-	// 		//	Sanitize data:
-
-	// 		//	Save Data:
-	// 		const saveIt = await dbFuncs.insert(req.body, "quillTest");
-
-	// 		//	Throw error if it doesn't save
-	// 		if (!saveIt) throw new Error({"Error": "no save it"});
-	// 		// Otherwise:
-	// 		console.log("saved it!");
-
-	// 		res.status(200);
-
-
-
-
-//	Just to see what comes back:*****************************************************
-// 			const retrieveTest = await dbFuncs.find(req.body, "quillTest");
-
-// 		// 	console.log("retrieveTest: ", retrieveTest.ops);
-// 		// //	console.log("retrieveTest Length: ". retrieveTest.length);
-// 		// 	console.log("retrieveTest ops length: ", retrieveTest.ops.length);
-// 		// 	console.log("retrieveTest.ops.insert; ", retrieveTest.ops[0].insert);
-// 		// 	console.log("retrieveTest.ops.attributes: ", retrieveTest.ops[0]);
-
-// let result = "";
-
-// 			const each = retrieveTest.ops.forEach((e, i) => {
-// 				console.log("e: ", e); //	Object
-// 				console.log("I: ", i);	//	Index number
-// 				// console.log("E equals: ", typeof(e)); //	object
-// 				// console.log("e.attributes: ", e.attributes);
-// 				// console.log("e.insert: ", e.insert);
-// 				console.log("\n \n \n");
-
-
-// 				if (e.attributes) {
-
-
-
-// 				if (e.attributes.hasOwnProperty('bold')) {
-// 					console.log("Attribute equals bold \n");	
-
-// 					result += "<strong>" + e.insert + "</strong>" + " ";
-
-// 				} else if (e.attributes.hasOwnProperty('italic')) {
-// 					console.log("Attribute equals italic \n");
-
-// 					result += "<em>" + e.insert + "</em>" + " ";
-
-// 				} else if (e.attributes.hasOwnProperty('italic' && 'bold')) {
-// 					console.log("Attribute has both bold and italic \n");
-
-// 					result += "<strong>" + "<em>" + e.insert + "</em>" + "</strong>" + " ";
-// 				};
-
-
-// 				// Main if ends here:
-// 				} else {
-// 						console.log("Just a regular string \n");
-
-// 					// console.log("e.insert in else clause: ", e.insert === '\n');
-// 					// if (e.insert === '\n' || e.insert.includes('\n')) {
-// 					// 	result += "<br>";
-// 					// } else {
-// 						console.log("Found new line: ", e.insert.indexOf('\n'));
-
-// 						if (e.insert.indexOf('\n') >= 0 && e.insert.indexOf('\n') <= 5) {
-
-// 							result += "<br/>" + e.insert;
-
-// 						} else if (e.insert.indexOf('\n') === e.insert.length -1) {
-
-// 							console.log("Does this happen?");
-
-// 							result += e.insert + "<br/>";
-
-// 						// } else if (instanceof(e.insert.indexOf('\n') >= 2)) {
-							
-// 						// 	console.log("Two new lines");
-// 						// 	result += "<br/>" + e.insert + "<br/>";
-
-// 							}else {
-
-// 					result += e.insert + " ";
-// 				}
-						
-// 					}
-// 				});
-
-// 			//	Make the html template string and concat result string:
-// 			const derek = '<div class="container">' + '<div class="row">' + '<p>' + result + '</p>' + '</div>' + '</div>';
-// console.log(derek);
-// 			//	Send template string back to front end:
-// 			res.json(derek);
-
-
-
-	// 	} catch(e) {
-	// 		console.log(e.stack);
-	// 		next(e);
-	//	}
-	 //});
-
-
-
-//	Get Route for QuillHtml:
-// app.get("/quillHtml", (req, res, next) => {
-// 	res.render("quillHtml");
-// });
 
 /*****************************************************************************/
 };	//	End of module exports
