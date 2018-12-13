@@ -93,20 +93,83 @@ exports = module.exports = function(app) {
 
 		try {
 
-			let currentUser = req.user;
+console.log("/getCategory: ", catSearch);
 
-console.log("catSearch from /getCategory: ", catSearch);
+			let currentUser = req.user;
 
 			//	Find the articles which match the search.
 			let catFind = await dbFuncs.findAll({"category": catSearch}, 'articlesMeta');
-
 console.log("catFind: ", catFind);
+			//	If doesn't really matter if there are articles or not, so just re-render the homepage either way:
+			res.render('home', {catFind, currentUser});
 
-			if (!catFind) {
+		} catch(e) {
+			console.log(e.message);
+			next(e);
+		};
+	});
 
-			} else {
-				res.render('home', {catFind});
-			}	
+
+
+	//	Route to search for articles from homepage/articleShow Widget:
+	app.post("/widgetSearch", async (req, res, next) => {
+
+		//	Sanitize data:
+		let inquiry = typeof(req.body.inquiry) === "string" && req.body.inquiry.trim().length > 0 && req.body.inquiry.trim().length < 50 ? req.body.inquiry.trim() : false;
+
+		try {
+
+			//	Set currentUser:
+			let currentUser = req.user;
+
+			//	Now you determine what the client is looking for by making multiple calls to the db:
+			if (inquiry) {
+
+				//	First see if they searched by article title:
+				let title = await dbFuncs.findAll({"title": inquiry}, 'articlesMeta');
+
+//	**** WHY DOES IT HAVE TO BE AN ARRAY TO WORK? WHY WON'T DBFUNCS.FIND WORK, BUT DBFUNCS.FINDALL DOES?????????
+
+				//	If title array returns a result:
+				if (title.length > 0) {
+					//	render home and pass the result and currentUser:
+					res.render('home', {title, currentUser});
+
+				//	Otherwise, continue:	
+				} else {
+
+				//	See if they searched by author:
+				let author = await dbFuncs.findAll({"author": inquiry}, 'articlesMeta');
+
+				//	If author array returns a result:
+				if (author.length > 0) {
+
+					//	Render home and pass the result and currentUser:
+					res.render('home', {author, currentUser});
+
+				//	Otherwise, continue:	
+				} else {
+
+				//	See if they searched by category:
+				let cat = await dbFuncs.findAll({"category": inquiry}, 'articlesMeta');
+
+				//	If the cat array returns a result:
+				if (cat.length > 0) {
+
+					//	Render home and pass the result and currentUser:
+					res.render('home', {cat, currentUser});
+				} else {
+
+					//	Otherwise, render the sorry page:
+					res.render('sorry');
+				};
+				};
+			};
+		} else {
+			//	If inquiry resolves false, render sorry:
+			console.log("There was an error getting inquiry.");
+			res.render('sorry');
+			};
 
 		} catch(e) {
 			console.log(e.message);

@@ -55,7 +55,67 @@
 
 
 
+	<!-- If the user searched by title from Widget -->
+	{{#if title}}
+	{{#each title}}
+	<div class="card mb-4">
+		<img class="card-img-top" src="artImages/{{this.imagePath}}" alt="Blog post image">
+		<div class="card-body">
+			<h2 class="card-title">{{this.title}}</h2>
+			<p class="card-text">{{this.description}}</p>
+			<a href="/posts/{{this._id}}" class="btn btn-success">Read On</a>
+		</div>
+		<div class="card-footer text-muted">
+			Posted on: {{this.createdOn}}
+		</div>
+	</div>
+
+	{{/each}}
+	{{/if}}
+
+
+
+	<!-- If the user searched by author from Widget -->
+	{{#if author}}
+	{{#each author}}
+	<div class="card mb-4">
+		<img class="card-img-top" src="artImages/{{this.imagePath}}" alt="Blog post image">
+		<div class="card-body">
+			<h2 class="card-title">{{this.title}}</h2>
+			<p class="card-text">{{this.description}}</p>
+			<a href="/posts/{{this._id}}" class="btn btn-success">Read On</a>
+		</div>
+		<div class="card-footer text-muted">
+			Posted on: {{this.createdOn}}
+		</div>
+	</div>
+
+	{{/each}}
+	{{/if}}
+
+
+
 <!-- If the user searched by category from Widget -->
+	{{#if cat}}
+	{{#each cat}}
+	<div class="card mb-4">
+		<img class="card-img-top" src="artImages/{{this.imagePath}}" alt="Blog post image">
+		<div class="card-body">
+			<h2 class="card-title">{{this.title}}</h2>
+			<p class="card-text">{{this.description}}</p>
+			<a href="/posts/{{this._id}}" class="btn btn-success">Read On</a>
+		</div>
+		<div class="card-footer text-muted">
+			Posted on: {{this.createdOn}}
+		</div>
+	</div>
+
+	{{/each}}
+	{{/if}}
+
+
+
+	<!-- If the user searched by LINK from Widget -->
 	{{#if catFind}}
 	{{#each catFind}}
 	<div class="card mb-4">
@@ -73,27 +133,6 @@
 	{{/each}}
 	{{/if}}
 
-
-<!-- <div class="container-fluid">
-		<div class="row justify-content-center m-1 p-1">
-			{{#each find}}
-			
-			<div class="col-sm-6 mb-3">
-			<div class="card" id="card-temp">
-				<div class="card-header p-3 bg-info text-white">
-					Category: {{this.category}}
-				</div>
-				<div class="card-body">
-					<h5 class="card-title">{{this.title}}</h5>
-					<p class="card-text">{{this.description}}</p>
-					<p class="card-footer">Posted On: {{this.createdOn}}</p>
-					<a href="/posts/{{this._id}}" class="btn btn-success">Read On</a>
-				</div>
-			</div>
-		</div>
-			{{/each}}
-		</div>
-	</div> -->
 
 	<!-- End of blog display preview -->
 
@@ -115,16 +154,20 @@
 	<!-- Sidebar Widgets Column -->
 <div class="col-md-4">
 
+
 	<!-- Search Widget -->
 	<div class="card my-4">
 		<h5 class="card-header">Search</h5>
 		<div class="card-body">
+			<form method="post" action="/widgetSearch" autocomplete="off">
+			<small class="text-muted">Search by Title, Author, or Category</small>
 			<div class="input-group">
-				<input type="text" class="form-control" placeholder="Search for...">
+				<input type="text" class="form-control" name="inquiry" placeholder="Search for...">
 				<span class="input-group-btn">
-					<button class="btn btn-success" type="button">Go!</button>
+					<button class="btn btn-success" type="submit">Go!</button>
 				</span>
 			</div>
+		</form>
 		</div>
 	</div>
 
