@@ -207,8 +207,4 @@ if (json) {
 //  Otherwise, just send back nothing:
 } else {
   console.log("No editor detected!");
-}//End of overarching if statement
-
-
-
-
+};  //End of overarching if statement

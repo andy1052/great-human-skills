@@ -1,0 +1,81 @@
+<!-- views/sideWidget.handlebars -->
+
+<div class="col-md-4">
+
+
+	<!-- Search Widget -->
+	<div class="card my-4">
+		<h5 class="card-header">Search</h5>
+		<div class="card-body">
+			<form method="post" action="/widgetSearch" autocomplete="off">
+			<small class="text-muted">Search by Title, Author, or Category</small>
+			<div class="input-group">
+				<input type="text" class="form-control" name="inquiry" placeholder="Search for...">
+				<span class="input-group-btn">
+					<button class="btn btn-success" type="submit">Go!</button>
+				</span>
+			</div>
+		</form>
+		</div>
+	</div>
+
+
+
+<!-- Categories Widget -->
+<div class="card my-4">
+	<h5 class="card-header">Categories</h5>
+	<div class="card-body">
+		<div class="row">
+			<div class="col-lg-6">
+			<ul class="list-unstyled mb-0">
+					<li>
+						<form method="post" action="/getCategory">
+						<input type="hidden" name="category" value="Writing"><button type="submit" class="btn-link">Writing</button>
+						</form>
+					</li>
+					<li>
+						<form method="post" action="/getCategory">
+						<input type="hidden" name="category" value="Lifestyle"><button type="submit" class="btn-link">Lifestyle</button>
+						</form>
+					</li>
+					<li>
+						<form method="post" action="/getCategory">
+						<input type="hidden" name="category" value="Tips"><button type="submit" class="btn-link">Tips</button>
+						</form>
+					</li>
+				</ul>
+			</div>
+			<div class="col-lg-6">
+				<ul class="list-unstyled mb-0">
+					<li>
+						<form method="post" action="/getCategory">
+						<input type="hidden" name="category" value="Communication"><button type="submit" class="btn-link">Communication</button>
+						</form>
+					</li>
+					<li>
+						<form method="post" action="/getCategory">
+						<input type="hidden" name="category" value="Who Knows"><button type="submit" class="btn-link">Who knows?</button>
+						</form>
+					</li>
+					<li>
+						<form method="post" action="/getCategory">
+						<input type="hidden" name="category" value="Else"><button type="submit" class="btn-link">Else</button>
+						</form>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+<!-- Side Widget -->
+<div class="card my-4">
+	<h5 class="card-header">Knowledge</h5>
+	<div class="card-body">
+		Unleash a new reality! <br> <a href="#">Words Are All You've Got</a>
+	</div>
+</div>
+
+</div>

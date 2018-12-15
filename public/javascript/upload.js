@@ -98,8 +98,9 @@ function handleFiles(files) {
     if (!file.type.startsWith('image/')){ continue }
     
     let img = document.createElement("img");
-  //  img.classList.add("obj");
     editArticleImg.style.display = "block";
+    img.classList.add("d-flex");
+    img.classList.add("rounded");
     img.file = file;
     img.id = "pic";
     editArticleImg.appendChild(img); // Assuming that "newProfile" is the div output where the content will be displayed.

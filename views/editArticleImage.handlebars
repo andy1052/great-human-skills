@@ -25,6 +25,15 @@
 	<!-- End of search bar -->
 
 {{#if found}}
+
+<div class="col-lg-8">
+	<h3>Current Article Image:</h3>
+<div class="media mb-4">
+	<img class="d-flex mr-3 rounded" src="artImages/{{found.imagePath}}" alt="article picture">
+</div>
+</div>
+
+
 <div class="col-lg-8 mt-5 border border-dark rounded justify-content-center">
 
 <form method="post" action="/artImageEditSave" enctype="multipart/form-data" autocomplete="off">
@@ -42,8 +51,8 @@
 
 <!-- "Preview" id needs to be changed, logic added to "upload.js" -->
 
-<div class="col-lg-8 m-3">
-<div id="newArticleImage" class="rounded">
+<div class="col-lg-8">
+<div id="newArticleImage">
 </div>
 </div>
 

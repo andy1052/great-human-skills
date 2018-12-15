@@ -168,7 +168,7 @@ console.log("catFind: ", catFind);
 		} else {
 			//	If inquiry resolves false, render sorry:
 			console.log("There was an error getting inquiry.");
-			res.render('sorry');
+			//res.render('home', {currentUser});
 			};
 
 		} catch(e) {

@@ -464,8 +464,6 @@ console.log("articleSearch: ", articleSearch);
 			//	If no result, throw error:
 			if (!found) throw new Error("Could not find specified article!");
 
-console.log("found: ", found);
-
 			//	Otherwise, re-render page with info:
 			res.render('editArticleImage', {found});
 

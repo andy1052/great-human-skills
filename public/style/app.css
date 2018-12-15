@@ -298,8 +298,8 @@ img {
 
 #newArticleImage {
 	height: 200px;
-	width: 300px;
-	margin: 10px auto;
+	width: 250px;
+	margin: 20px 15px;
 	display: none;
 }
 
@@ -311,6 +311,24 @@ img {
 	padding: 0 !important;
 	font: inherit;
 	cursor: pointer;
+}
+
+
+.goodbye {
+	font-size: 18px;
+	font-family: times, arial, sans-serif;
+}
+
+#bookHeader {
+	font-family: times, arial, sans-serif;
+	color: yellow;
+	text-shadow: 1px 0px 1px #000;
+}
+
+#bookUser {
+	font-size: 36px;
+	color: green;
+	text-shadow: 1px 0px 1px #000;
 }
 
 /* Smaller than standard 960px */
