@@ -18,6 +18,9 @@ const helpers = require('./lib/helpers');
 const path = require('path');
 const config = require('./config/config');
 const helmet = require('helmet');
+const morgan = require('morgan');
+const fs = require('fs');
+
 
 //	Initialize app:
 const app = express();
@@ -54,6 +57,33 @@ app.use(bodyParser.json());
 //	This is your custom middleware written in helpers module:
 app.use(helpers.checkAuth);
 
+//************************************** Logging ***********************************************
+//	NEEDS TO BE MOVED TO ITS OWN FILE!!!!!
+
+//	This is to provide an error logging stream to stderr:
+if (process.envNODE_ENV === 'production'){
+	app.use(morgan('combined', {
+		skip: function(req, res) {
+			return res.statusCode < 400;
+		}, stream: fs.createWriteStream(path.join(__dirname + '/' + 'logs' + '/' + 'error.log'), {flags: 'a'})
+	}));
+} else {
+	app.use(morgan('dev', {
+		skip: function(req, res) {
+			return res.statusCode < 400;
+		}
+	}));
+};
+
+//	This is to log all requests to File:
+if (process.env.NODE_ENV === 'production') {
+app.use(morgan('combined', {
+	stream: fs.createWriteStream(path.join(__dirname + '/' + 'logs' + '/' + 'access.log'), {flags: 'a'})
+}));
+} else {
+	app.use(morgan('dev'));
+};
+// ****************************************************************************************************
 
 //	Connect Routes from posts.js, pass the app variable into the file as well:
 const posts = require('./controllers/posts')(app);
