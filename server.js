@@ -18,8 +18,7 @@ const helpers = require('./lib/helpers');
 const path = require('path');
 const config = require('./config/config');
 const helmet = require('helmet');
-const morgan = require('morgan');
-const fs = require('fs');
+const logging = require('./lib/logging');
 
 
 //	Initialize app:
@@ -45,6 +44,11 @@ const app = express();
 app.engine('handlebars', exphbs({defaultLayout: 'default'}));
 app.set('view engine', 'handlebars');
 
+//	Proxy settings to get remote ip through ngnix:
+app.set('trust proxy', true);
+
+
+
 //	This is for helmet module to help secure the app against outside attacks:
 app.use(helmet());
 //	This is to serve static files:
@@ -56,34 +60,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 //	This is your custom middleware written in helpers module:
 app.use(helpers.checkAuth);
+//	This is your custom logger to track all app activity:
+app.use(logging.logRequestStart);
 
-//************************************** Logging ***********************************************
-//	NEEDS TO BE MOVED TO ITS OWN FILE!!!!!
 
-//	This is to provide an error logging stream to stderr:
-if (process.envNODE_ENV === 'production'){
-	app.use(morgan('combined', {
-		skip: function(req, res) {
-			return res.statusCode < 400;
-		}, stream: fs.createWriteStream(path.join(__dirname + '/' + 'logs' + '/' + 'error.log'), {flags: 'a'})
-	}));
-} else {
-	app.use(morgan('dev', {
-		skip: function(req, res) {
-			return res.statusCode < 400;
-		}
-	}));
-};
-
-//	This is to log all requests to File:
-if (process.env.NODE_ENV === 'production') {
-app.use(morgan('combined', {
-	stream: fs.createWriteStream(path.join(__dirname + '/' + 'logs' + '/' + 'access.log'), {flags: 'a'})
-}));
-} else {
-	app.use(morgan('dev'));
-};
-// ****************************************************************************************************
 
 //	Connect Routes from posts.js, pass the app variable into the file as well:
 const posts = require('./controllers/posts')(app);
