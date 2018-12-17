@@ -39,7 +39,6 @@ const app = express();
 }());
 
 
-
 //	Set template engine to handlebars:
 app.engine('handlebars', exphbs({defaultLayout: 'default'}));
 app.set('view engine', 'handlebars');
@@ -62,6 +61,19 @@ app.use(bodyParser.json());
 app.use(helpers.checkAuth);
 //	This is your custom logger to track all app activity:
 app.use(logging.logRequestStart);
+
+
+//	Log Rotation:
+if (process.env.NODE_ENV === 'production') {
+	//	Rotate logs immediately upon start up / crash recovery:
+	helpers.rotateLogs();
+
+	//	Then rotate logs every day after that:
+	helpers.logRotationLoop();
+
+} else {
+	console.info('App is running in Development Mode');
+};
 
 
 
