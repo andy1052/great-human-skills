@@ -1,0 +1,38 @@
+<!-- views/emailForm.handlebars -->
+
+<div class="container">
+	<div class="row">
+		<div class="col-md-8">
+			<legend>Send an email</legend>
+
+			<!-- Form -->
+			<form method="POST" action="/sendEmail" autocomplete="off">
+		<!--	<form method="POST" action="/play" autocomplete="off"> -->
+
+				<fieldset>
+
+				<div class="form-group">
+					<label for="to">To:</label>
+					<input type="email" class="form-control" name="to" placeholder="henry@example.com">
+				</div>
+
+				<div class="form-group">
+					<label for="subject">Subject:</label>
+					<input type="text" class="form-control" name="subject" placeholder="So I was thinking...">
+				</div>
+
+				<div class="form-group">
+					<label for="body">Body:</label>
+					<textarea cols="5" rows="5" class="form-control" name="body" placeholder="How are you?"></textarea>
+				</div>
+
+				<!-- Button -->
+				<div class="form-group">
+					<button type="submit" class="btn btn-success">Send</button>
+				</div>
+
+			</fieldset>
+			</form>
+		</div>
+	</div>
+</div>
