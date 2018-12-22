@@ -61,21 +61,15 @@ app.post('/imgPractice', upload.single('img'), async (req, res, next) => {
 
 		//	Sanitize Data:
 let filename = typeof(req.file.filename) === 'string' && req.file.filename.trim().length > 0 && req.file.filename.trim().length < 80 ? req.file.filename.trim() : false;
+let admin = typeof(req.body.admin) === 'string' && req.body.admin.trim().length > 0 && req.body.admin.trim().length < 350 ? req.body.admin.trim() : false;
+let articleMetaId = typeof(req.body.articleMetaId) === 'string' && req.body.articleMetaId.trim().length > 0 && req.body.articleMetaId.trim().length < 50 ? req.body.articleMetaId.trim() : false;
 
-		//	Initiate ObjectId:
-		const ObjectId = require('mongodb').ObjectId;
+	//	Initiate ObjectId:
+const ObjectId = require('mongodb').ObjectId;
 
 		try {
 
-			if (req.user) {
-
-console.log("Req.user from /imgPractice: ", req.user);
-
-
-
-
-		// 	console.log("Req.Body from /imgPractice: ", req.body);
-		// 	console.log("Req.file from /imgPractice: ", req.file);
+			if (admin) {
 
 //	********** File system manipulation code below ********************************************************
 
@@ -140,36 +134,19 @@ console.log("Req.user from /imgPractice: ", req.user);
 							});
 						 });
 					});
-				}); //	End of file system manipulation code *********************************************
+				}); 
+//	********************* End of file system manipulation code *********************************************
 
 
+		//	Update articlesMeta with the image path so it can be recalled on init:
+		const up = await dbFuncs.update({_id: ObjectId(articleMetaId)}, {"imagePath": filename}, 'articlesMeta');
 
-		// //	Here you can place size restrictions:
+		//	Throw error if update throws error:
+		if (!up) throw new Error({"Error": "Path did not save to database"});
 
-		// 	let stats = fs.statSync(req.file.path);
-		// 	let fileSizeInBytes = stats["size"];
-		// 	let sizeInMegaBytes = fileSizeInBytes / 1000000.0;
-
-		// if (sizeInMegaBytes <= 2.000000) {
-
-		// 	console.log("Stats: ", stats);
-		// 	console.log("fileSizeInMegabytes: ", fileSizeInBytes / 1000000.0);
-
-			//	Save the path of this image file to the article id in articleContent.
-
-			//	First you have to pass the articleId through req.body from hidden field in form.
-
-			let articleMetaId = req.body.articleMetaId;
-
-			//	Update articlesMeta with the image path so it can be recalled on init:
-			const up = await dbFuncs.update({_id: ObjectId(articleMetaId)}, {"imagePath": filename}, 'articlesMeta');
-
-			//	Throw error if update throws error:
-			if (!up) throw new Error({"Error": "Path did not save to database"});
-
-			//	Now that you have the meta data and an image, move on to the article content/ quill editor:
-			//	Pass in articleMetaId
-			res.render('quill', {"articleMetaId":  req.body.articleMetaId} );
+		//	Now that you have the meta data and an image, move on to the article content/ quill editor:
+		//	Pass in articleMetaId
+			res.render('quill', {"articleMetaId":  articleMetaId, admin} );
 
 		} else {
 			res.render('artImage', {"imageSize": "Sorry, Images must be below 2mb in size."});

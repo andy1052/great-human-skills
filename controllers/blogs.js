@@ -34,6 +34,10 @@ app.post('/adlog', async (req, res, next) => {
 			let admin = req.body.word;
 
 			res.render('adlog', {admin});
+		} else if (req.body.word === process.env.EMAIL) {
+			let emailAdmin = req.body.word;
+			res.render('emailForm', {emailAdmin});
+
 		} else {
 			return res.redirect('/unauthorized');
 		}
@@ -46,6 +50,7 @@ app.post('/adlog', async (req, res, next) => {
 
 //	New Blog LOGIN Post Route:
 app.post('/newBlog', async (req, res, next) => {
+
 	//	Sanitize the data
 	let username = typeof(req.body.username) === "string" && req.body.username.trim().length > 0 && req.body.username.trim().length < 80 ? req.body.username.trim() : false;
 	let password = typeof(req.body.password) === "string" && req.body.password.trim().length > 0 && req.body.password.trim().length < 60 ? req.body.password.trim() : false;
@@ -56,7 +61,7 @@ app.post('/newBlog', async (req, res, next) => {
 
 			if (!result) {
 				//	User not found:
-				return res.status(401).res.redirect('/unauthorized');
+				return res.redirect('/unauthorized');
 			}
 			return result;
 		});
@@ -73,7 +78,7 @@ app.post('/newBlog', async (req, res, next) => {
 			if (token) {
 				return res.render('blog', {token});
 			} else {
-				return res.status(401).res.redirect('/unauthorized');
+				return res.redirect('/unauthorized');
 			};
 
 			} catch(e) {
@@ -88,17 +93,17 @@ app.post('/newBlog', async (req, res, next) => {
 //	Save New Blog To The Database Route:
 app.post('/blogSave', async (req, res, next) => {
 
-
 	//	First sanitize the data:
 	let title = typeof(req.body.title) === "string" && req.body.title.trim().length >0 && req.body.title.trim().length < 60 ? req.body.title.trim() : false;
 	let author = typeof(req.body.author) === "string" && req.body.author.trim().length >0 && req.body.author.trim().length < 60 ? req.body.author.trim() : false;
 	let description = typeof(req.body.description) === "string" && req.body.description.length >0 && req.body.description.length < 500 ? req.body.description : false;
 	let state = typeof(req.body.state) === "string" && req.body.state.trim().length > 0 && req.body.state.trim().length <= 20 ? req.body.state.trim() : false;
 	let category = typeof(req.body.category) === "string" && req.body.category.trim().length > 0 && req.body.category.trim().length <= 20 ? req.body.category.trim() : false;
+	let token = typeof(req.body.token) === "string" && req.body.token.trim().length > 0 && req.body.token.trim().length < 350 ? req.body.token.trim() : false;
 
 	try {
 		
-		if (req.user) {
+		if (token) {
 
 		//	Once data is sanitized, make object and save it to database:
 		if (title && author && description && state && category) {
@@ -124,18 +129,18 @@ app.post('/blogSave', async (req, res, next) => {
 			return result;
 		} else {
 			//	Else, send error
-			res.status(400).res.json("Something went wrong when trying to save to database");
+			console.log("Something went wrong when trying to save to database");
 		}
 	});
 
 		//	Overkill check:
 		if (!x) throw new Error({"Error": "Something failed in blogSave"});
 
-		console.log("This is x passed to artImage: ", x.ops[0]._id);
+		//console.log("This is x passed to artImage: ", x.ops[0]._id);
 
 	try {
-		if (req.user) {
-			let admin = req.user;
+		if (token) {
+			let admin = token;
 
 			res.render('artImage', {"articleMetaId": x.ops[0]._id, admin});
 		} else {
@@ -150,7 +155,7 @@ app.post('/blogSave', async (req, res, next) => {
 		//res.redirect('/');
 
 	} else {
-		return res.status(401).send("Oops! Something went wrong. Cannot save to database");
+		console.log("Oops! Something went wrong. Cannot save to database");
 	};
 }else {
 	return res.send("Sorry, there is no user present.");
@@ -165,6 +170,9 @@ app.post('/blogSave', async (req, res, next) => {
 
 //	Route to practice post quill editor form:
 app.post("/quillForm", async (req, res, next) => {
+
+	//	Sanitize Data:
+	let articleId = typeof(req.body.articleId) === "string" && req.body.articleId.trim().length > 0 && req.body.articleId.trim().length < 80 ? req.body.articleId.trim() : false;
 
 		//	This ObjectId is NECESSARY if you want to search mongoDb by _id. _id is an ObjectId format
 		//	Therefore, in order to pass it, you need to use mongoDb's ObjectId Constructor, as demonstrated 
@@ -182,14 +190,14 @@ app.post("/quillForm", async (req, res, next) => {
 			if (!saveIt) throw new Error({"Error": "no save it"});
 
 			// Now find the articleMeta and update it with this article's articleId:
-			const updateArticleMeta = await dbFuncs.update({_id: ObjectId(req.body.articleId)}, {"articleId": saveIt.ops[0]._id}, "articlesMeta");
+			const updateArticleMeta = await dbFuncs.update({_id: ObjectId(articleId)}, {"articleId": saveIt.ops[0]._id}, "articlesMeta");
 
 			if (!updateArticleMeta) throw new Error({"Error": "Could not update articlesMeta"});
 
 			//	make sure req.user object is also cleared to prevevent any sort of sorcery:
-				let currentUser = null;
+				req.user = null;
 
-			res.clearCookie('nToken').status(200).json({"articleId" : req.body.articleId});
+			res.clearCookie('nToken').status(200).json({"articleId" : articleId});
 
 		} catch (e) {
 			console.log(e.stack);

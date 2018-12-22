@@ -1,5 +1,7 @@
 <!-- views/emailForm.handlebars -->
 
+{{#if emailAdmin}}
+
 <div class="container">
 	<div class="row">
 		<div class="col-md-8">
@@ -36,3 +38,16 @@
 		</div>
 	</div>
 </div>
+
+{{else}}
+
+<div class="container">
+	<div class="row justify-content-center">
+		<div class="col-md-8">
+			<h1>You are unauthorized to be here!</h1>
+			<h5>Your computer has been compromised!</h5>
+		</div>
+	</div>
+</div>
+
+{{/if}}

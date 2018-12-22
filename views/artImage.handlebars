@@ -14,7 +14,11 @@
 
 <form method="post" action="/imgPractice" enctype="multipart/form-data" autocomplete="off">
 
+	<!-- Hidden input to pass the aritcle's meta id # -->
 	<input type="hidden" name="articleMetaId" value="{{articleMetaId}}">
+
+	<!-- Hidden input to pass the admin token to next route -->
+	<input type="hidden" name="admin" value="{{admin}}">
 
 <div class="form-group m-3">
 	<label for="img">Upload An Image For The Article Header</label>

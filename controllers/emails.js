@@ -39,9 +39,9 @@ app.post("/sendEmail", async (req, res, next) => {
 	try {
 
 		//	Sanitize data:
-		let to = req.body.to;
-		let subject = req.body.subject;
-		let html = req.body.body;
+		let to = typeof(req.body.to) === 'string' && req.body.to.trim().length > 0 ? req.body.to.trim() : false; //CAn't set length limit because you don't know how many emails will be involved.
+		let subject = typeof(req.body.subject) === 'string' && req.body.subject.length > 0 && req.body.subject.length < 180 ? req.body.subject : false; // Don't trim subject
+		let html = typeof(req.body.body) === 'string' && req.body.body.length > 0 ? req.body.body : false;
 
 
 		//	Create your new mail client:
