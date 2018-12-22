@@ -9,6 +9,7 @@
 const nodemailer = require('nodemailer');
 const { google } = require('googleapis');
 const OAuth2 = google.auth.OAuth2;
+const econfig = require('../config/econfig');
 
 
 
@@ -34,7 +35,8 @@ app.get("/emailForm", async (req, res, next) => {
 //	Route to send email from /emailForm:
 app.post("/sendEmail", async (req, res, next) => {
 
-	console.log("req.body: ", req.body);
+//	************* Be aware of necessary modifications when launching in production behind proxy server ************************
+
 
 	try {
 
@@ -42,27 +44,25 @@ app.post("/sendEmail", async (req, res, next) => {
 		let to = typeof(req.body.to) === 'string' && req.body.to.trim().length > 0 ? req.body.to.trim() : false; //CAn't set length limit because you don't know how many emails will be involved.
 		let subject = typeof(req.body.subject) === 'string' && req.body.subject.length > 0 && req.body.subject.length < 180 ? req.body.subject : false; // Don't trim subject
 		let html = typeof(req.body.body) === 'string' && req.body.body.length > 0 ? req.body.body : false;
-
+		let emailAdmin = typeof(req.body.emailAdmin) === 'string' && req.body.emailAdmin.trim().length > 0 && req.body.emailAdmin.trim().length < 350 ? req.body.emailAdmin.trim() : false;
 
 		//	Create your new mail client:
 		const oauth2Client = new OAuth2({
-			type: "OAuth2",
-			user: "andy.ducharme@gmail.com",
-			clientId: '740579153969-63ogenc1aa7c4k90o70ruruafngr35fk.apps.googleusercontent.com',
-			clientSecret: '9MNQgETgtGkxE0pRLFqftgSV',
-			redirectUri: "https://developers.google.com/oauthplayground"
+			type: econfig.type,
+			user: econfig.user,
+			clientId: econfig.clientId,
+			clientSecret: econfig.clientSecret,
+			redirectUri: econfig.redirectUri
 		});
 
 		oauth2Client.setCredentials({
-			refresh_token: '1/FKffVkJGhtmIHsaBOcYRP6p423rObjrg6UeD7FbX2uc'
+			refresh_token: econfig.refreshToken
 		});
-
 
 
 	// 	const tokens = await oauth2Client.getRequestHeaders();
 
  // console.log("tokens: ", tokens);
-
 
 
 // 		//	Set up transport with OAuth2:
@@ -73,13 +73,20 @@ app.post("/sendEmail", async (req, res, next) => {
 // 			// port: 587,
 // 			// secure: false,
 			auth: {
-				type: "OAuth2",
-				user: "andy.ducharme@gmail.com",
+				type: econfig.type,
+				user: econfig.user,
 				clientId: oauth2Client._clientId,
 				clientSecret: oauth2Client._clientSecret,
 				refreshToken: oauth2Client.credentials.refresh_token,
-			//	accessToken: 'ya29.Glt5Bn6J2J-BYcfhNYSLpdvuXfKmkygENGi8GdJT1d7IKvSX5z2gpD0-81UI0mc0OF1vFRnlNg6KP0udHsXmF_e8zUH4cIDCrls_yTyyrFoERspV9rQ9wsY_8TEZ'
-			//	accessToken: tokens
+			}
+		});
+
+		//	Verify transporter/server connection:
+		transporter.verify(function(err, success) {
+			if (err) {
+				console.error(err);
+			} else {
+				console.log("Server is ready to take your messages.");
 			}
 		});
 
@@ -89,8 +96,8 @@ app.post("/sendEmail", async (req, res, next) => {
 			from: 'andy.ducharme@gmail.com',
 			to: to,
 			subject: subject,
-			//html: html
-			text: html
+			html: html
+			//text: html
 		};
 
 
@@ -99,8 +106,14 @@ app.post("/sendEmail", async (req, res, next) => {
 			if (err) {
 				return console.log("There was an error sending the email: ",err);
 			} else {
-				console.log("Email was sent!: %s", info.messagId);
+				console.log("Email was sent!: %s", info.messageId);
 				console.log("Info: ", JSON.stringify(info));
+
+				//	Clear emailAdmin:
+				emailAdmin = null;
+
+				//	render home, clear cookie:
+				res.clearCookie('nToken').redirect('/');
 			};
 		});
 
