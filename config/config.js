@@ -24,6 +24,12 @@ env.production = {
 };
 
 
+//	Create a testing environment:
+env.testing = {
+	"port": 4000,
+	"envName": "testing"
+};
+
 //	Determine which environment is passed as a command-line argument:
 let currentEnvironment = typeof(process.env.NODE_ENV) === 'string' ? process.env.NODE_ENV.toLowerCase() : {};
 
