@@ -27,7 +27,6 @@ _app.tests.api = require('./api');
 
 
 
-
 //	Count all tests:
 _app.countTests = function() {
 	let counter = 0;
@@ -51,6 +50,8 @@ _app.runTests = function() {
 	let errors = [];
 	let successes = 0;
 	let limit = _app.countTests();
+
+
 	let counter = 0;
 
 	//	Loop through _app.tests:
@@ -66,7 +67,7 @@ _app.runTests = function() {
 						// Call the test:
 						try {
 
-							testValue(function() {
+							 testValue(function() {
 								//	If it calls back without throwing, then it succeeded, so log it in green
 								console.log('\x1b[32m%s\x1b[0m', tempTestName);
 								counter++;
@@ -134,4 +135,4 @@ _app.produceTestReport = function(limit, successes, errors) {
 
 
 //	Run the tests:
-_app.runTests();
+	 _app.runTests();

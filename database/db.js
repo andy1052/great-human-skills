@@ -21,11 +21,13 @@ let DbConnection = function() {
 	async function DbConnect() {
 		try {
 			let url = 'mongodb://localhost:27017/great-human-skills';
+
 			let _db = await MongoClient.connect(url, {useNewUrlParser: true}, (err, client) => {
+
+				if (err) return console.error("***************************Error from mongo connect: ", err);
 
 				db = client.db('Blog-Posts');
 			});
-
 			return _db;
 		} catch (e) {
 			console.log(e.stack);
@@ -37,6 +39,7 @@ let DbConnection = function() {
 //	Function for determining if a connection is already open and using it
 //	or creating a new one if not:
 	async function Get() {
+
 		try {
 			instance++;
 			console.log(`DbConnection called ${instance} times`);
@@ -46,7 +49,7 @@ let DbConnection = function() {
 				return db;
 			} else {
 				console.log('Getting a new db connection');
-				db = await DbConnect();
+				db = await DbConnect();				
 				return db;
 			}
 		} catch (e) {
@@ -58,6 +61,7 @@ let DbConnection = function() {
 		Get: Get
 	}
 };
+
 
 
 //	Export module:

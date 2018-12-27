@@ -20,6 +20,7 @@ const config = require('./config/config');
 const helmet = require('helmet');
 const logging = require('./lib/logging');
 
+const helpers2 = require('./lib/helpers2');
 
 //	Initialize app:
 const app = express();
@@ -72,7 +73,11 @@ if (process.env.NODE_ENV === 'production') {
 	helpers.logRotationLoop();
 
 } else {
+	if (process.env.NODE_ENV === 'testing') {
+		console.info('App is running in Testing Mode');
+	} else {
 	console.info('App is running in Development Mode');
+	}
 };
 
 
@@ -97,7 +102,4 @@ const practices = require('./controllers/practices')(app);
 
 //	Connect Route from emails.js, pass the app variable into the file as well:
 const emails = require('./controllers/emails')(app);
-
-
-
 

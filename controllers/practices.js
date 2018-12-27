@@ -18,18 +18,6 @@ const dbFuncs = require('../database/dbFuncs');
 //	Export the endpoints, passing in app from express:
 exports = module.exports = function(app,) {
 
-//	Get route for "file-practice.handlebars":
-// app.get('/artImage', (req, res, next) => {
-
-// 	console.log("Data passed from app.js after quillForm submit: ", req.user, req.body);
-
-// 	//console.log("Req.user: ", req.user);
-// if (req.user) {
-// 	res.render('artImage');
-// } else {
-// 	res.redirect('/unauthorized');
-// }
-// });
 
 //	************* IMG UPLOAD ***********************************************
 
@@ -185,7 +173,7 @@ app.post("/artImageEditSave", upload.single('newImg'), async (req, res, next) =>
 
 			//	Otherwise, make sure the file is new and not the one that already exists in the database:
 			let check = await dbFuncs.find({_id: ObjectId(articleId)}, 'articlesMeta');
-console.log("check: ", check);
+
 			//	If there is no check, throw error:
 			if (!check) throw new Error({"Error": "Cannot login, non-existent email."});
 

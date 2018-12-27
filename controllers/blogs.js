@@ -12,6 +12,7 @@ const dbFuncs = require('../database/dbFuncs');
 const helpers = require('../lib/helpers');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const helpers2 = require('../lib/helpers2');
 
 
 //	Export module, passing in the app variable:
@@ -136,7 +137,17 @@ app.post('/blogSave', async (req, res, next) => {
 		//	Overkill check:
 		if (!x) throw new Error({"Error": "Something failed in blogSave"});
 
-		//console.log("This is x passed to artImage: ", x.ops[0]._id);
+		if (x.ops[0].state === 'published') {
+			//	If state is published here, send an email????:
+			let d = x.ops[0];
+
+			let sendEmail = await helpers2.autoEmail(d);
+
+		} else {
+			//	Otherwise, it isn't published:
+			console.log("State of article is draft: ", x.ops[0].state);
+		};
+
 
 	try {
 		if (token) {
@@ -250,8 +261,6 @@ app.post("/artSearch", async (req, res, next) => {
 	//	Route to get to quill "edit" editor:
 app.post('/getEdit', (req, res, next) => {
 
-	console.log("REq.user: ", req.user);
-
 	let admin = req.user;
 
 	res.render('editArticle', {admin});
@@ -267,7 +276,7 @@ be sent to this route to be saved to the database. */
 
 app.post("/saveArtEdit", async (req, res, next) => {
 
-	//	SANITIZE THE FUCKING DATA HERE!
+	//	SANITIZE THE FUCKING DATA HERE!******************************************************
 	console.log("Req.user from /saveArtEdit: ", req.user);
 	console.log("Req.body from /saveArtEdit: ", req.body);
 
@@ -279,8 +288,6 @@ app.post("/saveArtEdit", async (req, res, next) => {
 			//	ArticleId:
 			let articleId = req.body.meta.articleId;
 			let updates = req.body.edits;
-
-			console.log("Updates from /saveArtEdit: ", updates);
 
 			let f = await dbFuncs.update({_id: ObjectId(articleId)}, {"data": updates}, 'articleContent');
 

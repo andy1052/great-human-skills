@@ -74,12 +74,13 @@ console.log('Req.File: ', req.file);
 	let username = typeof(req.body.username) === "string" && req.body.username.trim().length > 0 && req.body.username.trim().length < 60 ? req.body.username.trim() : false;
 	let email = typeof(req.body.email) === "string" && req.body.email.trim().length > 0 && req.body.email.trim().length < 80 && req.body.email.trim().includes('@') ? req.body.email.trim() : false;
 	let password = typeof(req.body.password) === "string" && req.body.password.trim().length > 0 && req.body.password.trim().length < 60 ? req.body.password.trim() : false;
+	let notification = typeof(req.body.notification) === 'string' && req.body.notification.trim().length > 0 && req.body.notification.trim().length < 40 ? req.body.notification.trim() : false;
 	let image = typeof(req.file.filename) === "string" && req.file.filename.trim().length > 0 && req.file.filename.trim().length < 80 ? req.file.filename.trim() : false;
 
 	try{
 
 	//	Make sure that a username, an email and a password were entered:
-	if (username && email && password && image){
+	if (username && email && password && notification && image){
 
 		//	First hash the password:
 		let x = await helpers.salt(password).then((y) => {
@@ -161,6 +162,7 @@ console.log('Req.File: ', req.file);
 			username,
 			email,
 			password: x,
+			notification,
 			image,
 			"createdAt": Date()
 		};
@@ -234,19 +236,23 @@ app.post('/login', async (req, res, next) => {
 	let password = typeof(req.body.password) === "string" && req.body.password.trim().length > 0 && req.body.password.trim().length < 60 ? req.body.password.trim() : false;
 
 	try {
+
 		//	Find this email in the database:
 		let check = await dbFuncs.find({"email": email}, 'client').then((result) => {
+			//	If there is no result returned:
 			if (!result) {
 				//	User not found:
 				return res.status(401).redirect('/unauthorized');
 			}
 			return result;
 		});
+
 			//	If there is no check, throw error:
 			if (!check) throw new Error({"Error": "Cannot login, non-existent email."});
 
 			//	Compare entered password to hashed password:
 			let c = await helpers.compare(password, check.password).then((result) => {
+
 				if (!result) {
 					//	Password not found:
 
@@ -276,6 +282,8 @@ app.post('/login', async (req, res, next) => {
 			}
 
 		});
+
+
 
 
 //	get Edit Account Route:

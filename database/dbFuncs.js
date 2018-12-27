@@ -16,13 +16,13 @@ const assert = require('assert');
 const dbFunc = {};
 
 //	Find operation:
-dbFunc.find = async function(data, collection) {	
+dbFunc.find = async function(data, collection) {
 	try {
-		let db = await DbConnection.Get();
+		let db = await DbConnection.Get();	
 		let result = await db.collection(collection).findOne(data);
 		return result;
-	} catch (e) {
-		console.log(e.stack);
+	} catch(e) {
+		console.log(e);
 		return e;
 	}
 };
@@ -32,7 +32,7 @@ dbFunc.find = async function(data, collection) {
 dbFunc.findAll = async function(data, collection) {
 	try {
 		let db = await DbConnection.Get();
-		 let result = await db.collection(collection).find(data).toArray();
+		let result = await db.collection(collection).find(data).toArray();
 		return result;
 	} catch(e) {
 		console.log(e.stack);

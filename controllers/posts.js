@@ -27,7 +27,6 @@ exports = module.exports = function(app) {
 				return result;
 			});
 
-
 			//	Render homepage and pass in currentUser and all articles returned by find:
 			res.render('home', {find, currentUser});
 		} catch(e) {

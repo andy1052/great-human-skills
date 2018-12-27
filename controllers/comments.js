@@ -45,9 +45,6 @@ const ObjectId = require('mongodb').ObjectId;
 					"postedOn": Date()
 				};
 
-console.log("words: ", words);
-console.log("req.user :", req.user);
-
 				//	The save the words object in the "comments" collection:
 				let w = await dbFuncs.insert(words, 'comments');
 
