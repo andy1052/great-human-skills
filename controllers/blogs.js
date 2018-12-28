@@ -137,8 +137,9 @@ app.post('/blogSave', async (req, res, next) => {
 		//	Overkill check:
 		if (!x) throw new Error({"Error": "Something failed in blogSave"});
 
+		//	If the articles fetched have a state of 'published', send them to helpers2.autoEmail():
 		if (x.ops[0].state === 'published') {
-			//	If state is published here, send an email????:
+			//	If state is published here, send an email:
 			let d = x.ops[0];
 
 			let sendEmail = await helpers2.autoEmail(d);
@@ -148,7 +149,7 @@ app.post('/blogSave', async (req, res, next) => {
 			console.log("State of article is draft: ", x.ops[0].state);
 		};
 
-
+		//	Continue on with the process of adding images and content:
 	try {
 		if (token) {
 			let admin = token;
@@ -162,9 +163,6 @@ app.post('/blogSave', async (req, res, next) => {
 		next(e);
 	}
 
-		//res.render('quill', {x, currentUser});
-		//res.redirect('/');
-
 	} else {
 		console.log("Oops! Something went wrong. Cannot save to database");
 	};
@@ -177,6 +175,8 @@ app.post('/blogSave', async (req, res, next) => {
 }
 
 });
+
+
 
 
 //	Route to practice post quill editor form:
@@ -372,7 +372,7 @@ app.post("/newMetaSave", async (req, res, next) => {
 	try {
 
 		//	If admin is logged in:
-		if (req.user) {
+		if (admin) {
 
 			//	Create new Meta Object:
 			let newMeta = {};
@@ -428,6 +428,23 @@ app.post("/newMetaSave", async (req, res, next) => {
 			//	If no update, throw error:
 			if (!updateObj) throw new Error({"Error": "Something went wrong with the update!"});
 		};
+
+		//	At this point, if was passed && state === published, send an email to those who signed up for notifications:
+			if (typeof(state) === 'string' && state === 'published') {
+
+				//	First fetch the newly updated object from database using originally passed articlesMeta id#:
+				let newSearch = await dbFuncs.find({_id: ObjectId(searched)}, 'articlesMeta');
+
+				//	If there is no newSearch, throw error:
+				if (!newSearch) throw new Error({"Error": "Could not fetch article Meta info from database!"});
+
+				//	Otherwise, send the info to helpers2.autoEmail():
+				let sendEmail = await helpers2.autoEmail(newSearch);
+
+			} else {
+				//	Otherwise, inform the console that state does not meet conditions:
+				console.info('Something went wrong with sending info to helpers2.autoEmail()');
+			};
 
 			//	Now log admin out of the system:
 			//	make sure req.user object is also cleared to prevevent any sort of sorcery:

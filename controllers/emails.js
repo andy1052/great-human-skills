@@ -32,12 +32,10 @@ app.get("/emailForm", async (req, res, next) => {
 });
 
 
-//	Route to send email from /emailForm:
+//	Route to send email from /emailForm && autoEmail when new article is published:
 app.post("/sendEmail", async (req, res, next) => {
 
 //	************* Be aware of necessary modifications when launching in production behind proxy server ************************
-
-// console.log("REQ.BODY FROM SEND EMAIL!---------------------------------------------: ", req.body);
 
 	try {
 
@@ -46,11 +44,6 @@ app.post("/sendEmail", async (req, res, next) => {
 		let subject = typeof(req.body.subject) === 'string' && req.body.subject.length > 0 && req.body.subject.length < 180 ? req.body.subject : false; // Don't trim subject
 		let html = typeof(req.body.body) === 'string' && req.body.body.length > 0 ? req.body.body : false;
 		let emailAdmin = typeof(req.body.emailAdmin) === 'string' && req.body.emailAdmin.trim().length > 0 && req.body.emailAdmin.trim().length < 350 ? req.body.emailAdmin.trim() : false;
-
-
-console.log("to: ", address);
-console.log("subject: ", subject);
-console.log("html: ", html);
 
 
 		//	Create your new mail client:
@@ -67,12 +60,7 @@ console.log("html: ", html);
 		});
 
 
-	// 	const tokens = await oauth2Client.getRequestHeaders();
-
- // console.log("tokens: ", tokens);
-
-
-// 		//	Set up transport with OAuth2:
+ 		//	Set up transport with OAuth2:
 		const transporter = nodemailer.createTransport({
 			service: 'gmail',
 // 			//	For Gmail, the host, port, and secure fields can be omitted in favor of service: "gmail":
@@ -100,15 +88,38 @@ console.log("html: ", html);
 
 		//	Here, you need loop through incoming email addresses and send one email per address.
 		//	You CANNOT send one mass email, as it's a privacy violation:
-		// let address = to;
 
-		// if (to === Array.isArray(to)) {
-		// 	for (let i = 0; i < to.length; i++) {
-		// 		address = '';
-		// 		address += to[i];
-		// 		sendit();
-		// 		};
-		// 	}; //	End of if clause
+		//	If 'address' is only 1 string, i.e. admin is sending it, to === address:
+		if (typeof(address) === 'string') {
+
+		//	Configure mail options:
+		let mailOptions = {
+			from: 'andy.ducharme@gmail.com',
+			to: address,
+			subject: subject,
+			html: html
+			//text: html
+		};
+
+		//	Send mail:
+		transporter.sendMail(mailOptions, (err, info) => {
+			if (err) {
+				return console.log("There was an error sending the email: ",err);
+			} else {
+				console.log("Email was sent!: %s", info.messageId);
+				console.log("Info: ", JSON.stringify(info));
+
+				//	Clear emailAdmin:
+				emailAdmin = null;
+
+				//	render home, clear cookie:
+				res.clearCookie('nToken').status(200).redirect('/');
+			};
+		});
+
+		} else {
+
+		//	If address is passed in as an array, i.e. a new article has been published, send multiple emails:
 
 		address.forEach((e) => {
 
@@ -120,7 +131,6 @@ console.log("html: ", html);
 			html: html
 			//text: html
 		};
-
 
 		//	Send mail:
 		transporter.sendMail(mailOptions, (err, info) => {
@@ -138,6 +148,8 @@ console.log("html: ", html);
 			};
 		});
 }); //	End of forEach loop.
+
+	};	// End of else clause.
 
 	} catch(e) {
 		console.error(e.message);
