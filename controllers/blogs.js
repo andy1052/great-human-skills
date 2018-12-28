@@ -104,6 +104,7 @@ app.post('/blogSave', async (req, res, next) => {
 
 	try {
 		
+		//	This token is being passed from 'blog.handlebars', this is the proper way of confirming admin:
 		if (token) {
 
 		//	Once data is sanitized, make object and save it to database:
@@ -120,8 +121,7 @@ app.post('/blogSave', async (req, res, next) => {
 			comments: []
 		};
 
-
-
+		//	Insert new object into database:
 		let x = await dbFuncs.insert(article, "articlesMeta").then((result) => {
 
 			//	If database confirms save.
@@ -137,7 +137,7 @@ app.post('/blogSave', async (req, res, next) => {
 		//	Overkill check:
 		if (!x) throw new Error({"Error": "Something failed in blogSave"});
 
-		//	If the articles fetched have a state of 'published', send them to helpers2.autoEmail():
+		//	If the article being saved has a state of 'published', send it to helpers2.autoEmail():
 		if (x.ops[0].state === 'published') {
 			//	If state is published here, send an email:
 			let d = x.ops[0];
@@ -151,11 +151,16 @@ app.post('/blogSave', async (req, res, next) => {
 
 		//	Continue on with the process of adding images and content:
 	try {
+		//	If admin is logged in:
 		if (token) {
+
 			let admin = token;
 
+			//	render page and pass in new article's id + admin token:
 			res.render('artImage', {"articleMetaId": x.ops[0]._id, admin});
 		} else {
+
+			//	Otherwise, redirect to unauthorized page:
 			return res.redirect('/unauthorized');
 		}
 	} catch(e) {
@@ -164,10 +169,10 @@ app.post('/blogSave', async (req, res, next) => {
 	}
 
 	} else {
-		console.log("Oops! Something went wrong. Cannot save to database");
+		throw new Error({"Error": "Some data didn't meet sanitized criteria"});
 	};
 }else {
-	return res.send("Sorry, there is no user present.");
+	throw new Error({"Error": "Admin is not logged in!"});
 };
 } catch(e){
 	console.log(e);
@@ -192,8 +197,6 @@ app.post("/quillForm", async (req, res, next) => {
 
 		try {
 
-//**********************			//	Sanitize data 	********************************************
-
 			//	Save Data:
 			const saveIt = await dbFuncs.insert(req.body, "articleContent");
 
@@ -208,6 +211,7 @@ app.post("/quillForm", async (req, res, next) => {
 			//	make sure req.user object is also cleared to prevevent any sort of sorcery:
 				req.user = null;
 
+			//	Clear cookie, send 200 status, respond to fetch request from front end with json data:
 			res.clearCookie('nToken').status(200).json({"articleId" : articleId});
 
 		} catch (e) {
@@ -224,29 +228,41 @@ app.post("/artSearch", async (req, res, next) => {
 
 
 	//	*********************** Sanitize the data:
+	let title = typeof(req.body.data) === 'string' && req.body.data.length > 0 && req.body.data.length < 400 ? req.body.data : false;
+
+	let admin = req.user;
 
 	try {
 
-	//	if (req.user) {
-		//	let admin = req.user;
+		if (admin) {
 
+			//	First find the articlesMeta data using the search title passed in:
+			let findMetaArt = await dbFuncs.find({"title": title}, 'articlesMeta');
 
-			let findMetaArt = await dbFuncs.find({"title": req.body.data}, 'articlesMeta');
-
+			//	If no data, throw error:
 			if (!findMetaArt) throw new Error({"Error": "Could not find requested article in db"});
 
+			//	Assign article id to variable:
 			let article = findMetaArt.articleId;
 
+			//	find article content using article id variable:
 			let findArt = await dbFuncs.find({_id: article}, 'articleContent');
 
+			//	If no result, throw error:
 			if (!findArt) throw new Error({"Error": "Could not find article"});
 
+			//	Build object:
 			const data = {
 				article: findArt.data,
 				meta: findMetaArt
 			};
 
-					res.json(data);
+			//	Respond to fetch request with json data:
+			res.json(data);
+
+		} else {
+			throw new Error("Admin is not logged in!");
+		}
 
 				} catch(e) {
 					console.log(e.stack);
@@ -258,7 +274,7 @@ app.post("/artSearch", async (req, res, next) => {
 
 
 
-	//	Route to get to quill "edit" editor:
+//	Route to get to quill "edit" editor:
 app.post('/getEdit', (req, res, next) => {
 
 	let admin = req.user;
@@ -268,7 +284,7 @@ app.post('/getEdit', (req, res, next) => {
 
 
 
-	//	Route to update edits made in "/getEdit":
+//	Route to update edits made in "/getEdit":
 
 /* When the "save changes" button is clicked in "/getEdit" the data first has to go back to the 
 front end, because quill needs to pull the data again and make a new Delta object, and then it can
@@ -276,41 +292,39 @@ be sent to this route to be saved to the database. */
 
 app.post("/saveArtEdit", async (req, res, next) => {
 
-	//	SANITIZE THE FUCKING DATA HERE!******************************************************
-	console.log("Req.user from /saveArtEdit: ", req.user);
-	console.log("Req.body from /saveArtEdit: ", req.body);
+	//	SANITIZE DATA:
+	let articleId = typeof(req.body.meta.articleId) === 'string' && req.body.meta.articleId.trim().length > 0 && req.body.meta.articleId.trim().length < 100 ? req.body.meta.articleId.trim() : false;
+	let updates = typeof(req.body.edits) === 'object' ? req.body.edits : false;
 
+	let admin = req.user;
+
+	//	Initiate ObjectId function:
 	const ObjectId = require('mongodb').ObjectId;
 
 	try {
-		if(req.user) {
+		if(admin) {
 
-			//	ArticleId:
-			let articleId = req.body.meta.articleId;
-			let updates = req.body.edits;
-
+			//	If admin is logged in, update the article:
 			let f = await dbFuncs.update({_id: ObjectId(articleId)}, {"data": updates}, 'articleContent');
 
+			//	If the update is unsuccessful, throw an error object:
 			if (!f) throw new Error({"Error": "Could not save updates!"});
 
-		
-
+			//	Respond to fetch request on the front end:
 			res.json({"msg": "Thank you!"});
 
 
 		} else {
+			//	If no admin, throw error:
 			throw new Error({"Error": "Admin is not logged in!"});
 		}
-
-		//	Now you need to find the original article, then update it. 
-
-
 
 	} catch(e) {
 		console.log(e);
 		next(e);
 	};
 });
+
 
 
 
@@ -339,10 +353,11 @@ app.post("/metaEdit", async (req, res, next) => {
 			//	If no results are returned, throw error:
 			if (!info) throw new Error({"Error": "Could not find article."});
 
+			//	render page and pass it info:
 			res.render("editArticleMeta", {info});
 
-
 		} else {
+			//	Otherwise, redirect to unauthorized page:
 			res.redirect('/unauthorized');
 		};
 	} catch(e) {
