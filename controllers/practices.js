@@ -153,20 +153,16 @@ const ObjectId = require('mongodb').ObjectId;
 //	Route to save artImageEditSave sent from "editArticleImage.handlebars":
 app.post("/artImageEditSave", upload.single('newImg'), async (req, res, next) => {
 
-	console.log("req.body: ", req.body);
-	console.log("req.user: ", req.user);
-	console.log("req.file: ", req.file);
-
 	//	Sanitize the data:
 	let filename = typeof(req.file.filename) === 'string' && req.file.filename.trim().length > 0 && req.file.filename.trim().length < 80 ? req.file.filename.trim() : false;
+	let articleId = typeof(req.body.articleId) === 'string' && req.body.articleId.trim().length > 0 && req.body.articleId.trim().length < 120 ? req.body.articleId.trim() : false;
+	let currentUser = typeof(req.user) === 'object' ? req.user : false;
 
 	//	Initiate ObjectId:
 	const ObjectId = require('mongodb').ObjectId;
 
 	try {
-		if (req.user) {
-
-			let articleId = req.body.articleId;
+		if (currentUser) {
 
 			//	check to make sure the data is in:
 			if (!filename) throw new Error("No profile pic was uploaded");
@@ -275,6 +271,7 @@ app.post("/artImageEditSave", upload.single('newImg'), async (req, res, next) =>
 			//	Now log admin out of the system:
 			//	make sure req.user object is also cleared to prevevent any sort of sorcery:
 			admin = null;
+			currentUser = null;
 
 			// At this point, re-render editArticleMeta page with confirmation of operation:
 			res.clearCookie('nToken').render('confirmMetaEdit');

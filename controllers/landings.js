@@ -17,7 +17,13 @@ exports = module.exports = function(app) {
 
 //	Get Words are all you've got landing page:
 app.get('/allYouveGot', (req, res, next) => {
-	res.render('allYouveGot');
+
+	try {
+		res.render('allYouveGot');
+	} catch(e) {
+		console.error(e);
+		next(e);
+	};
 });
 
 
@@ -25,9 +31,16 @@ app.get('/allYouveGot', (req, res, next) => {
 //	Route for books:
 app.get('/books', (req, res, next) => {
 
-	let currentUser = req.user;
+	try {
 
-	res.render('books', {currentUser});
+		let currentUser = req.user;
+
+		res.render('books', {currentUser});
+
+	} catch(e) {
+		console.error(e);
+		next(e);
+	};
 });
 
 

@@ -74,9 +74,12 @@ if (process.env.NODE_ENV === 'production') {
 
 } else {
 	if (process.env.NODE_ENV === 'testing') {
+
 		console.info('App is running in Testing Mode');
+		
 	} else {
-	console.info('App is running in Development Mode');
+		
+		console.info('App is running in Development Mode');
 	}
 };
 

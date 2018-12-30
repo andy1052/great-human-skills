@@ -17,13 +17,12 @@ exports = module.exports = function(app) {
 	//	Homepage route:
 	app.get('/', async (req, res, next) => {
 
-		let currentUser = req.user;
+		let currentUser = typeof(req.user) === 'object' ? req.user : false;
 
 		try{
 
 			//	Fetch all articles based on "published" state:
 			let find = await dbFuncs.findAll({"state": "published"}, 'articlesMeta').then((result) => {
-				//console.log("result from app.get: ", result);
 				return result;
 			});
 
@@ -45,7 +44,7 @@ exports = module.exports = function(app) {
 		//	below. Very interesting and important lesson to remember. Now everything works!
 		const ObjectId = require('mongodb').ObjectId;
 
-		let currentUser = req.user;
+		let currentUser = typeof(req.user) === 'object' ? req.user : false;
 
 			try {
 
@@ -78,8 +77,14 @@ exports = module.exports = function(app) {
 
 
 	//	"Unauthorized" Get Route:
-	app.get('/unauthorized', (req, res) => {
-		res.render('unauthorized');
+	app.get('/unauthorized', (req, res, next) => {
+
+		try {
+			res.render('unauthorized');
+		} catch(e) {
+			console.error(e);
+			next(e);
+		};
 	});
 
 
@@ -92,14 +97,12 @@ exports = module.exports = function(app) {
 
 		try {
 
-console.log("/getCategory: ", catSearch);
-
-			let currentUser = req.user;
+			let currentUser = typeof(req.user) === 'object' ? req.user : false;
 
 			//	Find the articles which match the search.
 			let catFind = await dbFuncs.findAll({"category": catSearch}, 'articlesMeta');
-console.log("catFind: ", catFind);
-			//	If doesn't really matter if there are articles or not, so just re-render the homepage either way:
+
+			//	It doesn't really matter if there are articles or not, so just re-render the homepage either way:
 			res.render('home', {catFind, currentUser});
 
 		} catch(e) {
@@ -119,7 +122,7 @@ console.log("catFind: ", catFind);
 		try {
 
 			//	Set currentUser:
-			let currentUser = req.user;
+			let currentUser = typeof(req.user) === 'object' ? req.user : false;
 
 			//	Now you determine what the client is looking for by making multiple calls to the db:
 			if (inquiry) {
@@ -167,7 +170,7 @@ console.log("catFind: ", catFind);
 		} else {
 			//	If inquiry resolves false, render sorry:
 			console.log("There was an error getting inquiry.");
-			//res.render('home', {currentUser});
+			res.render('sorry');
 			};
 
 		} catch(e) {

@@ -19,19 +19,18 @@ exports = module.exports = function (app) {
 //	Add A New Comment Route:
 app.post('/newComment', async (req, res, next) => {
 
-
 //	Require the mongodb ObjectId Type in order to find article in "v" variable below:
 const ObjectId = require('mongodb').ObjectId;
 
 	try {
-//	Only allow comments by logged in users, otherwise send them to unauthorized page.
+	//	Only allow comments by logged in users, otherwise send them to unauthorized page.
 		if (req.user) {
 
 			//	First sanitize the data:
 			let userId = typeof(req.user.username) === "string" && req.user.username.trim().length > 0 && req.user.username.trim().length < 60 ? req.user.username.trim() : false;
 			let comment = typeof(req.body.comment) === "string" && req.body.comment.length > 0 && req.body.comment.length < 1000 ? req.body.comment : false;
 			let articleId = typeof(req.body.articleId) === "string" && req.body.articleId.length > 0 && req.body.articleId.length < 100 ? req.body.articleId : false;
-
+			let userEmail = typeof(req.user.email) === 'string' && req.user.email.trim().length > 0 && req.user.email.trim().length < 120 ? req.user.email.trim() : false;
 
 
 			// If all fields are present:
@@ -42,10 +41,10 @@ const ObjectId = require('mongodb').ObjectId;
 					userId,
 					comment,
 					articleId,
-					"postedOn": Date()
+					"postedOn": new Date().toDateString()
 				};
 
-				//	The save the words object in the "comments" collection:
+				//	Then save the words object in the "comments" collection:
 				let w = await dbFuncs.insert(words, 'comments');
 
 				// Check that the operation went through:
@@ -75,7 +74,7 @@ const ObjectId = require('mongodb').ObjectId;
 				 if (!o) throw new Error({"Error": "Something went wrong saving comments to articleMeta"});
 
 				 //	Find the user in the client document:
-				 let f = await dbFuncs.find({"email": req.user.email}, 'client');
+				 let f = await dbFuncs.find({"email": userEmail}, 'client');
 
 				 //	Now update the 'comments' document with user's image from articlesMeta:
 				 let n = await dbFuncs.update({"_id": ObjectId(commentId)}, {"image": f.image}, 'comments');

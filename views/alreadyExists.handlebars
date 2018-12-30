@@ -1,10 +1,11 @@
-<!-- views/sorry.handlebars -->
+<!-- views/alreadyExists.handlebars -->
+
 
 <div class="container mt-5">
 	<div class="row mt-5 justify-content-center">
 <div class="col-md-8 mt-5">
 	<img src="images/writing.jpg" alt="hands writing" class="img-fluid rounded">
-	<h3>Sorry, Your search didn't return any results.<br>Try something else</h3>
+	<h3>Oops! That email addresss is already assigned to an account.<br>Please try again or use a different email address.</h3>
 </div>
 </div>
 </div>
@@ -12,6 +13,6 @@
 
 <script>
 	setTimeout(() => {
-		window.location.href = '/';
+		window.location.href = '/sign-up';
 	}, 4000);
 </script>

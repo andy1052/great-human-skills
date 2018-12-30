@@ -10,6 +10,8 @@ const nodemailer = require('nodemailer');
 const { google } = require('googleapis');
 const OAuth2 = google.auth.OAuth2;
 const econfig = require('../config/econfig');
+const logging = require('../lib/logging');
+const dbFuncs = require('../database/dbFuncs');
 
 
 
@@ -103,11 +105,34 @@ app.post("/sendEmail", async (req, res, next) => {
 
 		//	Send mail:
 		transporter.sendMail(mailOptions, (err, info) => {
+
 			if (err) {
-				return console.log("There was an error sending the email: ",err);
+
+				return console.log("There was an error sending the email: ", err);
+
 			} else {
+
 				console.log("Email was sent!: %s", info.messageId);
 				console.log("Info: ", JSON.stringify(info));
+
+			let emailData = {
+					mailOptions,
+					main: JSON.stringify(info)
+				};
+
+			//	Save info to db:
+			(async function() {
+
+			let eSave = await dbFuncs.insert(emailData, 'emailLogs');
+
+			if (!eSave) throw new Error({"Error": "eSave has no data!"});
+
+			//	Add saved id to emailData Object
+			emailData.eSave = eSave.ops[0]._id;
+			
+			//	Send object to emailLog:
+			logging.emailLog(emailData);
+		})();
 
 				//	Clear emailAdmin:
 				emailAdmin = null;
@@ -119,7 +144,7 @@ app.post("/sendEmail", async (req, res, next) => {
 
 		} else {
 
-		//	If address is passed in as an array, i.e. a new article has been published, send multiple emails:
+		//	If address is passed in as an array, i.e. an article's state is set to "published", send multiple emails:
 
 		address.forEach((e) => {
 
@@ -139,6 +164,27 @@ app.post("/sendEmail", async (req, res, next) => {
 			} else {
 				console.log("Email was sent!: %s", info.messageId);
 				console.log("Info: ", JSON.stringify(info));
+
+			
+			let emailData = {
+					mailOptions,
+					main: JSON.stringify(info)
+				};
+
+			//	Save info to db:
+			(async function() {
+
+			let eSave = await dbFuncs.insert(emailData, 'emailLogs');
+
+			if (!eSave) throw new Error({"Error": "eSave has no data!"});
+
+			//	Add saved id to emailData object:
+			emailData.eSave = eSave.ops[0]._id;
+			
+			//	Send object to emailLog:
+			logging.emailLog(emailData);
+		})();
+
 
 				//	Clear emailAdmin:
 				emailAdmin = null;

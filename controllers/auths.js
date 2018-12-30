@@ -25,10 +25,11 @@ exports = module.exports = function(app) {
 
 //	Sign-up route:
 app.get('/sign-up', async (req, res, next) => {
+
 	try {
 		res.render('sign-up');
 	} catch(e) {
-		console.log(e.stack);
+		console.error(e);
 		next(e);
 	}
 });
@@ -66,9 +67,6 @@ let upload = multer({storage: storage,
 
 //	Sign-up Route:
 app.post('/sign-up', upload.single('profilePic'), async (req, res, next) => {
-
-console.log('Req.Body: ', req.body);
-console.log('Req.File: ', req.file);
 
 	//	Sanitize the data
 	let username = typeof(req.body.username) === "string" && req.body.username.trim().length > 0 && req.body.username.trim().length < 60 ? req.body.username.trim() : false;
@@ -169,25 +167,21 @@ console.log('Req.File: ', req.file);
 
 		//	Then, before saving the client, check to see if the email address already exists:
 		let check = await dbFuncs.find({"email": client.email}, 'client').then((result) => {
+
 			//	If there is no result, then the user does not exist and program can continue. Return.
 			if (!result) {
 				return;
 			}
 
-			//	Otherwise, the user already exists, reject the attempt and redirect the unauthorized page.
-			console.log('User email already exists.');
-
-		// 	//*********** TODO ************
-			//render a page here:
-			res.send('Oops! This email address is already registered in our system.');
+			//	Otherwise, the user already exists, so return the results:
 			return result;
 		});
 
-		//	This is an overkill check, but still wise. If check variable is false, throw error.
-		if (!check == false) throw new Error({"Error": "This email already exists."});
+		//	If check has a value, redirect to alreadyExists page:
+		if (check) return res.render('alreadyExists'); 
 
 
-		//	Then, save the user to the database in 'client' collection:
+		//	Otherwise, check is undefined and the user should be saved to the database in 'client' collection:
 		let save = await dbFuncs.insert(client, 'client').then((result) => {
 
 			//	If database confirms save redirect to homepage.
@@ -203,17 +197,15 @@ console.log('Req.File: ', req.file);
 			//	Redirect to homepage:
 			res.redirect('/');
 		} else {
-			//	If the database does not save, redirect.
-			// *********** TODO *********** redirect to sign-up with message to try again.
-			res.redirect('/sign-up');
+			//	If the database does not save, render sorry2.
+			res.render('sorry2');
 		}
 		});
 
 	} else {
-		//	If !username, email, password.
-		console.log('Oops! Looks like you forgot to enter a field. Give it another shot.');
-		return res.redirect('/unauthorized');
-	}
+		//	If !username, email, password, render sorry2:
+		res.render('sorry2');
+	};
 	} catch(e) {
 		console.log(e.stack);
 		next(e);
@@ -223,8 +215,14 @@ console.log('Req.File: ', req.file);
 
 
 //	Login Get Route:
-app.get('/login', async (req, res) => {
-	res.render('login');
+app.get('/login', async (req, res, next) => {
+
+	try {
+		res.render('login');
+	} catch(e) {
+		console.error(e);
+		next(e);
+	};
 });
 
 
@@ -247,18 +245,15 @@ app.post('/login', async (req, res, next) => {
 			return result;
 		});
 
-			//	If there is no check, throw error:
-			if (!check) throw new Error({"Error": "Cannot login, non-existent email."});
+			//	If there is no check, render to sorry3:
+			if (!check) return res.render('sorry3');
 
-			//	Compare entered password to hashed password:
+			//	Otherwise, Compare entered password to hashed password:
 			let c = await helpers.compare(password, check.password).then((result) => {
 
 				if (!result) {
-					//	Password not found:
-
-					//*********** TODO ************* display a message on login page to try again.
-
-					return res.status(401).redirect('/login');
+					//	If Password not found, render sorry3:
+					return res.render('sorry3');
 				}
 
 				//	Otherwise, create a new token:
@@ -290,17 +285,19 @@ app.post('/login', async (req, res, next) => {
 app.get("/editAccount", (req, res, next) => {
 
 	try {
-	if (req.user) {
 
-		let currentUser = req.user;
-		//	If user is already logged in, render the editAccount page:
-		res.render("editAccount", {currentUser});
-	} else {
-		res.redirect('/unauthorized');
-	}
-} catch(e) {
-	console.log(e.stack);
-	next(e);
+		if (req.user) {
+
+			let currentUser = req.user;
+			//	If user is already logged in, render the editAccount page:
+			res.render("editAccount", {currentUser});
+		} else {
+			res.redirect('/unauthorized');
+		};
+
+	} catch(e) {
+		console.log(e.stack);
+		next(e);
 	};
 });
 
@@ -308,18 +305,22 @@ app.get("/editAccount", (req, res, next) => {
 //	Post accountChange from editAccount page:
 app.post("/accountChange", async (req, res, next) => {
 
-
-	//	Sanitize data!
+	//	Sanitize Data:
+	let oldEmail = typeof(req.body.oldEmail) === 'string' && req.body.oldEmail.trim().length > 0 && req.body.oldEmail.trim().length < 120 ? req.body.oldEmail.trim() : false;
 
 	try {
 		if (req.user) {
 
 		let currentUser = req.user;
 
-		let confirmed = await dbFuncs.find({"email": req.body.oldEmail}, 'client');
+		//	First confirm that the email posted does match a record in the database:
+		let confirmed = await dbFuncs.find({"email": oldEmail}, 'client');
 
-		if (!confirmed) throw new Error({"Error": "Oops! Can't find that email address!"});
+		//	If there is no data, render sorry4:
+		if (!confirmed) return res.render('sorry4');
 
+		//	Otherwise, re-render editAccount with the confirmed data, thereby showing a new part
+		//	of the page where edits to the account can be made (i.e. posting to /changeSave):
 		res.render('editAccount', {confirmed, currentUser});
 
 		} else {
@@ -336,7 +337,7 @@ app.post("/accountChange", async (req, res, next) => {
 //	changeSave Post Route from editAccount after confirmation is established:
 app.post("/changeSave", async (req, res, next) => {
 
-	//	SANITIZE THE DATA!!!!
+	//	Sanitize Data:
 	let newEmail = typeof(req.body.newEmail) === "string" && req.body.newEmail.trim().length > 0 && req.body.newEmail.trim().length < 60 && req.body.newEmail.trim().includes('@') ? req.body.newEmail.trim() : false;
 	let newPass = typeof(req.body.newPass) === 'string' && req.body.newPass.trim().length > 0 && req.body.newPass.trim().length < 60 ? req.body.newPass.trim() : false;
 	let confirmed = typeof(req.body.confirmed) === 'string' && req.body.confirmed.trim().length > 0 && req.body.confirmed.trim().length < 60 ? req.body.confirmed.trim() : false;
@@ -349,11 +350,11 @@ app.post("/changeSave", async (req, res, next) => {
 		// Make sure the user is logged in:
 		if (req.user) {
 
-		//	Find this email in the database:
+		//	Once more for security and functionality, Find this email in the database:
 		let check = await dbFuncs.find({_id: ObjectId(confirmed)}, 'client');
 
-		//	If there is no check, throw error:
-		if (!check) throw new Error({"Error": "Cannot login, non-existent email."});
+		//	If there is no check, render sorry4:
+		if (!check) return res.render('sorry4');
 
 // ************** Case 1: newEmail && newPass ********************************:
 
@@ -364,11 +365,13 @@ app.post("/changeSave", async (req, res, next) => {
 		//	Compare entered password to hashed password:
 		let c = await helpers.compare(newPass, check.password);
 
+			//	If the new email or the new password match an item in the database, render sorry4:
 			if (newEmail === check.email || c) {
-				return console.log("one of these fields match the database");
+				console.log("Case 1: One of these fields match the database!");
+				return res.render('sorry4');
 			}
 
-			//	Now hash and compare the password:
+			//	Otherwise, hash and compare the password:
 			let x = await helpers.salt(newPass).then((y) => {
 			return y;
 			});
@@ -376,47 +379,54 @@ app.post("/changeSave", async (req, res, next) => {
 			//	then save them
 			let both = await dbFuncs.update({_id: ObjectId(confirmed)}, {"email": newEmail, "password": x}, 'client');
 	
+			//	If both doesn't update, throw an error:
+			if (!both) throw new Error({"Error": "Could not update client account!"});
 
-			if (!both) throw new Error({"Error": "could not update client account"});
+				//	Otherwise, confirm in console that changes were successful:
+				console.log("Email and Password have been updated!");
 
-			console.log("Email, Password, and Image have been updated!");
-
-			//	Then redirect home:
-			res.redirect('/');
+				//	Then redirect home:
+				res.redirect('/');
 
 
 //	*************** Case 2: if pnly email is passed, but no password ****************************:
 
 	} else if (newEmail && newPass === false) {
 
-			//	First make sure these values don't already exist:
+			//	First make sure the new email doesn't already exist. If it does, render sorry4:
 			if (newEmail === check.email) {
-				return console.log("Case 3: One of these fields matches the database");
+				console.log("Case 2: New Email matches field in the database!");
+				return res.render('sorry4');
 			}
 
 			//	Otherwise save them:
 			let pass = await dbFuncs.update({_id: ObjectId(confirmed)}, {"email": newEmail}, 'client');
-			console.log('Email has been updated!');
 
-			//	Check to make sure operation was successful:
-			if (!pass) throw new Error({"Error": "Email and/or image were not saved to database"});
+			//	If pass doesn't update, throw an error:
+			if (!pass) throw new Error({"Error": "Could not update client account!"});
 
-			//	Then redirect home:
-			res.redirect('/');
+				//	Otherwise, confirm in console that the change was successful:
+				console.log('Email has been updated!');
+
+
+				//	Then redirect home:
+				res.redirect('/');
 
 
 //	***************** Case 3: if password only is passed, and no image or email ***********************:
 
 	} else if (newPass && newEmail === false) {
 
-			//	First check to make sure the values don't already exist:
-			let c = await helpers.compare(newPass, check.password);
+		//	First check to make sure the values don't already exist:
+		let c = await helpers.compare(newPass, check.password);
 
-			//	Check the password first, update if necessary:
-			if (c) {
+		//	Check the password first, update if necessary:
+		if (c) {
 
-			//If the password or image already exist, return
-			return console.log("Case 3: One of these fields matches the database");
+			//If the password already exists, render sorry4:
+			console.log("Case 3: New password matches field in the database!");
+			return res.render('sorry4');
+
 		} else {
 
 			//	Otherwise hash the new password:
@@ -427,15 +437,15 @@ app.post("/changeSave", async (req, res, next) => {
 			//	then update database:
 			let pass = await dbFuncs.update({_id: ObjectId(confirmed)}, {"password": x}, 'client');
 
-			//	Check that the operation went through:
-			if (!pass) throw new Error({"Error": "Case 3 database was not updated"});
+			//	If pass doesn't update, throw an error:
+			if (!pass) throw new Error({"Error": "Could not update client account!"});
 
-			console.log("Password only has been updated!");
+				console.log("New Password has been updated!");
 
-			//	Then redirect home:
-			res.redirect('/');
+				//	Then redirect home:
+				res.redirect('/');
 				}
-			 }
+			 };
 		} else {
 			res.redirect('/unauthorized');
 		}
@@ -455,12 +465,12 @@ app.get('/editProfilePic', async (req, res, next) => {
 
 		if (req.user) {
 
-		let currentUser = req.user;
+			let currentUser = req.user;
 
-		res.render('editProfilePic', {currentUser});
+			res.render('editProfilePic', {currentUser});
 		} else {
-		res.redirect('/unauthorized');
-		}
+			res.redirect('/unauthorized');
+		};
 	} catch(e) {
 		console.log(e.message);
 		next(e);
@@ -578,7 +588,9 @@ app.post('/changeProfPic', upload.single("changedProf"), async (req, res, next) 
 			//	At this point, update the database with the new image:
 				const newImg = await dbFuncs.update({_id: ObjectId(check._id)}, {"image": newImage}, 'client');
 
+			//	Then redirect user to homepage:
 				res.redirect('/');
+
 			} else {
 				res.redirect('/unauthorized');
 			}
@@ -595,17 +607,17 @@ app.post('/changeProfPic', upload.single("changedProf"), async (req, res, next) 
 //	Route for account-delete:
 app.get('/account-delete', async (req, res, next) => {
 
+	//	Sanitize Data:
+	let currentUser = typeof(req.user) === 'object' ? req.user : false;
+
 	try {
 
-		if (req.user) {
+		if (currentUser) {
 
-			console.log("req.user from /account-delete: ", req.user);
+			res.render('account-delete', {currentUser});
 
-		let currentUser = req.user;
-
-		res.render('account-delete', {currentUser});
 		} else {
-		res.redirect('/unauthorized');
+			res.redirect('/unauthorized');
 		}
 	} catch(e) {
 		console.log(e.message);
@@ -617,13 +629,13 @@ app.get('/account-delete', async (req, res, next) => {
 //	Route for Client to Delete account:
 app.post('/accountDelete', async (req, res, next) => {
 
-	try {
-		if (req.user) {
+	let currentUser = typeof(req.user) === 'object' ? req.user : false;
 
-	console.log("req.user from /accountDelete Post: ", req.user);
+	try {
+		if (currentUser) {
 
 			//	Get the logged in user's email:
-			let userEmail = req.user.email;
+			let userEmail = currentUser.email;
 
 			//	delete the user:
 			let del = await dbFuncs.delete({"email": userEmail}, 'client');
@@ -652,13 +664,20 @@ app.post('/accountDelete', async (req, res, next) => {
 
 
 //	Logout Route:
-app.get('/logout', (req, res) => {
+app.get('/logout', (req, res, next) => {
 
-	//	make sure req.user object is also cleared to prevevent any sort of sorcery:
-	let currentUser = null;
+	try {
+		//	make sure req.user object is also cleared to prevevent any sort of sorcery:
+		let currentUser = null;
 
-	res.clearCookie('nToken');
-	res.render('logout', {currentUser});
+		res.clearCookie('nToken');
+		res.render('logout', {currentUser});
+
+	} catch(e) {
+
+		console.error(e);
+		next(e);
+	};
 });
 
 

@@ -20,23 +20,34 @@ exports = module.exports = function(app) {
 
 
 //	Get Word Route:
-app.get('/word', (req, res) => {
-	res.render('word');
+app.get('/word', (req, res, next) => {
+
+	try {
+		res.render('word');
+	}catch(e) {
+		console.error(e);
+		next(e);
+	}
 });
 
 
 //	Admin Login:
 app.post('/adlog', async (req, res, next) => {
 
-	console.log(req.body);
+	//	Sanitize Data:
+	let word = typeof(req.body.word) === 'string' && req.body.word.trim().length > 0 && req.body.word.trim().length < 30 ? req.body.word.trim() : false;
 
 	try {
-		if (req.body.word === process.env.ADMIN) {
-			let admin = req.body.word;
+		if (word === process.env.ADMIN) {
+
+			let admin = word;
 
 			res.render('adlog', {admin});
-		} else if (req.body.word === process.env.EMAIL) {
-			let emailAdmin = req.body.word;
+
+		} else if (word === process.env.EMAIL) {
+
+			let emailAdmin = word;
+
 			res.render('emailForm', {emailAdmin});
 
 		} else {
@@ -227,7 +238,7 @@ app.post("/quillForm", async (req, res, next) => {
 app.post("/artSearch", async (req, res, next) => {
 
 
-	//	*********************** Sanitize the data:
+	// Sanitize data:
 	let title = typeof(req.body.data) === 'string' && req.body.data.length > 0 && req.body.data.length < 400 ? req.body.data : false;
 
 	let admin = req.user;
@@ -277,9 +288,17 @@ app.post("/artSearch", async (req, res, next) => {
 //	Route to get to quill "edit" editor:
 app.post('/getEdit', (req, res, next) => {
 
-	let admin = req.user;
+	try {
 
-	res.render('editArticle', {admin});
+		let admin = req.user;
+
+		res.render('editArticle', {admin});
+
+	} catch(e) {
+		console.error(e);
+		next(e);
+	};
+
 });
 
 
@@ -331,10 +350,14 @@ app.post("/saveArtEdit", async (req, res, next) => {
 //	Route to edit an article's meta data:
 app.post("/editMeta", (req, res, next) => {
 
-	let admin = req.user;
+	try {
+		let admin = req.user;
 
-	res.render('editArticleMeta', {admin});
-
+		res.render('editArticleMeta', {admin});
+	} catch(e) {
+		console.error(e);
+		next(e);
+	};
 });	
 
 
@@ -485,9 +508,17 @@ app.post("/newMetaSave", async (req, res, next) => {
 //	Route to edit an article's existing image:
 app.post("/editImage", (req, res, next) => {
 
-	let admin = req.user;
+	try {
 
-	res.render('editArticleImage', {admin});
+		let admin = req.user;
+
+		res.render('editArticleImage', {admin});
+
+	} catch(e) {
+		console.error(e);
+		next(e);
+	};
+
 });
 
 
@@ -499,8 +530,6 @@ app.post('/artImageEdit', async (req, res, next) => {
 
 	//	Sanitize Data:
 	let articleSearch = typeof(req.body.articleSearch) === "string" && req.body.articleSearch.trim().length > 0 && req.body.articleSearch.trim().length < 80 ? req.body.articleSearch.trim() : false;
-
-console.log("articleSearch: ", articleSearch);
 
 	try {
 		if (req.user) {
