@@ -16,15 +16,11 @@ exports = module.exports = function(app) {
 	//	Homepage route:
 	app.get('/', async (req, res, next) => {
 
-		console.log("I am here!");
-		
-		res.send('App gets to here!!!!');
+		let currentUser = typeof(req.user) === 'object' ? req.user : false;
 
-		//let currentUser = typeof(req.user) === 'object' ? req.user : false;
+		console.log("currentUser from / :", currentUser);
 
 		try{
-
-			let currentUser = req.user;
 
 			//	Fetch all articles based on "published" state:
 			let find = await dbFuncs.findAll({"state": "published"}, 'articlesMeta').then((result) => {

@@ -233,9 +233,6 @@ app.get('/login', async (req, res, next) => {
 //	Login Post Route:
 app.post('/login', async (req, res, next) => {
 
-
-	console.log("REQ.USER From Login------------------------------------: ", req.user);
-
 		//	Sanitize the data
 	let email = typeof(req.body.email) === "string" && req.body.email.trim().length > 0 && req.body.email.trim().length < 80 && req.body.email.trim().includes('@') ? req.body.email.trim() : false;
 	let password = typeof(req.body.password) === "string" && req.body.password.trim().length > 0 && req.body.password.trim().length < 60 ? req.body.password.trim() : false;

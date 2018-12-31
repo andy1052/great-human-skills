@@ -40,19 +40,6 @@ const app = express();
 	}
 }());
 
-
-
-// app.get('/', (req, res, next) => {
-
-// 	res.send('what the fuck is happening?!');
-
-// });
-
-
-
-
-
-
 //	Set template engine to handlebars:
 app.engine('handlebars', exphbs({defaultLayout: 'default'}));
 app.set('view engine', 'handlebars');
@@ -75,12 +62,6 @@ app.use(bodyParser.json());
 app.use(helpers.checkAuth);
 //	This is your custom logger to track all app activity:
 app.use(logging.logRequestStart);
-
-
-app.get('/', (req, res) => {
-	res.render('home');
-	// res.send('Fuck you!');
-});
 
 
 //	Log Rotation:
