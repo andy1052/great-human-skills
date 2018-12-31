@@ -39,6 +39,8 @@ app.post("/sendEmail", async (req, res, next) => {
 
 //	************* Be aware of necessary modifications when launching in production behind proxy server ************************
 
+console.log(".sendMail ----------------------------------: ", req.body);
+
 	try {
 
 		//	Sanitize data:
@@ -46,7 +48,6 @@ app.post("/sendEmail", async (req, res, next) => {
 		let subject = typeof(req.body.subject) === 'string' && req.body.subject.length > 0 && req.body.subject.length < 180 ? req.body.subject : false; // Don't trim subject
 		let html = typeof(req.body.body) === 'string' && req.body.body.length > 0 ? req.body.body : false;
 		let emailAdmin = typeof(req.body.emailAdmin) === 'string' && req.body.emailAdmin.trim().length > 0 && req.body.emailAdmin.trim().length < 350 ? req.body.emailAdmin.trim() : false;
-
 
 		//	Create your new mail client:
 		const oauth2Client = new OAuth2({
@@ -100,7 +101,6 @@ app.post("/sendEmail", async (req, res, next) => {
 			to: address,
 			subject: subject,
 			html: html
-			//text: html
 		};
 
 		//	Send mail:
@@ -154,7 +154,6 @@ app.post("/sendEmail", async (req, res, next) => {
 			to: e,
 			subject: subject,
 			html: html
-			//text: html
 		};
 
 		//	Send mail:

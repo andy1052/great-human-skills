@@ -13,13 +13,18 @@ const generator = require('../lib/htmlGenerator');
 // export module, passing in express app variable:
 exports = module.exports = function(app) {
 
-
 	//	Homepage route:
 	app.get('/', async (req, res, next) => {
 
-		let currentUser = typeof(req.user) === 'object' ? req.user : false;
+		console.log("I am here!");
+		
+		res.send('App gets to here!!!!');
+
+		//let currentUser = typeof(req.user) === 'object' ? req.user : false;
 
 		try{
+
+			let currentUser = req.user;
 
 			//	Fetch all articles based on "published" state:
 			let find = await dbFuncs.findAll({"state": "published"}, 'articlesMeta').then((result) => {
@@ -28,6 +33,7 @@ exports = module.exports = function(app) {
 
 			//	Render homepage and pass in currentUser and all articles returned by find:
 			res.render('home', {find, currentUser});
+
 		} catch(e) {
 			console.log(e.stack);
 			next(e);
@@ -181,5 +187,4 @@ exports = module.exports = function(app) {
 
 
 
-/*****************************************************************************/
 };	//	End of module exports

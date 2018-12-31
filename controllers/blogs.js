@@ -82,9 +82,10 @@ app.post('/newBlog', async (req, res, next) => {
 			if (!check) throw new Error({"Error": "Cannot login, non-existent user."});
 
 				//	Otherwise, create a new token:
-				let token = jwt.sign({_id: check._id}, process.env.SECRET, {expiresIn: "60 days"});
-				//	Then set a cookie and redirect to homepage:
-				res.cookie('nToken', token, {maxAge: 900000, httpOnly: true});
+				let token = jwt.sign({_id: check._id}, process.env.SECRET, {expiresIn: 3600000});
+			
+				//	Set cookie maxAge to 60 minutes - 3,600,000 milliseconds:
+				res.cookie('nToken', token, {maxAge: 3600000, httpOnly: true});
 
 			//	At this point, everything went well, and you should send the user to the Blog page along with the token
 			if (token) {

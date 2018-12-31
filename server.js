@@ -20,15 +20,16 @@ const config = require('./config/config');
 const helmet = require('helmet');
 const logging = require('./lib/logging');
 
-const helpers2 = require('./lib/helpers2');
 
 //	Initialize app:
 const app = express();
+
 
 //	Initialize database:
 (async function() {
 	try {
 		let con = await database.Get().then(() => app.listen(config.port, () => {
+
 			console.log(`Server running on port ${config.port}`);
 		}));
 		if (!con) throw err;
@@ -38,6 +39,18 @@ const app = express();
 		return e;
 	}
 }());
+
+
+
+// app.get('/', (req, res, next) => {
+
+// 	res.send('what the fuck is happening?!');
+
+// });
+
+
+
+
 
 
 //	Set template engine to handlebars:
@@ -54,7 +67,7 @@ app.use(helmet());
 //	This is to serve static files:
 app.use(express.static(path.join(__dirname, '/public')));
 //	This middleware is for cookies, place AFTER you initialize express:
-app.use(cookieParser());
+ app.use(cookieParser());
 //	This line MUST appear AFTER app = express(), but BEFORE your routes!:
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -62,6 +75,12 @@ app.use(bodyParser.json());
 app.use(helpers.checkAuth);
 //	This is your custom logger to track all app activity:
 app.use(logging.logRequestStart);
+
+
+app.get('/', (req, res) => {
+	res.render('home');
+	// res.send('Fuck you!');
+});
 
 
 //	Log Rotation:
@@ -84,7 +103,6 @@ if (process.env.NODE_ENV === 'production') {
 };
 
 
-
 //	Connect Routes from posts.js, pass the app variable into the file as well:
 const posts = require('./controllers/posts')(app);
 
@@ -105,4 +123,3 @@ const practices = require('./controllers/practices')(app);
 
 //	Connect Route from emails.js, pass the app variable into the file as well:
 const emails = require('./controllers/emails')(app);
-

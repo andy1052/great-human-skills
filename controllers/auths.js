@@ -189,10 +189,14 @@ app.post('/sign-up', upload.single('profilePic'), async (req, res, next) => {
 			console.log("Saved to database!");
 
 			//	Generate web token:
-			// let token = jwt.sign({_id: result._id}, process.env.SECRET, {expiresIn: "60 days"});
-			let token = jwt.sign(client, process.env.SECRET, {expiresIn: "60 days"});
+			// let token = jwt.sign(client, process.env.SECRET, {expiresIn: 3600000});
 
-			res.cookie('nToken', token, {maxAge: 900000, httpOnly: true});
+			let token = jwt.sign(client, process.env.SECRET, {expiresIn: 3600000});
+
+//	**** NOTE: In production, these cookie settings will have to change!!!! ***********************
+
+			//	Set cookie maxAge to 60 minutes - 3,600,000 milliseconds:
+			res.cookie('nToken', token, {maxAge: 3600000, httpOnly: true});
 
 			//	Redirect to homepage:
 			res.redirect('/');
@@ -229,6 +233,9 @@ app.get('/login', async (req, res, next) => {
 //	Login Post Route:
 app.post('/login', async (req, res, next) => {
 
+
+	console.log("REQ.USER From Login------------------------------------: ", req.user);
+
 		//	Sanitize the data
 	let email = typeof(req.body.email) === "string" && req.body.email.trim().length > 0 && req.body.email.trim().length < 80 && req.body.email.trim().includes('@') ? req.body.email.trim() : false;
 	let password = typeof(req.body.password) === "string" && req.body.password.trim().length > 0 && req.body.password.trim().length < 60 ? req.body.password.trim() : false;
@@ -257,11 +264,12 @@ app.post('/login', async (req, res, next) => {
 				}
 
 				//	Otherwise, create a new token:
-				let token = jwt.sign({"username": check.username, "email": check.email}, process.env.SECRET, {expiresIn: "60 days"});
+				let token = jwt.sign({"username": check.username, "email": check.email}, process.env.SECRET, {expiresIn: 3600000});
 				//	Then set a cookie and redirect to homepage:
-				res.cookie('nToken', token, {maxAge: 900000, httpOnly: true});
-				// console.log("Password result: ", result);
-				// console.log("token:", token);
+
+			//	Set cookie maxAge to 60 minutes - 3,600,000 milliseconds:
+			res.cookie('nToken', token, {maxAge: 3600000, httpOnly: true});
+
 				return result;
 			});
 
