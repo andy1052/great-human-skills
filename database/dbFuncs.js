@@ -76,6 +76,20 @@ dbFunc.update = async function(data, update, collection) {
 };
 
 
+//	FindOneAndUpdate operation:
+dbFunc.findOneAndUpdate = async function(data, update, collection) {
+
+	try {
+		let db = await DbConnection.Get();
+		let result = await db.collection(collection).findOneAndUpdate(data, {$set: update}, {returnNewDocument: true});
+		return result;
+	} catch(e) {
+		console.error(e);
+		return e;
+	};
+};
+
+
 //	Update method to add to an array field:
 dbFunc.arrayUpdate = async function(data, update, collection) {
 

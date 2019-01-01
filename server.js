@@ -102,5 +102,8 @@ const landings = require('./controllers/landings')(app);
 //	Connect Routes from practices.js, pass the app variable into the file as well:
 const practices = require('./controllers/practices')(app);
 
-//	Connect Route from emails.js, pass the app variable into the file as well:
+//	Connect Routes from emails.js, pass the app variable into the file as well:
 const emails = require('./controllers/emails')(app);
+
+//	Connect Routes from resetPasswords.js, pass the app cariable into the file as well:
+const resetPasswords = require('./controllers/resetPasswords')(app);
