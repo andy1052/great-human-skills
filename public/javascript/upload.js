@@ -1,6 +1,6 @@
 //	Logic for file uploads front end:
 
-console.log("Hello from uploads!");
+// console.log("Hello from uploads!");
 
 if (document.querySelector("#up")) {
 

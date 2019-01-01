@@ -13,12 +13,12 @@ const generator = require('../lib/htmlGenerator');
 // export module, passing in express app variable:
 exports = module.exports = function(app) {
 
+
+
 	//	Homepage route:
 	app.get('/', async (req, res, next) => {
 
 		let currentUser = typeof(req.user) === 'object' ? req.user : false;
-
-		console.log("currentUser from / :", currentUser);
 
 		try{
 
@@ -76,6 +76,8 @@ exports = module.exports = function(app) {
 			next(e);
 		};
 	});
+
+
 
 
 	//	"Unauthorized" Get Route:

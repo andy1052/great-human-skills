@@ -39,8 +39,6 @@ app.post("/sendEmail", async (req, res, next) => {
 
 //	************* Be aware of necessary modifications when launching in production behind proxy server ************************
 
-console.log(".sendMail ----------------------------------: ", req.body);
-
 	try {
 
 		//	Sanitize data:
@@ -108,12 +106,13 @@ console.log(".sendMail ----------------------------------: ", req.body);
 
 			if (err) {
 
-				return console.log("There was an error sending the email: ", err);
+				// console.log("There was an error sending the email: ", err);
+				throw new Error(err);
 
 			} else {
 
-				console.log("Email was sent!: %s", info.messageId);
-				console.log("Info: ", JSON.stringify(info));
+				// console.log("Email was sent!: %s", info.messageId);
+				// console.log("Info: ", JSON.stringify(info));
 
 			let emailData = {
 					mailOptions,
@@ -159,10 +158,13 @@ console.log(".sendMail ----------------------------------: ", req.body);
 		//	Send mail:
 		transporter.sendMail(mailOptions, (err, info) => {
 			if (err) {
-				return console.log("There was an error sending the email: ",err);
+
+				// console.log("There was an error sending the email: ",err);
+				throw new Error(err);
+
 			} else {
-				console.log("Email was sent!: %s", info.messageId);
-				console.log("Info: ", JSON.stringify(info));
+				// console.log("Email was sent!: %s", info.messageId);
+				// console.log("Info: ", JSON.stringify(info));
 
 			
 			let emailData = {

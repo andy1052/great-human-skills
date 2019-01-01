@@ -17,6 +17,7 @@ const dbFunc = {};
 
 //	Find operation:
 dbFunc.find = async function(data, collection) {
+	
 	try {
 		let db = await DbConnection.Get();	
 		let result = await db.collection(collection).findOne(data);
@@ -30,6 +31,7 @@ dbFunc.find = async function(data, collection) {
 
 //	Find All Operation:
 dbFunc.findAll = async function(data, collection) {
+
 	try {
 		let db = await DbConnection.Get();
 		let result = await db.collection(collection).find(data).toArray();
@@ -40,13 +42,12 @@ dbFunc.findAll = async function(data, collection) {
 	}
 };
 
-// //	Find All IDs from an Array of ObjectIds:
-// dbFunc.findAllIds = async function(data)
 
 
 
 //	Insert operation:
 dbFunc.insert = async function(data, collection) {
+
 	try {
 		let db = await DbConnection.Get();
 		let result = await db.collection(collection).insertOne(data);
@@ -61,9 +62,6 @@ dbFunc.insert = async function(data, collection) {
 
 //	Update operation:
 dbFunc.update = async function(data, update, collection) {
-
-	console.log("data: ", data);
-	console.log("update: ", update);
 
 	try {
 		let db = await DbConnection.Get();
@@ -81,10 +79,6 @@ dbFunc.update = async function(data, update, collection) {
 //	Update method to add to an array field:
 dbFunc.arrayUpdate = async function(data, update, collection) {
 
-	console.log("data: ", data);
-	console.log("update: ", update);
-	console.log("collection: ", collection);
-
 	try {
 		let db = await DbConnection.Get();
 		let result = await db.collection(collection).updateOne(data, {$push: update});
@@ -101,8 +95,6 @@ dbFunc.arrayUpdate = async function(data, update, collection) {
 
 //	Delete operation:
 dbFunc.delete = async function(data, collection) {
-
-console.log("Data from delete: ", data);
 
 	try{
 		let db = await DbConnection.Get();

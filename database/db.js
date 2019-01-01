@@ -53,7 +53,7 @@ let DbConnection = function() {
 				return db;
 			}
 		} catch (e) {
-			console.log(e.stack);
+			console.error(e.stack);
 			return e;
 		}
 	}

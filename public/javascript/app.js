@@ -8,7 +8,7 @@
 
 
 //	Check that it loads:
-console.log("I'm here!");
+// console.log("I'm here!");
 
 
 //  ***************** DELTA FROM DB TO FRONT END *****************************
@@ -89,9 +89,8 @@ editButton.addEventListener("click", async function(e) {
    // body: JSON.stringify({a: 1, b: 'Textual content'})
    body: o
   });
-  const saveArtEdit = await saveEdit.json();
 
-console.log('SaveArtEdit response: ', saveArtEdit);
+  const saveArtEdit = await saveEdit.json();
 
 if (saveArtEdit) {
   window.location.href = "/";
@@ -148,12 +147,8 @@ form.onsubmit = function(e) {
 //	Because about.value is now stringified, the array is also now a string, so parse back into an object:
   let t = JSON.parse(about.value);
 
-  console.log("Article data: ", t);
-
   //	Get articleId from quill:
   let articleId = document.getElementById("articleId").value;
-
-  // console.log("articleId: ", articleId);
 
 
 //	****************************************************************************************************
@@ -188,7 +183,7 @@ using Fetch api */
     return res.json();
 
   }).then((json) => {
-    console.log("Response from server: ", json);
+    // console.log("Response from server: ", json);
 
 if (json) {
 

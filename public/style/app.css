@@ -83,32 +83,6 @@ body {
 	background-color: rgba(255, 255, 255, 0.4);
 }
 
-/*
-.con {
-	position: relative;
-	text-align: center;
-}
-
-#back {
-	height: 350px;
-	width: 100%;
-	margin: 20px auto;
-	border: 1px solid #000;
-	border-radius: 1%;
-}
-
-.centered {
-	position: absolute;
-	height: 350px;
-	margin: auto;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	font-size: 24px;
-	text-shadow: 1px 0px 0px #000;
-	font-family: Times, sans-serif;
-}*/
-
 
 /* css for homepage */
 
@@ -119,12 +93,6 @@ body {
 	font-family: times;
 }
 
-/*
-#user-text {
-	text-decoration: underline;
-	font-size: 20px;
-	font-family: times;
-}*/
 
 .card-img-top {
 	width: 100%;
@@ -305,7 +273,6 @@ img {
 
 .btn-link {
 	background: none !important;
-	/* color: inherit;*/
 	color: #0275d8; /* This is bootstrap's "primary" color */
 	border: none;
 	padding: 0 !important;
