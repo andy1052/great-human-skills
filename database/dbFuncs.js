@@ -81,7 +81,7 @@ dbFunc.findOneAndUpdate = async function(data, update, collection) {
 
 	try {
 		let db = await DbConnection.Get();
-		let result = await db.collection(collection).findOneAndUpdate(data, {$set: update}, {returnNewDocument: true});
+		let result = await db.collection(collection).findOneAndUpdate(data, {$set: update}, {upsert: false, returnNewDocument: true});
 		return result;
 	} catch(e) {
 		console.error(e);

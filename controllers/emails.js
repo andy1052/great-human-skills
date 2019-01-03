@@ -111,8 +111,8 @@ app.post("/sendEmail", async (req, res, next) => {
 
 			} else {
 
-				// console.log("Email was sent!: %s", info.messageId);
-				// console.log("Info: ", JSON.stringify(info));
+				console.log("Email was sent!: %s", info.messageId);
+				console.log("Info: ", JSON.stringify(info));
 
 			let emailData = {
 					mailOptions,
