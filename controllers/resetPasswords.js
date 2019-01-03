@@ -113,7 +113,6 @@ console.log("TokenId: ", tokenId);
 		if (tokenFind.reset_password_expires < Date.now()) {
 
 			//	Render sorry page indicating that client must request a new token:
-			console.log("password expired: true");
 			res.render('sorry6');
 
 		} else {
@@ -121,7 +120,6 @@ console.log("TokenId: ", tokenId);
 			let authorizationToken = tokenFind.reset_password_token;
 
 			//	The token is good and isn't expired, so render page to change password:
-			console.log("Password expired: good to go!");
 			res.render('resetPasswordForm', {authorizationToken});
 		};
 
@@ -136,11 +134,69 @@ console.log("TokenId: ", tokenId);
 //	Route to save new password:
 app.post('/saveNewPass', async (req, res, next) => {
 
-	//	Sanitize Data:
-	console.log("req.body /saveNewPass: ", req.body);
+	console.log("REQ.Body from /saveNewPass: ", req.body);
 
+	//	Sanitize Data:
+	let newPass = typeof(req.body.newPassword) === 'string' && req.body.newPassword.trim().length > 0 && req.body.newPassword.trim().length <= 20 ? req.body.newPassword.trim() : false;
+	let confPass = typeof(req.body.confirmPassword) === 'string' && req.body.confirmPassword.trim().length > 0 && req.body.confirmPassword.trim().length <= 20 ? req.body.confirmPassword.trim() : false; 
+	let authToken = typeof(req.body.authToken) === 'string' && req.body.authToken.trim().length > 0 && req.body.authToken.trim().length < 50 ? req.body.authToken.trim() : false;
+
+	//	Initiate ObjectId:
+	const ObjectId = require('mongodb').ObjectId;
 
 	try {
+
+		//	For added security, make sure the authorization token was passed from /resetToken:
+		if (authToken) {
+
+			//	First, check to see that the token matches the one in the database:
+			let tokenFind = await dbFuncs.find({"reset_password_token": authToken}, 'client');
+
+			//	If no match is found, throw an error:
+			if (!tokenFind) throw new Error("There was no match found for this authorizationToken!");
+
+			//	Otherwise, check to see if the new password matches the confirmed password:
+			if (newPass === confPass) {
+
+			//	If they do match, update the client's account with a hashed password:
+			let x = await helpers.salt(newPass).then((y) => {
+				return y;
+			});
+
+			//	If the password doesn't hash, throw an error:
+			if (!x) throw new Error({"Error": "Password could not be hashed. Exiting."});
+
+			//	Otherwise, save the password:
+			let password = await dbFuncs.update({_id: ObjectId(tokenFind._id)}, {"password": x}, 'client');
+
+			//	If no result, throw error:
+			if (!password) throw new Error("Could not update client's password!");
+
+			// Now send the client a confirmation email, and then render a confirmation page which redirects to login page:
+
+			//	Make variable object to send only relevant info to helpers2:
+			let data = {
+				"username": tokenFind.username,
+				"email": tokenFind.email
+			};
+
+			//	Otherwise, send data object the helpers2.resetPassEmail(), in order to send email:
+			let sendEmail = await helpers2.confirmResetPassEmail(data);
+
+			//	Redirect to confirmation page here:
+			res.render('confirmNewPassword');
+
+		} else {
+
+				//	Render sorry page and redirect to password input:
+				res.render('sorry7');
+			};
+
+
+
+		} else {
+			throw new Error("There was no authorizationToken passed!");
+		};
 
 	} catch(e) {
 		console.error(e);
