@@ -107,6 +107,35 @@ dbFunc.arrayUpdate = async function(data, update, collection) {
 
 
 
+//	Update method to unset certain fields from document:
+dbFunc.unset = async function(data, update, collection) {
+
+	try {
+		let db = await DbConnection.Get();
+		let result = await db.collection(collection).findOneAndUpdate(data, {$unset: update});
+		return result;
+	} catch(e) {
+		console.error(e);
+		return e;
+	};
+};
+
+
+//	Update method to unset certain fields from document:
+dbFunc.increment = async function(data, update, collection) {
+
+	try {
+		let db = await DbConnection.Get();
+		let result = await db.collection(collection).findOneAndUpdate(data, {$inc: update});
+		return result;
+	} catch(e) {
+		console.error(e);
+		return e;
+	};
+};
+
+
+
 //	Delete operation:
 dbFunc.delete = async function(data, collection) {
 
@@ -120,6 +149,7 @@ dbFunc.delete = async function(data, collection) {
 		return e;
 	}
 };
+
 
 
 //	Export Module

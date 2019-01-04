@@ -10,6 +10,7 @@
 const dbFuncs = require('../database/dbFuncs');
 const crypto = require('crypto');
 const helpers2 = require('../lib/helpers2');
+const helpers = require('../lib/helpers');
 
 
 
@@ -99,9 +100,6 @@ app.get('/resetToken/:id', async (req, res, next) => {
 	//	Sanitize Data:
 	let tokenId = typeof(req.params.id) === 'string' && req.params.id.trim().length > 0 && req.params.id.trim().length < 50 ? req.params.id.trim() : false;
 
-console.log("TokenId: ", tokenId);
-
-
 	try {
 		//	First, check to see that the token matches the one in the database:
 		let tokenFind = await dbFuncs.find({"reset_password_token": tokenId}, 'client');
@@ -133,8 +131,6 @@ console.log("TokenId: ", tokenId);
 
 //	Route to save new password:
 app.post('/saveNewPass', async (req, res, next) => {
-
-	console.log("REQ.Body from /saveNewPass: ", req.body);
 
 	//	Sanitize Data:
 	let newPass = typeof(req.body.newPassword) === 'string' && req.body.newPassword.trim().length > 0 && req.body.newPassword.trim().length <= 20 ? req.body.newPassword.trim() : false;
@@ -182,6 +178,18 @@ app.post('/saveNewPass', async (req, res, next) => {
 
 			//	Otherwise, send data object the helpers2.resetPassEmail(), in order to send email:
 			let sendEmail = await helpers2.confirmResetPassEmail(data);
+
+			//	Now remove token and expiry date from document:
+			let rem = await dbFuncs.unset({_id: ObjectId(tokenFind._id)}, {"reset_password_expires": "", "reset_password_token": ""}, 'client');
+
+			//	If the operation isn't successful, throw error:
+			if (!rem) throw new Error("Could not remove token fields from db!");
+
+			//	Then increment the password_reset_times field. I.e. this is sloppy and expensive a new, more efficient way should be found, but it'll do for now:
+			let inc = await dbFuncs.increment({_id: ObjectId(tokenFind._id)}, {"password_reset_times": 1}, 'client');
+
+			//	If not successful, throw error:
+			if (!inc) throw new Error("Could not increment password_reset_times!");
 
 			//	Redirect to confirmation page here:
 			res.render('confirmNewPassword');
