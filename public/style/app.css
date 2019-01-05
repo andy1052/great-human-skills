@@ -298,6 +298,11 @@ img {
 	text-shadow: 1px 0px 1px #000;
 }
 
+#logoImg {
+	width: 60px;
+	height: 60px;
+}
+
 /* Smaller than standard 960px */
 @media only screen and (max-width: 959px) {};
 

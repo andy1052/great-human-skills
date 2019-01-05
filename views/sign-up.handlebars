@@ -3,7 +3,7 @@
 
 <div class="row justify-content-center">
 	<div class="col-sm-6 col-sm-offset-3">
-		<legend>Sign Up!</legend>
+		<legend class="mb-4">Sign Up!</legend>
 <form method="post" action="/sign-up" enctype="multipart/form-data" autocomplete="off">
 
 <fieldset>
@@ -39,12 +39,13 @@
 
 	<!-- Password -->
 	<div class="form-group">
-		<label for="password" style="display:block;">Make It A Good Password</label>
-		<input class="form-control" id="password" type="password" name="password" placeholder="Password"/>
+		<label for="password" style="display:block;">Create A Good Password</label>
+		<small class="form-text text-muted">Do yourself a favor and be creative, don't use a password you use other places, and mix it up with capital letters, symbols, and numbers for best results. The most secure system in the world cannot protect against poor passwords.</small>
+		<input class="form-control mt-3" id="password" type="password" name="password" placeholder="Password"/>
 	</div>
 
 	<!-- Notification agreement -->
-	<div class="form-group">
+	<div class="form-group mt-3">
 		<label for="notification" class="d-block">Would you like to receive a notification when a new article has been published?</label>
 	<select name="notification">
 		<option value="yes">Yes, send me notification of new articles</option>
@@ -54,8 +55,8 @@
 	</div>
 
 	<!-- Button -->
-	<div class="form-group">
-	<button class="btn btn-success" type="submit">Sign Up!</button>
+	<div class="form-group mt-4">
+	<button class="btn btn-success m-0" type="submit">Sign Up!</button>
 	</div>
 
 	</fieldset>
