@@ -95,7 +95,8 @@ app.post("/sendEmail", async (req, res, next) => {
 
 		//	Configure mail options:
 		let mailOptions = {
-			from: 'andy.ducharme@gmail.com',
+			// from: 'andy.ducharme@gmail.com',
+			from: "ghs@greathumanskills.com",
 			to: address,
 			subject: subject,
 			html: html
@@ -149,7 +150,8 @@ app.post("/sendEmail", async (req, res, next) => {
 
 		//	Configure mail options:
 		let mailOptions = {
-			from: 'andy.ducharme@gmail.com',
+			// from: 'andy.ducharme@gmail.com',
+			from: 'ghs@greathumanskills.com',
 			to: e,
 			subject: subject,
 			html: html

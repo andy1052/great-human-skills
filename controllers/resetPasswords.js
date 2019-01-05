@@ -200,8 +200,6 @@ app.post('/saveNewPass', async (req, res, next) => {
 				res.render('sorry7');
 			};
 
-
-
 		} else {
 			throw new Error("There was no authorizationToken passed!");
 		};

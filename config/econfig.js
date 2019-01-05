@@ -9,12 +9,12 @@
 
 //	Container:
 const auth = {
-	type: "OAuth2",
-	user: "andy.ducharme@gmail.com",
-	clientId: '740579153969-63ogenc1aa7c4k90o70ruruafngr35fk.apps.googleusercontent.com',
-	clientSecret: '9MNQgETgtGkxE0pRLFqftgSV',
-	redirectUri: "https://developers.google.com/oauthplayground",
-	refreshToken: '1/FKffVkJGhtmIHsaBOcYRP6p423rObjrg6UeD7FbX2uc'
+	type: 'OAuth2',
+	user: 'ghs@greathumanskills.com',
+	clientId: '775309851837-t58jpu3ru298famqbmuimqsv6qd9i8t8.apps.googleusercontent.com',
+	clientSecret: 'BNBn4uQ4xC4LnTpLudZ-WLBQ',
+	redirectUri: 'https://www.developers.google.com/oauthplayground',
+	refreshToken: '1/q0s-ygcGor3ljTJUI-I6fgQS5ODUz8GCISF5QUtv3WY'
 };
 
 

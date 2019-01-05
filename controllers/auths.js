@@ -665,6 +665,33 @@ app.post('/accountDelete', async (req, res, next) => {
 
 
 
+//	Terms and Conditions route:
+app.get('/termsAndConditions', async (req, res, next) => {
+
+	try {
+		res.render('termsAndConditions');
+	} catch(e) {
+		console.error(e);
+		next(e);
+	};
+});
+
+
+
+//	Privacy Policy route:
+app.get('/privacyPolicy', async (req, res, next) => {
+
+	try {
+		res.render('privacyPolicy');
+	} catch(e) {
+		console.error(e);
+		next(e);
+	};
+
+});
+
+
+
 
 
 
