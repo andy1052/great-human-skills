@@ -184,5 +184,20 @@ exports = module.exports = function(app) {
 	});
 
 
+//	Route to get contact page:
+app.get('/contact', async (req, res, next) => {
+
+	try {
+
+		res.render('contact');
+
+	} catch(e) {
+		console.error(e);
+		next(e);
+	};
+
+});
+
+
 
 };	//	End of module exports
