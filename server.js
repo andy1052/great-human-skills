@@ -19,7 +19,6 @@ const path = require('path');
 const config = require('./config/config');
 const helmet = require('helmet');
 const logging = require('./lib/logging');
-const analyze = require('./lib/analytics');
 
 
 //	Initialize app:
@@ -63,8 +62,6 @@ app.use(bodyParser.json());
 app.use(helpers.checkAuth);
 //	This is your custom logger to track all app activity:
 app.use(logging.logRequestStart);
-//	This is your custom middleware for google Analytics:
-app.use(analyze.postData);
 
 
 //	Log Rotation:

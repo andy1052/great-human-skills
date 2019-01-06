@@ -7,3 +7,5 @@ public/artImages
 public/profiles
 public/tempImages
 logs
+config/econfig
+config/aconfig
