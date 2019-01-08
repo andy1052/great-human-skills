@@ -63,12 +63,20 @@ app.use(bodyParser.json());
 app.use(helpers.checkAuth);
 //	This is your custom logger to track all app activity:
 app.use(logging.logRequestStart);
-//	This is your custom analytics middleware:
-app.use(analyze.postData);
+
+
+
+
+// //	This is your custom analytics middleware:
+// app.use(analyze.postData);
 
 
 //	Log Rotation:
 if (process.env.NODE_ENV === 'production') {
+
+	//	This is your custom analytics middleware:
+	app.use(analyze.postData);
+
 	//	Rotate logs immediately upon start up / crash recovery:
 	helpers.rotateLogs();
 

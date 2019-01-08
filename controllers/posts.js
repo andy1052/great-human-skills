@@ -10,6 +10,11 @@ const dbFuncs = require('../database/dbFuncs');
 const generator = require('../lib/htmlGenerator');
 
 
+//	"Global variables" in order to get pagination to work properly:
+let page = 0;
+let skip = 0;
+
+
 // export module, passing in express app variable:
 exports = module.exports = function(app) {
 
@@ -23,6 +28,7 @@ exports = module.exports = function(app) {
 		try{
 
 			//	Fetch all articles based on "published" state:
+			//	This initial function only returns 5 results first, from newest to oldest.
 			let find = await dbFuncs.findAll({"state": "published"}, 'articlesMeta').then((result) => {
 				return result;
 			});
@@ -35,6 +41,71 @@ exports = module.exports = function(app) {
 			next(e);
 		};
 	});
+
+
+	//	Homepage post route, for pagination functionality:
+	app.post('/', async (req, res, next) => {
+
+		//	Sanitize Data:
+		let plus = typeof(req.body.plus) === 'string' && req.body.plus.trim().length > 0 && req.body.plus.trim().length < 6 ? req.body.plus.trim() : false;
+		let minus = typeof(req.body.minus) === 'string' && req.body.minus.trim().length > 0 && req.body.minus.trim().length < 6 ? req.body.minus.trim() : false;
+		let currentUser = typeof(req.user) === 'object' ? req.user : false;
+
+		try {
+
+			//	Parse string variables into integers:
+			let p = parseInt(plus, 10);
+			let m = parseInt(minus, 10);
+
+			if (p === 1) {
+				//	If p equal's 1, then increase the variables accordingly, fetching the documents:
+				page +=1;
+				skip += 5;
+
+			} else if (m === -1) {
+				//	If m equal's -1, however, there is an important condition to take care of:
+
+				if (page === 0 && skip === 0) {
+					//	To avoid causing mongodb errors with negative numbers,
+					//	If the variables are already valued at 0, assign them 0:
+					page = 0;
+					skip = 0;
+				} else {
+					//	Otherwise, decrease the variable's values accordingly:
+					page -= 1;
+					skip -= 5;
+				};
+			} else {
+				//	If all else fails, assign the variables a value of 0:
+				page = 0;
+				skip = 0;
+			};
+
+console.log("PAGE------------------------: ", page);
+console.log("SKIP------------------------: ", skip);
+
+			//	This needs to be called "find" because of handlebars {{find}} on html page:
+			let find = await dbFuncs.paginate({"state": "published"}, skip, 'articlesMeta');
+
+			if (find.length === 0) {
+				console.log("******************* I Found Nothing!");
+				page -= 2;
+				skip -= 10;
+			}
+
+
+console.log("FIND:-------------: ", find);
+
+			//	Render the homepage with new results:
+			res.render('home', {find, currentUser});
+
+		} catch(e) {
+			console.error(e);
+			next(e);
+		};
+	});
+
+
 
 
 

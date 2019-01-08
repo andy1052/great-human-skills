@@ -141,10 +141,16 @@
 	<!-- Pagination -->
 	<ul class="pagination justify-content-center mb-4">
 		<li class="page-item">
-			<a class="page-link" href="#">&larr; Older</a>
+			<form method="POST" action="/">
+				<input type="hidden" name="minus" value="-1">
+				<button type="submit" class="btn btn-outline-info">&larr; Older</button>
+			</form>
 		</li>
 		<li class="page-item">
-			<a class="page-link" href="#">Newer &rarr;</a>
+			<form method="POST" action="/">
+				<input type="hidden" name="plus" value="1">
+				<button type="submit" class="btn btn-outline-info">Newer &rarr;</button>
+			</form>
 		</li>
 
 

@@ -34,7 +34,7 @@ dbFunc.findAll = async function(data, collection) {
 
 	try {
 		let db = await DbConnection.Get();
-		let result = await db.collection(collection).find(data).toArray();
+		let result = await db.collection(collection).find(data).sort({_id: -1}).limit(5).toArray();
 		return result;
 	} catch(e) {
 		console.log(e.stack);
@@ -42,6 +42,20 @@ dbFunc.findAll = async function(data, collection) {
 	}
 };
 
+
+
+//	Aggregate Find method for homepage posts and pagination:
+dbFunc.paginate = async function(data, skip, collection) {
+
+	try {
+		let db = await DbConnection.Get();
+		let result = await db.collection(collection).find(data).sort({_id: -1}).skip(skip).limit(5).toArray();
+		return result;
+	} catch(e) {
+		console.error(e);
+		return e;
+	};
+};
 
 
 
