@@ -34,7 +34,7 @@ exports = module.exports = function(app) {
 			});
 
 			//	Render homepage and pass in currentUser and all articles returned by find:
-			res.render('home', {find, currentUser});
+			res.render('home', {find, currentUser, "page": page + 1});
 
 		} catch(e) {
 			console.log(e.stack);
@@ -81,23 +81,38 @@ exports = module.exports = function(app) {
 				skip = 0;
 			};
 
-console.log("PAGE------------------------: ", page);
-console.log("SKIP------------------------: ", skip);
 
 			//	This needs to be called "find" because of handlebars {{find}} on html page:
 			let find = await dbFuncs.paginate({"state": "published"}, skip, 'articlesMeta');
 
+
+			//	If "paginate" returns an empty array:
 			if (find.length === 0) {
 				console.log("******************* I Found Nothing!");
-				page -= 2;
-				skip -= 10;
-			}
+				//	Dial the variables back one page and five results:
+				page -= 1;
+				skip -= 5;
+
+				//	Call paginate again with the dialed back variables, returning the last results:
+				let find = await dbFuncs.paginate({"state": "published"}, skip, 'articlesMeta');
+
+				//	Now, re-render the home page, passing the results to handlebars:
+				res.render('home', {find, currentUser, "page": page + 1});
+
+				//	This return statement is IMPERATIVE in order to interrupt the execution of the 
+				//	program and keep it from continuing on to the "res.render('home')" below.
+				 return;
+
+			} else {
+				//	If the original find function returns an array, all is good and the program 
+				//	can render the home page using the command below.
+				console.log("*******************Array has items!!**********");
+			};
 
 
-console.log("FIND:-------------: ", find);
 
 			//	Render the homepage with new results:
-			res.render('home', {find, currentUser});
+			res.render('home', {find, currentUser, "page": page + 1});
 
 		} catch(e) {
 			console.error(e);
