@@ -88,7 +88,7 @@ exports = module.exports = function(app) {
 
 			//	If "paginate" returns an empty array:
 			if (find.length === 0) {
-				console.log("******************* I Found Nothing!");
+				// console.log("******************* I Found Nothing!");
 				//	Dial the variables back one page and five results:
 				page -= 1;
 				skip -= 5;
