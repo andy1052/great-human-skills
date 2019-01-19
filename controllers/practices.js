@@ -67,6 +67,8 @@ const ObjectId = require('mongodb').ObjectId;
 		//	Analyze the file and perform various checks on the data:
 		fs.readFile(location, function(err, data) {
 
+			try{
+
 				//	If there was an error, throw it.
 				if (err) throw new Error({"Error": "Could not read uploaded file!"});
 
@@ -122,6 +124,11 @@ const ObjectId = require('mongodb').ObjectId;
 							});
 						 });
 					});
+			} catch(e) {
+				console.error(e);
+				return e;
+			}
+
 				}); 
 //	********************* End of file system manipulation code *********************************************
 
