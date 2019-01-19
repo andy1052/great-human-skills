@@ -8,6 +8,7 @@
 //	Dependencies:
 const dbFuncs = require('../database/dbFuncs');
 const generator = require('../lib/htmlGenerator');
+const uuidv4 = require('uuid/v4');
 
 
 //	"Global variables" in order to get pagination to work properly:
@@ -26,6 +27,30 @@ exports = module.exports = function(app) {
 		let currentUser = typeof(req.user) === 'object' ? req.user : false;
 
 		try{
+
+
+//	****************** Session Cookie for analytics purposes **********************************
+
+			//	When the user get to homepage, check their brower to see if the site's assigned them
+			//	a session cookie on a previous session. If true, keep it. 
+			if (req.cookies.GHScid) {
+				console.log("Session cookie already exists: ", req.cookies.GHScid);
+			} else {
+				// Otherwise, this is either their first visit, or the first in at least 2 years
+				// Or they've cleared their cookies.
+				//	First check the status of the cookieconsent:
+				//	Only issue a cookie if consent is set to 'dismiss' (i.e. accepted):
+				if (req.cookies.cookieconsent_status === 'dismiss') {
+					//	Setting httpOnly: false makes the cookie available on the browser not just the server.
+					res.cookie('GHScid', uuidv4(), { maxAge: 63113904, httpOnly: false});
+					console.log("New session cookie has been assigned: ");
+				} else {
+					//	If this point is reached, the client hasn't agreed to the cookies agreement
+					//	So what do you do???
+					console.log("Client has not agreed to cookie consent!");
+				}
+			};
+//**************************************************************************************************			
 
 			//	Fetch all articles based on "published" state:
 			//	This initial function only returns 5 results first, from newest to oldest.

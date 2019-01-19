@@ -66,9 +66,10 @@ app.use(logging.logRequestStart);
 
 
 
-
-// //	This is your custom analytics middleware:
-// app.use(analyze.postData);
+//************REMOVE THIS ANALYZE.POSTDATE BEFORE PRODUCTION***************************
+//	This is your custom analytics middleware:
+ // app.use(analyze.postData);
+//*************************************************************************************
 
 
 //	Log Rotation:
