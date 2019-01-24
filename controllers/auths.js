@@ -10,6 +10,7 @@
 //	Dependencies:
 const dbFuncs = require('../database/dbFuncs');
 const helpers = require('../lib/helpers');
+const fsAsync = require('../lib/fsAsync');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
@@ -64,6 +65,7 @@ let upload = multer({storage: storage,
 
 //	*************************************************************************************************
 
+// let res = '';
 
 //	Sign-up Route:
 app.post('/sign-up', upload.single('profilePic'), async (req, res, next) => {
@@ -74,6 +76,7 @@ app.post('/sign-up', upload.single('profilePic'), async (req, res, next) => {
 	let password = typeof(req.body.password) === "string" && req.body.password.trim().length > 0 && req.body.password.trim().length < 60 ? req.body.password.trim() : false;
 	let notification = typeof(req.body.notification) === 'string' && req.body.notification.trim().length > 0 && req.body.notification.trim().length < 40 ? req.body.notification.trim() : false;
 	let image = typeof(req.file.filename) === "string" && req.file.filename.trim().length > 0 && req.file.filename.trim().length < 80 ? req.file.filename.trim() : false;
+
 
 	try{
 
@@ -94,64 +97,65 @@ app.post('/sign-up', upload.single('profilePic'), async (req, res, next) => {
 		let location = '/home/andy/Desktop/great-human-skills/public/tempImages/' + image;
 
 		//	Analyze the file and perform various checks on the data:
-		fs.readFile(location, function(err, data) {
+		 
+		let read = await fsAsync.read(location);
 
-				//	If there was an error, throw it.
-				if (err) throw new Error({"Error": "Could not read uploaded file!"});
+console.log("Read-------------------: ", read);		
 
-				// Check the file's size in megabytes, keep it under 2Mb maximum:
-				const size = data.length / 1000000;
+		//	If there was an error, throw a new error:
+		if (!read) throw new Error({"Error":"Could not read uploaded file!"});
 
-				//	If file size is above 2mb, throw error:
-				if (size > 2.00000) throw new Error({"Error": "File size is too big!"});
+		// Check the file's size in megabytes, keep it under 2Mb maximum:
+		const size = read.length / 1000000;
 
-				//	Otherwise, determine the file's type by checking its binary magic number (first 4 bytes):
-				const magic = data.readUIntBE(0,4).toString(16);
+		//	If file size is above 2mb, throw error:
+		if (size > 2.00000) throw new Error({"Error": "File size is too big!"});
 
-				//	Check the results against a list held in helper function:
-				helpers.checkFiletype(magic, (err, result) => {
+		//	Otherwise, determine the file's type by checking its binary magic number (first 4 bytes):
+		const magic = read.readUIntBE(0,4).toString(16);
 
-				//	If there's an error, throw new error:
-				if (err) throw new Error({"Error": "Cannot find specified file type!"});
+		//	Check the results against a list held in helper function:
+		let fileType = await helpers.checkFiletype(magic);
 
-				//	Otherwise, the file has passed validations, so get the base directory you want to write it to:
-				let baseDir = path.join(__dirname, "/../public");
+console.log("FileType--------------------------: ", fileType);		
 
-				//	Open the directory, passing in newImage variableL
-				 fs.open(baseDir + '/profiles' + '/' + image, 'wx', (err, fd) => {
-					
-						//	If err, throw it:
-						if (err) throw new Error({"Error": "Could not get file descriptor!"});
+		//	If there fileType could not be determined, throw an error:
+		if (!fileType) throw new Error ({"Error": "Cannot find the specified type of file!"});
 
-						//	Otherwise, write the file to profiles directory:
-						fs.writeFile(fd , data, (err) => {
+		//	Otherwise, the file has passed validations, so get the base directory you want to write it to:
+		let baseDir = path.join(__dirname, "/../public");
 
-									//	If err, return it:
-									if (err) {
-									console.log("Err:", err.message);
-									return err;
-								} else {
-									//	Otherwise, confirm the write....
-									console.log("File was written to profiles!");
+		//	Open the directory, passing in newImage variableL
+		let openFile = await fsAsync.open(baseDir + '/profiles' + '/' + image, 'wx');
 
-									//	And then delete the uploaded file from the tempImages directory:
-									fs.unlink(location, (err) => {
+console.log("openfile---------------------------: ", openFile);
 
-										//	If err, return it.
-										if (err) {
-											console.log("Err in unlink: ", err.message);
-											return err;
-										} else {
+		//	If there was an error opening the file, throw error:
+		if (!openFile) throw new Error({"Error": "Could not open file and return descriptor!"});
 
-											//	Otherwise, confirm that all went well:
-											console.log("File was deleted from tempImages!");
-										};
-									});
-								};
-							});
-						 });
-					});
-				}); //	End of file system manipulation code *********************************************
+		//	Otherwise, write the file to profiles directory:
+		let writeToFile = await fsAsync.write(openFile , read);
+
+console.log("writeToFile-------------------------: ", writeToFile);
+
+		//	If there is no writeToFile confirmation, throw new error:
+		if (!writeToFile) throw new Error({"Error": "Could not write to file!"});
+
+		//	Now make sure you close the fileDescriptor!:
+		let closeFile = await fsAsync.close(openFile);
+
+console.log("closeFile----------------------------: ", closeFile);
+
+		//	And then delete the uploaded file from the tempImages directory:
+		let unlinkFile = await fsAsync.unlink(location);
+
+console.log("unlinkFile----------------------------: ", unlinkFile);
+
+		//	If Error occurs, throw error:
+		if (!unlinkFile) throw new Error({"Error": "Could not unlink file!"});
+
+//	********************** END OF FILE SYSTEM MANIPULATION CODE*******************************************************************
+
 
 
 		//	If password "x", was hashed and image file passed the validation, then make the client model/object:
@@ -164,6 +168,7 @@ app.post('/sign-up', upload.single('profilePic'), async (req, res, next) => {
 			image,
 			"createdAt": Date()
 		};
+
 
 		//	Then, before saving the client, check to see if the email address already exists:
 		let check = await dbFuncs.find({"email": client.email}, 'client').then((result) => {

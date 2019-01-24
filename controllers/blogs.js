@@ -330,8 +330,9 @@ app.post("/saveArtEdit", async (req, res, next) => {
 			//	If the update is unsuccessful, throw an error object:
 			if (!f) throw new Error({"Error": "Could not save updates!"});
 
+			//	Log out admin:
 			//	Respond to fetch request on the front end:
-			res.json({"msg": "Thank you!"});
+			res.clearCookie('nToken').json({"msg": "Thank you!"});
 
 
 		} else {
