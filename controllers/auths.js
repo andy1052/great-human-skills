@@ -90,7 +90,6 @@ app.post('/sign-up', upload.single('profilePic'), async (req, res, next) => {
 
 		if (!x) throw new Error({"Error": "Password could not be hashed. Exiting."});
 
-
 //	********** File system manipulation code below ********************************************************
 
 		//	Locate the file that was updated:
@@ -98,9 +97,8 @@ app.post('/sign-up', upload.single('profilePic'), async (req, res, next) => {
 
 		//	Analyze the file and perform various checks on the data:
 		 
+		//	Read the uploaded file, an image in this case:
 		let read = await fsAsync.read(location);
-
-console.log("Read-------------------: ", read);		
 
 		//	If there was an error, throw a new error:
 		if (!read) throw new Error({"Error":"Could not read uploaded file!"});
@@ -115,20 +113,23 @@ console.log("Read-------------------: ", read);
 		const magic = read.readUIntBE(0,4).toString(16);
 
 		//	Check the results against a list held in helper function:
-		let fileType = await helpers.checkFiletype(magic);
+		let fileType = await helpers.checkFiletype(magic).then(function(resolved) {
+			//	return a resolved promise:
+			return resolved;
+		}, function(rejected) {
+			//	return a rejected promise, (i.e.: null) in this case:
+			return rejected;
+		});
 
-console.log("FileType--------------------------: ", fileType);		
-
-		//	If there fileType could not be determined, throw an error:
-		if (!fileType) throw new Error ({"Error": "Cannot find the specified type of file!"});
+		//	If there fileType could not be determined, render sorry8 page and redirect to sign-up:
+		//	Do not forget the return command!:
+		if (!fileType) return res.render('sorry8');
 
 		//	Otherwise, the file has passed validations, so get the base directory you want to write it to:
 		let baseDir = path.join(__dirname, "/../public");
 
-		//	Open the directory, passing in newImage variableL
+		//	Open the directory, passing in newImage variable:
 		let openFile = await fsAsync.open(baseDir + '/profiles' + '/' + image, 'wx');
-
-console.log("openfile---------------------------: ", openFile);
 
 		//	If there was an error opening the file, throw error:
 		if (!openFile) throw new Error({"Error": "Could not open file and return descriptor!"});
@@ -136,27 +137,22 @@ console.log("openfile---------------------------: ", openFile);
 		//	Otherwise, write the file to profiles directory:
 		let writeToFile = await fsAsync.write(openFile , read);
 
-console.log("writeToFile-------------------------: ", writeToFile);
-
 		//	If there is no writeToFile confirmation, throw new error:
 		if (!writeToFile) throw new Error({"Error": "Could not write to file!"});
 
 		//	Now make sure you close the fileDescriptor!:
 		let closeFile = await fsAsync.close(openFile);
 
-console.log("closeFile----------------------------: ", closeFile);
+		//	If Error occurs, throw error:
+		if (!closeFile) throw new Error({"Error": "Could not close file descriptor!"});
 
 		//	And then delete the uploaded file from the tempImages directory:
 		let unlinkFile = await fsAsync.unlink(location);
-
-console.log("unlinkFile----------------------------: ", unlinkFile);
 
 		//	If Error occurs, throw error:
 		if (!unlinkFile) throw new Error({"Error": "Could not unlink file!"});
 
 //	********************** END OF FILE SYSTEM MANIPULATION CODE*******************************************************************
-
-
 
 		//	If password "x", was hashed and image file passed the validation, then make the client model/object:
 
@@ -194,8 +190,6 @@ console.log("unlinkFile----------------------------: ", unlinkFile);
 			console.log("Saved to database!");
 
 			//	Generate web token:
-			// let token = jwt.sign(client, process.env.SECRET, {expiresIn: 3600000});
-
 			let token = jwt.sign(client, process.env.SECRET, {expiresIn: 3600000});
 
 //	**** NOTE: In production, these cookie settings will have to change!!!! ***********************
@@ -208,7 +202,7 @@ console.log("unlinkFile----------------------------: ", unlinkFile);
 		} else {
 			//	If the database does not save, render sorry2.
 			res.render('sorry2');
-		}
+		};
 		});
 
 	} else {
