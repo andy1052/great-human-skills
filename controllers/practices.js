@@ -7,7 +7,7 @@
 */
 
 //	Dependencies:
-const fs = require('fs');
+const fsAsync = require('../lib/fsAsync');
 const path = require('path');
 const multer = require('multer');
 const crypto = require('crypto');
@@ -65,71 +65,57 @@ const ObjectId = require('mongodb').ObjectId;
 		let location = '/home/andy/Desktop/great-human-skills/public/tempImages/' + filename;
 
 		//	Analyze the file and perform various checks on the data:
-		fs.readFile(location, function(err, data) {
+		let read = await fsAsync.read(location);
 
-			try{
+		//	If there was an error, throw it.
+		if (!read) throw new Error({"Error": "Could not read uploaded file!"});
 
-				//	If there was an error, throw it.
-				if (err) throw new Error({"Error": "Could not read uploaded file!"});
+		// Check the file's size in megabytes, keep it under 2Mb maximum:
+		const size = read.length / 1000000;
 
-				// Check the file's size in megabytes, keep it under 2Mb maximum:
-				const size = data.length / 1000000;
+		//	If file size is above 2mb, throw error:
+		if (size > 2.00000) throw new Error({"Error": "File size is too big!"});
 
-				//	If file size is above 2mb, throw error:
-				if (size > 2.00000) throw new Error({"Error": "File size is too big!"});
+		//	Otherwise, determine the file's type by checking its binary magic number (first 4 bytes):
+		const magic = read.readUIntBE(0,4).toString(16);
 
-				//	Otherwise, determine the file's type by checking its binary magic number (first 4 bytes):
-				const magic = data.readUIntBE(0,4).toString(16);
+		//	Check the results against a list held in helper function:
+		let fileType = await helpers.checkFiletype(magic).then(function(resolved) {
+			return resolved;
+		}, function(rejected) {
+			return rejected;
+		});
 
-				//	Check the results against a list held in helper function:
-				helpers.checkFiletype(magic, (err, result) => {
+		//	If there's an error, throw new error:
+		if (!fileType) throw new Error({"Error": "Cannot find specified file type!"});
 
-				//	If there's an error, throw new error:
-				if (err) throw new Error({"Error": "Cannot find specified file type!"});
+		//	Otherwise, the file has passed validations, so get the base directory you want to write it to:
+		let baseDir = path.join(__dirname, "/../public");
 
-				//	Otherwise, the file has passed validations, so get the base directory you want to write it to:
-				let baseDir = path.join(__dirname, "/../public");
-
-				//	Open the directory, passing in newImage variableL
-				 fs.open(baseDir + '/artImages' + '/' + filename, 'wx', (err, fd) => {
+		//	Open the directory, passing in newImage variableL
+		let open = await fsAsync.open(baseDir + '/artImages' + '/' + filename, 'wx');
 					
-						//	If err, throw it:
-						if (err) throw new Error({"Error": "Could not get file descriptor!"});
+		//	If err, throw it:
+		if (!open) throw new Error({"Error": "Could not get file descriptor!"});
 
-						//	Otherwise, write the file to profiles directory:
-						fs.writeFile(fd , data, (err) => {
+		//	Otherwise, write the file to profiles directory:
+		let write = await fsAsync.write(open , read);
 
-									//	If err, return it:
-									if (err) {
-									console.log("Err:", err.message);
-									return err;
-								} else {
-									//	Otherwise, confirm the write....
-									console.log("File was written to artImages!");
+		//	If err, throw error:
+		if (!write) throw new Error({"Error": "Could not write to file!"});
 
-									//	And then delete the uploaded file from the tempImages directory:
-									fs.unlink(location, (err) => {
+		//	Close the file:
+		let close = await fsAsync.close(open);
 
-										//	If err, return it.
-										if (err) {
-											console.log("Err in unlink: ", err.message);
-											return err;
-										} else {
+		//	If error, throw error:
+		if (!close) throw new Error({"Error": "Could not close file descriptor!"});
 
-											//	Otherwise, confirm that all went well:
-											console.log("File was deleted from tempImages!");
-										};
-									});
-								};
-							});
-						 });
-					});
-			} catch(e) {
-				console.error(e);
-				return e;
-			}
+		//	And then delete the uploaded file from the tempImages directory:
+		let unlink = await fsAsync.unlink(location);
 
-				}); 
+		//	If err, throw error:
+		if (!unlink) throw new Error({"Error": "Could not delete file from tempImages!"});
+
 //	********************* End of file system manipulation code *********************************************
 
 
@@ -183,91 +169,69 @@ app.post("/artImageEditSave", upload.single('newImg'), async (req, res, next) =>
 			//	If the image is the same, throw error:
 			if (filename === check.imagePath) throw new Error("Image is already assigned to this account");
 
+//	********** File system manipulation code below ********************************************************
+
+			//	Locate the file that was updated:
+			let location = '/home/andy/Desktop/great-human-skills/public/tempImages/' + filename;
+
+			//	locate existing file in /profiles:
+			let existing = '/home/andy/Desktop/great-human-skills/public/profiles/' + check.image;
+
+			//	Analyze the file and perform various checks on the data:
+			
+			//	Read uploaded file, an image in this case:
+			let read = await fsAsync.read(location);
+
+			//	If there was an error, throw it.
+			if (!read) throw new Error({"Error": "Could not read uploaded file!"});
+
+			// Check the file's size in megabytes, keep it under 2Mb maximum:
+			const size = read.length / 1000000;
+
+			//	If file size is above 2mb, throw error:
+			if (size > 2.00000) throw new Error({"Error": "File size is too big!"});
+
+			//	Otherwise, determine the file's type by checking its binary magic number (first 4 bytes):
+			const magic = read.readUIntBE(0,4).toString(16);
+
+			//	Check the results against a list held in helper function:
+			let fileType = await helpers.checkFiletype(magic).then(function(resolved) {
+				return resolved;
+			}, function(rejected) {
+				return rejected;
+			});
+
+			//	If there's an error, throw new error:
+			if (!fileType) throw new Error({"Error": "Cannot find specified file type!"});
+
+			//	Otherwise, the file has passed validations, so get the base directory you want to write it to:
+			let baseDir = path.join(__dirname, "/../public");
+
+			//	Open the directory, passing in newImage variableL
+			let open = await fsAsync.open(baseDir + '/artImages' + '/' + filename, 'wx');
+
+			//	If err, throw it:
+			if (!open) throw new Error({"Error": "Could not get file descriptor!"});
+
+			//	Otherwise, write the file to profiles directory:
+			let write = await fsAsync.write(open, read);
+
+			//	If err, throw error:
+			if (!write) throw new Error({"Error": "Could not write to file!"});
+
+			//	Close the file:
+			let close = await fsAsync.close(open);
+
+			if (!open) throw new Error({"Error": "Could not close file descriptor!"});
+
+			//	And then delete the uploaded file from the tempImages directory:
+			let unlink = await fsAsync.unlink(location);
+
+			//	If err, throw Error:
+			if (!unlink) throw new Error({"Error": "Could not delete file from tempImages!"});
 
 
-			//	This is where the multer magic happens!
-
-			//	********** File system manipulation code below ********************************************************
-
-		//	Locate the file that was updated:
-		let location = '/home/andy/Desktop/great-human-skills/public/tempImages/' + filename;
-
-		//	locate existing file in /profiles:
-		let existing = '/home/andy/Desktop/great-human-skills/public/profiles/' + check.image;
-
-		//	Analyze the file and perform various checks on the data:
-		fs.readFile(location, function(err, data) {
-
-				//	If there was an error, throw it.
-				if (err) throw new Error({"Error": "Could not read uploaded file!"});
-
-				// Check the file's size in megabytes, keep it under 2Mb maximum:
-				const size = data.length / 1000000;
-
-				//	If file size is above 2mb, throw error:
-				if (size > 2.00000) throw new Error({"Error": "File size is too big!"});
-
-				//	Otherwise, determine the file's type by checking its binary magic number (first 4 bytes):
-				const magic = data.readUIntBE(0,4).toString(16);
-
-				//	Check the results against a list held in helper function:
-				helpers.checkFiletype(magic, (err, result) => {
-
-				//	If there's an error, throw new error:
-				if (err) throw new Error({"Error": "Cannot find specified file type!"});
-
-				//	Otherwise, the file has passed validations, so get the base directory you want to write it to:
-				let baseDir = path.join(__dirname, "/../public");
-
-				//	Open the directory, passing in newImage variableL
-				 fs.open(baseDir + '/artImages' + '/' + filename, 'wx', (err, fd) => {
-					
-						//	If err, throw it:
-						if (err) throw new Error({"Error": "Could not get file descriptor!"});
-
-						//	Otherwise, write the file to profiles directory:
-						fs.writeFile(fd , data, (err) => {
-
-									//	If err, return it:
-									if (err) {
-									console.log("Err:", err.message);
-									return err;
-								} else {
-									//	Otherwise, confirm the write....
-									console.log("File was written to artImages!");
-
-									//	And then delete the uploaded file from the tempImages directory:
-									fs.unlink(location, (err) => {
-
-										//	If err, return it.
-										if (err) {
-											console.log("Err in unlink: ", err.message);
-											return err;
-										} else {
-
-											//	Otherwise, confirm that all went well:
-											console.log("File was deleted from tempImages!");
-
-											//	Now delete existing file from artImages:
-											fs.unlink(existing, (err) => {
-												//	If err, return it:
-												if (err) {
-													console.log("err in unlink/artImages/: ", err.message);
-													return err;
-												} else {
-													console.log("File has been deleted from artImages");
-												}
-											});
-										};
-									});
-								};
-							});
-						 });
-					});
-				}); //	End of file system manipulation code *********************************************
-
-	//	First you have to pass the articleId through req.body from hidden field in form.
-
+//***********************	End of file system manipulation code *********************************************
 
 			//	Update articlesMeta with the image path so it can be recalled on init:
 			const up = await dbFuncs.update({_id: ObjectId(articleId)}, {"imagePath": filename}, 'articlesMeta');

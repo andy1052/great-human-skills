@@ -16,7 +16,6 @@ const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const crypto = require('crypto');
 const path = require('path');
-const fs = require('fs');
 
 
 
@@ -512,88 +511,71 @@ app.post('/changeProfPic', upload.single("changedProf"), async (req, res, next) 
 
 //	********** File system manipulation code below ********************************************************
 
-		//	Locate the file that was updated:
-		let location = '/home/andy/Desktop/great-human-skills/public/tempImages/' + newImage;
+			//	Locate the file that was updated:
+			let location = '/home/andy/Desktop/great-human-skills/public/tempImages/' + newImage;
 
-		//	locate existing file in /profiles:
-		let existing = '/home/andy/Desktop/great-human-skills/public/profiles/' + check.image;
+			//	locate existing file in /profiles:
+			let existing = '/home/andy/Desktop/great-human-skills/public/profiles/' + check.image;
 
-		//	Analyze the file and perform various checks on the data:
-		fs.readFile(location, function(err, data) {
+			//	Read incoming file, an image in this case:
+			let read = await fsAsync.read(location);
 
-				//	If there was an error, throw it.
-				if (err) throw new Error({"Error": "Could not read uploaded file!"});
+			//	If there was an error, throw it.
+			if (!read) throw new Error({"Error": "Could not read uploaded file!"});
 
-				// Check the file's size in megabytes, keep it under 2Mb maximum:
-				const size = data.length / 1000000;
+			// Check the file's size in megabytes, keep it under 2Mb maximum:
+			const size = read.length / 1000000;
 
-				//	If file size is above 2mb, throw error:
-				if (size > 2.00000) throw new Error({"Error": "File size is too big!"});
+			//	If file size is above 2mb, throw error:
+			if (size > 2.00000) throw new Error({"Error": "File size is too big!"});
 
-				//	Otherwise, determine the file's type by checking its binary magic number (first 4 bytes):
-				const magic = data.readUIntBE(0,4).toString(16);
+			//	Otherwise, determine the file's type by checking its binary magic number (first 4 bytes):
+			const magic = read.readUIntBE(0,4).toString(16);
 
-				//	Check the results against a list held in helper function:
-				helpers.checkFiletype(magic, (err, result) => {
+			//	Check the results against a list held in helper function:
+			let fileType = await helpers.checkFiletype(magic).then(function(resolved) {
+				return resolved;
+			}, function(rejected) {
+				return rejected;
+			});
 
-				//	If there's an error, throw new error:
-				if (err) throw new Error({"Error": "Cannot find specified file type!"});
+			//	If there's an error, throw new error:
+			if (!fileType) throw new Error({"Error": "Cannot find specified file type!"});
 
-				//	Otherwise, the file has passed validations, so get the base directory you want to write it to:
-				let baseDir = path.join(__dirname, "/../public");
+			//	Otherwise, the file has passed validations, so get the base directory you want to write it to:
+			let baseDir = path.join(__dirname, "/../public");
 
-				//	Open the directory, passing in newImage variableL
-				 fs.open(baseDir + '/profiles' + '/' + newImage, 'wx', (err, fd) => {
-					
-						//	If err, throw it:
-						if (err) throw new Error({"Error": "Could not get file descriptor!"});
+			//	Open the directory, passing in newImage variableL
+			let open = await fsAsync.open(baseDir + '/profiles' + '/' + newImage, 'wx');
+		
+			//	If err, throw it:
+			if (!open) throw new Error({"Error": "Could not get file descriptor!"});
 
-						//	Otherwise, write the file to profiles directory:
-						fs.writeFile(fd , data, (err) => {
+			//	Otherwise, write the file to profiles directory:			
+			let write = await fsAsync.write(open, read);
 
-									//	If err, return it:
-									if (err) {
-									console.log("Err:", err.message);
-									return err;
-								} else {
-									//	Otherwise, confirm the write....
-									console.log("File was written to profiles!");
+			//	If error, throw error:
+			if (!write) throw new Error({"Error": "Could not write to file"});
 
-									//	And then delete the uploaded file from the tempImages directory:
-									fs.unlink(location, (err) => {
+			//	Close the file descriptor:
+			let close = await fsAsync.close(open);
 
-										//	If err, return it.
-										if (err) {
-											console.log("Err in unlink: ", err.message);
-											return err;
-										} else {
-											//	Otherwise, confirm that all went well:
-											console.log("File was deleted from tempImages!");
+			//	If error, throw error:
+			if (!close) throw new Error({"Error": "Could not close the file descriptor!"});
 
-											//	Then remove the existing file from Profiles:
-											fs.unlink(existing, (err) => {
+			//	And then delete the uploaded file from the tempImages directory:
+			let unlink = await fsAsync.unlink(location);
 
-												//	If err, return it:
-												if (err) {
-													console.log("Err in unlink/profiles: ", err.message);
-													return err;
-												} else {
-												console.log("Existing Profile Image has been removed!");
-											};
-											});
-										};
-									});
-								};
-							});
-						 });
-					});
-				}); //	End of file system manipulation code *********************************************
+			//	If error, throw error:
+			if (!unlink) throw new Error({"Error": "Could not delete image from tempImages!"});
+
+//****************************** End of file system manipulation code *********************************************
 
 			//	At this point, update the database with the new image:
-				const newImg = await dbFuncs.update({_id: ObjectId(check._id)}, {"image": newImage}, 'client');
+			const newImg = await dbFuncs.update({_id: ObjectId(check._id)}, {"image": newImage}, 'client');
 
 			//	Then redirect user to homepage:
-				res.redirect('/');
+			res.redirect('/');
 
 			} else {
 				res.redirect('/unauthorized');
