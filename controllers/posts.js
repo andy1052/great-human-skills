@@ -54,9 +54,7 @@ exports = module.exports = function(app) {
 
 			//	Fetch all articles based on "published" state:
 			//	This initial function only returns 5 results first, from newest to oldest.
-			let find = await dbFuncs.findAll({"state": "published"}, 'articlesMeta').then((result) => {
-				return result;
-			});
+			let find = await dbFuncs.findAll({"state": "published"}, 'articlesMeta');
 
 			//	Render homepage and pass in currentUser and all articles returned by find:
 			res.render('home', {find, currentUser, "page": page + 1});
@@ -244,8 +242,6 @@ exports = module.exports = function(app) {
 
 				//	First see if they searched by article title:
 				let title = await dbFuncs.findAll({"title": inquiry}, 'articlesMeta');
-
-//	**** WHY DOES IT HAVE TO BE AN ARRAY TO WORK? WHY WON'T DBFUNCS.FIND WORK, BUT DBFUNCS.FINDALL DOES?????????
 
 				//	If title array returns a result:
 				if (title.length > 0) {

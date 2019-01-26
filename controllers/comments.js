@@ -76,6 +76,9 @@ const ObjectId = require('mongodb').ObjectId;
 				 //	Find the user in the client document:
 				 let f = await dbFuncs.find({"email": userEmail}, 'client');
 
+				 //	If error, throw error:
+				 if (!f) throw new Error({"Error": "Could not find this client!"});
+
 				 //	Now update the 'comments' document with user's image from articlesMeta:
 				 let n = await dbFuncs.update({"_id": ObjectId(commentId)}, {"image": f.image}, 'comments');
 

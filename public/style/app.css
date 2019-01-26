@@ -257,9 +257,9 @@ img {
 
 
 #newProfile {
-	height: 200px;
+	height: 300px;
 	width: 300px;
-	margin: 10px auto;
+	/*margin: 10px auto;*/
 	display: none;
 }
 

@@ -69,37 +69,25 @@ app.post('/newBlog', async (req, res, next) => {
 
 	try {
 		//	Find this username and password in the database:
-		let check = await dbFuncs.find({"username": username, "password": password}, 'blogger').then((result) => {
+		let check = await dbFuncs.find({"username": username, "password": password}, 'blogger');
 
-			if (!result) {
-				//	User not found:
-				return res.redirect('/unauthorized');
-			}
-			return result;
-		});
+		//	If user isn't found, redirect to unauthorized:
+		if (!check) return res.redirect('/unauthorized');
 
-			//	If there is no check, throw error:
-			if (!check) throw new Error({"Error": "Cannot login, non-existent user."});
-
-				//	Otherwise, create a new token:
-				let token = jwt.sign({_id: check._id}, process.env.SECRET, {expiresIn: 3600000});
+		//	Otherwise, create a new token:
+		let token = jwt.sign({_id: check._id}, process.env.SECRET, {expiresIn: 3600000});
 			
-				//	Set cookie maxAge to 60 minutes - 3,600,000 milliseconds:
-				res.cookie('nToken', token, {maxAge: 3600000, httpOnly: true});
+		//	Set cookie maxAge to 60 minutes - 3,600,000 milliseconds:
+		res.cookie('nToken', token, {maxAge: 3600000, httpOnly: true});
 
-			//	At this point, everything went well, and you should send the user to the Blog page along with the token
-			if (token) {
-				return res.render('blog', {token});
-			} else {
-				return res.redirect('/unauthorized');
-			};
+		//	At this point, everything went well, and you should send the user to the Blog page along with the token:	
+		res.render('blog', {token});
 
-			} catch(e) {
-				console.log(e.stack);
-				next(e);
-			}
-
-		});
+		} catch(e) {
+			console.error(e);
+			next(e);
+		}
+	});
 
 
 
@@ -115,12 +103,9 @@ app.post('/blogSave', async (req, res, next) => {
 	let token = typeof(req.body.token) === "string" && req.body.token.trim().length > 0 && req.body.token.trim().length < 350 ? req.body.token.trim() : false;
 
 	try {
-		
-		//	This token is being passed from 'blog.handlebars', this is the proper way of confirming admin:
-		if (token) {
 
 		//	Once data is sanitized, make object and save it to database:
-		if (title && author && description && state && category) {
+		if (token && title && author && description && state && category) {
 
 		//	Make object:
 		const article = {
@@ -134,63 +119,36 @@ app.post('/blogSave', async (req, res, next) => {
 		};
 
 		//	Insert new object into database:
-		let x = await dbFuncs.insert(article, "articlesMeta").then((result) => {
+		let x = await dbFuncs.insert(article, "articlesMeta");
 
-			//	If database confirms save.
-			if({"n":1, "ok":1}) {
-			console.log("Saved to database!");
-			return result;
-		} else {
-			//	Else, send error
-			console.log("Something went wrong when trying to save to database");
-		}
-	});
-
-		//	Overkill check:
+		//	If error inserting, throw error:
 		if (!x) throw new Error({"Error": "Something failed in blogSave"});
 
 		//	If the article being saved has a state of 'published', send it to helpers2.autoEmail():
 		if (x.ops[0].state === 'published') {
-			//	If state is published here, send an email:
-			let d = x.ops[0];
+				//	If state is published here, send an email:
+				let d = x.ops[0];
 
-			let sendEmail = await helpers2.autoEmail(d);
+				let sendEmail = await helpers2.autoEmail(d);
 
 		} else {
-			//	Otherwise, it isn't published:
-			console.log("State of article is draft: ", x.ops[0].state);
-		};
+				//	Otherwise, it isn't published:
+				console.log("State of article is draft: ", x.ops[0].state);
+			};
 
-		//	Continue on with the process of adding images and content:
-	try {
-		//	If admin is logged in:
-		if (token) {
-
-			let admin = token;
-
-			//	render page and pass in new article's id + admin token:
-			res.render('artImage', {"articleMetaId": x.ops[0]._id, admin});
-		} else {
-
-			//	Otherwise, redirect to unauthorized page:
-			return res.redirect('/unauthorized');
-		}
-	} catch(e) {
-		console.log(e.stack);
-		next(e);
-	}
+		//	render page and pass in new article's id + admin token:
+		res.render('artImage', {"articleMetaId": x.ops[0]._id, token});
+	
+	
 
 	} else {
 		throw new Error({"Error": "Some data didn't meet sanitized criteria"});
 	};
-}else {
-	throw new Error({"Error": "Admin is not logged in!"});
-};
-} catch(e){
-	console.log(e);
-	next(e);
-}
 
+	} catch(e){
+		console.error(e);
+		next(e);
+	}
 });
 
 

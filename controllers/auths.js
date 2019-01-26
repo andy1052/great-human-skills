@@ -48,7 +48,6 @@ let storage = multer.diskStorage({
 		crypto.randomBytes(31, (err, buf) => {
 			cb(null, buf.toString("hex") + path.extname(file.originalname));
 		});
-		//cb(null, file.fieldname + '-' + Date.now() + '.jpg')
 	}
 });
 
@@ -77,12 +76,28 @@ app.post('/sign-up', upload.single('profilePic'), async (req, res, next) => {
 	let image = typeof(req.file.filename) === "string" && req.file.filename.trim().length > 0 && req.file.filename.trim().length < 80 ? req.file.filename.trim() : false;
 
 
-	try{
+	try {
 
 	//	Make sure that a username, an email and a password were entered:
 	if (username && email && password && notification && image){
 
-		//	First hash the password:
+		//	Before doing anything, check to see if the email address already exists:
+		let check = await dbFuncs.find({"email": email}, 'client');
+
+		//	If check has a value, redirect to alreadyExists page:
+		if (check) {
+
+		//	If check returns a value, tempImage's contents must be deleted:
+		let fault = await fsAsync.unlink('/home/andy/Desktop/great-human-skills/public/tempImages/' + image);
+
+		//	If error, throw error:
+		if (!fault) throw new Error({"Error": "Could not empty tempImages!"});
+
+		//	Render already exists page:
+		return res.render('alreadyExists'); 
+		}
+
+		//	If no check value, then hash the password:
 		let x = await helpers.salt(password).then((y) => {
 			return y;
 		});
@@ -165,44 +180,25 @@ app.post('/sign-up', upload.single('profilePic'), async (req, res, next) => {
 		};
 
 
-		//	Then, before saving the client, check to see if the email address already exists:
-		let check = await dbFuncs.find({"email": client.email}, 'client').then((result) => {
+		//	At this point, Check is undefined and the user should be saved to the database in 'client' collection:
+		let save = await dbFuncs.insert(client, 'client');
 
-			//	If there is no result, then the user does not exist and program can continue. Return.
-			if (!result) {
-				return;
-			}
+		//	If error, redirect to sorry2:
+		if (!save) return res.render('sorry2');
 
-			//	Otherwise, the user already exists, so return the results:
-			return result;
-		});
+		//	If database confirms save redirect to homepage.
+		console.log("Saved to database!");
 
-		//	If check has a value, redirect to alreadyExists page:
-		if (check) return res.render('alreadyExists'); 
-
-
-		//	Otherwise, check is undefined and the user should be saved to the database in 'client' collection:
-		let save = await dbFuncs.insert(client, 'client').then((result) => {
-
-			//	If database confirms save redirect to homepage.
-			if({"n":1, "ok":1}) {
-			console.log("Saved to database!");
-
-			//	Generate web token:
-			let token = jwt.sign(client, process.env.SECRET, {expiresIn: 3600000});
+		//	Generate web token:
+		let token = jwt.sign(client, process.env.SECRET, {expiresIn: 3600000});
 
 //	**** NOTE: In production, these cookie settings will have to change!!!! ***********************
 
-			//	Set cookie maxAge to 60 minutes - 3,600,000 milliseconds:
-			res.cookie('nToken', token, {maxAge: 3600000, httpOnly: true});
+		//	Set cookie maxAge to 60 minutes - 3,600,000 milliseconds:
+		res.cookie('nToken', token, {maxAge: 3600000, httpOnly: true});
 
-			//	Redirect to homepage:
-			res.redirect('/');
-		} else {
-			//	If the database does not save, render sorry2.
-			res.render('sorry2');
-		};
-		});
+		//	Redirect to homepage:
+		res.redirect('/');	
 
 	} else {
 		//	If !username, email, password, render sorry2:
@@ -231,55 +227,39 @@ app.get('/login', async (req, res, next) => {
 //	Login Post Route:
 app.post('/login', async (req, res, next) => {
 
-		//	Sanitize the data
+	//	Sanitize the data
 	let email = typeof(req.body.email) === "string" && req.body.email.trim().length > 0 && req.body.email.trim().length < 80 && req.body.email.trim().includes('@') ? req.body.email.trim() : false;
 	let password = typeof(req.body.password) === "string" && req.body.password.trim().length > 0 && req.body.password.trim().length < 60 ? req.body.password.trim() : false;
 
 	try {
 
 		//	Find this email in the database:
-		let check = await dbFuncs.find({"email": email}, 'client').then((result) => {
-			//	If there is no result returned:
-			if (!result) {
-				//	User not found:
-				return res.status(401).redirect('/unauthorized');
-			}
-			return result;
-		});
+		let check = await dbFuncs.find({"email": email}, 'client');
 
-			//	If there is no check, render to sorry3:
-			if (!check) return res.render('sorry3');
+		//	If there is no check, render to sorry3:
+		if (!check) return res.render('sorry3');
 
-			//	Otherwise, Compare entered password to hashed password:
-			let c = await helpers.compare(password, check.password).then((result) => {
+		//	Otherwise, Compare entered password to hashed password:
+		let c = await helpers.compare(password, check.password);
 
-				if (!result) {
-					//	If Password not found, render sorry3:
-					return res.render('sorry3');
-				}
+		//	If the check fails, redirect to sorry3:
+		if (!c) return res.render('sorry3');
 
-				//	Otherwise, create a new token:
-				let token = jwt.sign({"username": check.username, "email": check.email}, process.env.SECRET, {expiresIn: 3600000});
-				//	Then set a cookie and redirect to homepage:
+		//	Otherwise, create a new token:
+		let token = jwt.sign({"username": check.username, "email": check.email}, process.env.SECRET, {expiresIn: 3600000});
+		//	Then set a cookie and redirect to homepage:
 
-			//	Set cookie maxAge to 60 minutes - 3,600,000 milliseconds:
-			res.cookie('nToken', token, {maxAge: 3600000, httpOnly: true});
+		//	Set cookie maxAge to 60 minutes - 3,600,000 milliseconds:
+		res.cookie('nToken', token, {maxAge: 3600000, httpOnly: true});
 
-				return result;
-			});
+		//	At this point, everything went well, and you should send the user to the homepage along with req.user
+		res.redirect('/');
 
-			//	Overkill check on c, if no result is returned, throw error:
-			if (!c) throw new Error({"Error": "No result returned from checking password, internal error"});
-
-			//	At this point, everything went well, and you should send the user to the homepage along with req.user
-			res.redirect('/');
-
-			} catch(e) {
-				console.log(e.stack);
-				next(e);
-			}
-
-		});
+		} catch(e) {
+			console.log(e.stack);
+			next(e);
+		}
+	});
 
 
 
@@ -365,8 +345,8 @@ app.post("/changeSave", async (req, res, next) => {
 
 		// If the email, password have been passed, save them, but first check them:
 
-		//	Compare entered password to hashed password:
-		let c = await helpers.compare(newPass, check.password);
+			//	Compare entered password to hashed password:
+			let c = await helpers.compare(newPass, check.password);
 
 			//	If the new email or the new password match an item in the database, render sorry4:
 			if (newEmail === check.email || c) {
@@ -470,7 +450,13 @@ app.get('/editProfilePic', async (req, res, next) => {
 
 			let currentUser = req.user;
 
-			res.render('editProfilePic', {currentUser});
+			//	Find user info using req.user.email:
+			let user = await dbFuncs.find({"email": req.user.email}, 'client');
+
+			//	If error, throw error:
+			if (!user) throw new Error({"Error": "Could not find this user!"});
+
+			res.render('editProfilePic', {currentUser, user});
 		} else {
 			res.redirect('/unauthorized');
 		};
@@ -539,8 +525,8 @@ app.post('/changeProfPic', upload.single("changedProf"), async (req, res, next) 
 				return rejected;
 			});
 
-			//	If there's an error, throw new error:
-			if (!fileType) throw new Error({"Error": "Cannot find specified file type!"});
+			//	If there's an error, return redirect to sorry9:
+			if (!fileType) return res.render('sorry9');
 
 			//	Otherwise, the file has passed validations, so get the base directory you want to write it to:
 			let baseDir = path.join(__dirname, "/../public");
@@ -615,13 +601,15 @@ app.get('/account-delete', async (req, res, next) => {
 //	Route for Client to Delete account:
 app.post('/accountDelete', async (req, res, next) => {
 
+	//	Sanitize Data:
 	let currentUser = typeof(req.user) === 'object' ? req.user : false;
+
 
 	try {
 		if (currentUser) {
 
 			//	Get the logged in user's email:
-			let userEmail = currentUser.email;
+			let userEmail = req.user.email;
 
 			//	delete the user:
 			let del = await dbFuncs.delete({"email": userEmail}, 'client');
