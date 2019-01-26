@@ -49,30 +49,6 @@ app.set('view engine', 'handlebars');
 app.set('trust proxy', true);
 
 
-
-
-
-//******************* MUST BE REMOVED BEFORE PRODUCTION, PURELY FOR TESTING ***********************
-
-// (async function() {
-// const a = require('./tests/fsTests');
-// const file = './testFile.txt';
-// try {
-// let r = await a.readIt(file);
-// console.log("readIt---------------------: ", r);
-// let r2 = await a.readIt2(file);
-// console.log("readIt2--------------------: ", r2);
-// }catch(e) {
-// 	console.log(e);
-// 	return e;
-// }
-// }());
-
-//**************************************************************************************************
-
-
-
-
 //	This is for helmet module to help secure the app against outside attacks:
 app.use(helmet());
 //	This is to serve static files:
@@ -86,13 +62,6 @@ app.use(bodyParser.json());
 app.use(helpers.checkAuth);
 //	This is your custom logger to track all app activity:
 app.use(logging.logRequestStart);
-
-
-
-//************REMOVE THIS ANALYZE.POSTDATE BEFORE PRODUCTION***************************
-//	This is your custom analytics middleware:
- // app.use(analyze.postData);
-//*************************************************************************************
 
 
 //	Log Rotation:
