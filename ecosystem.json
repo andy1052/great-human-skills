@@ -1,12 +1,10 @@
-module.exports = {
-  "apps" : [
+
+
       {
-        "name": "myapp",
-        "script": "./app.js",
+        "name": "ghs",
+        "script": "./server.js",
         "watch": true,
         "env": {
           "NODE_ENV": "production",
         }
       }
-  ]
-}
