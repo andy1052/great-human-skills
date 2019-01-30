@@ -41,7 +41,7 @@ app.get('/sign-up', async (req, res, next) => {
 //	Multer Function:
 let storage = multer.diskStorage({
 	destination: function(req, file, cb) {
-		cb(null, '/home/andy/Desktop/great-human-skills/public/tempImages');
+		cb(null, '/home/ghs/app/great-human-skills/public/tempImages');
 	},
 	filename: function(req, file, cb) {
 		//	Create a random 31 character string: 
@@ -88,13 +88,13 @@ app.post('/sign-up', upload.single('profilePic'), async (req, res, next) => {
 		if (check) {
 
 		//	If check returns a value, tempImage's contents must be deleted:
-		let fault = await fsAsync.unlink('/home/andy/Desktop/great-human-skills/public/tempImages/' + image);
+		let fault = await fsAsync.unlink('/home/ghs/app/great-human-skills/public/tempImages/' + image);
 
 		//	If error, throw error:
 		if (!fault) throw new Error({"Error": "Could not empty tempImages!"});
 
 		//	Render already exists page:
-		return res.render('alreadyExists'); 
+		return res.render('alreadyExists');
 		}
 
 		//	If no check value, then hash the password:
@@ -107,10 +107,10 @@ app.post('/sign-up', upload.single('profilePic'), async (req, res, next) => {
 //	********** File system manipulation code below ********************************************************
 
 		//	Locate the file that was updated:
-		let location = '/home/andy/Desktop/great-human-skills/public/tempImages/' + image;
+		let location = '/home/ghs/app/great-human-skills/public/tempImages/' + image;
 
 		//	Analyze the file and perform various checks on the data:
-		 
+
 		//	Read the uploaded file, an image in this case:
 		let read = await fsAsync.read(location);
 
@@ -498,10 +498,10 @@ app.post('/changeProfPic', upload.single("changedProf"), async (req, res, next) 
 //	********** File system manipulation code below ********************************************************
 
 			//	Locate the file that was updated:
-			let location = '/home/andy/Desktop/great-human-skills/public/tempImages/' + newImage;
+			let location = '/home/ghs/app/great-human-skills/public/tempImages/' + newImage;
 
 			//	locate existing file in /profiles:
-			let existing = '/home/andy/Desktop/great-human-skills/public/profiles/' + check.image;
+			let existing = '/home/ghs/app/great-human-skills/public/profiles/' + check.image;
 
 			//	Read incoming file, an image in this case:
 			let read = await fsAsync.read(location);

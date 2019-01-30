@@ -80,9 +80,9 @@ if (process.env.NODE_ENV === 'production') {
 	if (process.env.NODE_ENV === 'testing') {
 
 		console.info('App is running in Testing Mode');
-		
+
 	} else {
-		
+
 		console.info('App is running in Development Mode');
 	}
 };
