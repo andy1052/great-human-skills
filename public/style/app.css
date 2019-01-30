@@ -155,13 +155,13 @@ img {
 
 
 #the-great-header {
-	height: 200px;
-	width: 100%;
+	max-height: auto;
+	max-width: 100%;
 	background-color: #000;
 }
 
 #pic {
-	max-height: 100%;
+	max-height: 200px !important;
 	max-width: 50%;
 }
 
@@ -180,10 +180,16 @@ img {
 	text-align: center;
 }
 
-.carousel-inner {
-	width: 100%;
+.carousel-item {
+	max-width: 100%;
 	max-height: 200px !important;
 }
+
+.carousel-inner {
+	max-width: 100%;
+	max-height: 200px !important;
+}
+
 
 #article-data {
 	background-color: #fff;
@@ -238,10 +244,12 @@ img {
 	display: none;
 }
 
-#pic {
+/*#pic {
 	height: 150px;
 	width: 100px;
-	text-align: center;
+	max-width: 100%;
+	height: auto;
+	text-align: center;*/
 }
 
 #card-container {
@@ -307,7 +315,7 @@ img {
 @media only screen and (max-width: 959px) {};
 
 /* Standard 960px: */
-@media only screen and (min-width 768px) and (max-widthL 959px) {};
+@media only screen and (min-width:; 768px) and (max-width:; 959px) {};
 
 /* All mobile sizes */
 @media only screen and (max-width: 767px) {};
@@ -317,3 +325,11 @@ img {
 
 /* Mobile portrait size */
 @media only screen and (max-width: 479px) {};
+
+@media only screen and (max-width: 320px) {};
+
+
+/* Experiment */
+@media (min-width: 576px) {
+	h3 {font-size: 1.25rem;}
+}

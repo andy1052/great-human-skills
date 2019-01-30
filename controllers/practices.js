@@ -25,6 +25,9 @@ exports = module.exports = function(app,) {
 let storage = multer.diskStorage({
 	destination: function(req, file, cb) {
 		cb(null, '/home/andy/Desktop/great-human-skills/public/tempImages');
+// *************** ON THE SERVER THIS IS: /home/ghs/app/great-human-skills/public/tempImages ******
+// ************************************************************************************************
+
 	},
 	filename: function(req, file, cb) {
 		//	Create a random 31 character string: 
