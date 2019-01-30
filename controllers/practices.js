@@ -24,7 +24,7 @@ exports = module.exports = function(app,) {
 //	Multer Function:
 let storage = multer.diskStorage({
 	destination: function(req, file, cb) {
-		cb(null, '/home/andy/Desktop/great-human-skills/public/tempImages');
+		cb(null, '/home/ghs/app/great-human-skills/public/tempImages');
 	},
 	filename: function(req, file, cb) {
 		//	Create a random 31 character string: 
@@ -62,7 +62,7 @@ const ObjectId = require('mongodb').ObjectId;
 //	********** File system manipulation code below ********************************************************
 
 		//	Locate the file that was updated:
-		let location = '/home/andy/Desktop/great-human-skills/public/tempImages/' + filename;
+		let location = '/home/ghs/app/great-human-skills/public/tempImages/' + filename;
 
 		//	Analyze the file and perform various checks on the data:
 		let read = await fsAsync.read(location);
@@ -172,10 +172,10 @@ app.post("/artImageEditSave", upload.single('newImg'), async (req, res, next) =>
 //	********** File system manipulation code below ********************************************************
 
 			//	Locate the file that was updated:
-			let location = '/home/andy/Desktop/great-human-skills/public/tempImages/' + filename;
+			let location = '/home/ghs/app/great-human-skills/public/tempImages/' + filename;
 
 			//	locate existing file in /profiles:
-			let existing = '/home/andy/Desktop/great-human-skills/public/profiles/' + check.image;
+			let existing = '/home/ghs/app/great-human-skills/public/profiles/' + check.image;
 
 			//	Analyze the file and perform various checks on the data:
 			
