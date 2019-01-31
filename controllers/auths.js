@@ -16,6 +16,23 @@ const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const crypto = require('crypto');
 const path = require('path');
+const config = require('../config/config');
+
+
+
+
+//	Determine file location based on environment variable:
+let port = config.port;
+let location;
+let existing;
+
+if (port === 5947) {
+	location = '/home/ghs/app/great-human-skills/public/tempImages';
+	existing = '/home/ghs/app/great-human-skills/profiles';
+} else {
+	location = '/home/andy/Desktop/great-human-skills/public/tempImages';
+	existing = '/home/andy/Desktop/great-human-skills/profiles';
+};
 
 
 
@@ -41,7 +58,7 @@ app.get('/sign-up', async (req, res, next) => {
 //	Multer Function:
 let storage = multer.diskStorage({
 	destination: function(req, file, cb) {
-		cb(null, '/home/ghs/app/great-human-skills/public/tempImages');
+		cb(null, location);
 	},
 	filename: function(req, file, cb) {
 		//	Create a random 31 character string: 
@@ -88,7 +105,7 @@ app.post('/sign-up', upload.single('profilePic'), async (req, res, next) => {
 		if (check) {
 
 		//	If check returns a value, tempImage's contents must be deleted:
-		let fault = await fsAsync.unlink('/home/ghs/app/great-human-skills/public/tempImages/' + image);
+		let fault = await fsAsync.unlink(location + '/' + image);
 
 		//	If error, throw error:
 		if (!fault) throw new Error({"Error": "Could not empty tempImages!"});
@@ -107,12 +124,12 @@ app.post('/sign-up', upload.single('profilePic'), async (req, res, next) => {
 //	********** File system manipulation code below ********************************************************
 
 		//	Locate the file that was updated:
-		let location = '/home/ghs/app/great-human-skills/public/tempImages/' + image;
+		let newLocation = location + '/' + image;
 
 		//	Analyze the file and perform various checks on the data:
 
 		//	Read the uploaded file, an image in this case:
-		let read = await fsAsync.read(location);
+		let read = await fsAsync.read(newLocation);
 
 		//	If there was an error, throw a new error:
 		if (!read) throw new Error({"Error":"Could not read uploaded file!"});
@@ -161,7 +178,7 @@ app.post('/sign-up', upload.single('profilePic'), async (req, res, next) => {
 		if (!closeFile) throw new Error({"Error": "Could not close file descriptor!"});
 
 		//	And then delete the uploaded file from the tempImages directory:
-		let unlinkFile = await fsAsync.unlink(location);
+		let unlinkFile = await fsAsync.unlink(newLocation);
 
 		//	If Error occurs, throw error:
 		if (!unlinkFile) throw new Error({"Error": "Could not unlink file!"});
@@ -498,13 +515,13 @@ app.post('/changeProfPic', upload.single("changedProf"), async (req, res, next) 
 //	********** File system manipulation code below ********************************************************
 
 			//	Locate the file that was updated:
-			let location = '/home/ghs/app/great-human-skills/public/tempImages/' + newImage;
+			let newLocation = location + '/' + newImage;
 
 			//	locate existing file in /profiles:
-			let existing = '/home/ghs/app/great-human-skills/public/profiles/' + check.image;
+			let newExisting = existing + '/' + check.image;
 
 			//	Read incoming file, an image in this case:
-			let read = await fsAsync.read(location);
+			let read = await fsAsync.read(newLocation);
 
 			//	If there was an error, throw it.
 			if (!read) throw new Error({"Error": "Could not read uploaded file!"});
@@ -550,7 +567,7 @@ app.post('/changeProfPic', upload.single("changedProf"), async (req, res, next) 
 			if (!close) throw new Error({"Error": "Could not close the file descriptor!"});
 
 			//	And then delete the uploaded file from the tempImages directory:
-			let unlink = await fsAsync.unlink(location);
+			let unlink = await fsAsync.unlink(newLocation);
 
 			//	If error, throw error:
 			if (!unlink) throw new Error({"Error": "Could not delete image from tempImages!"});

@@ -182,12 +182,37 @@ img {
 
 .carousel-item {
 	max-width: 100%;
+	height: 100%;
 	max-height: 200px !important;
 }
 
 .carousel-inner {
 	max-width: 100%;
+	height: 100%;
 	max-height: 200px !important;
+}
+
+.carousel-caption {
+  position: absolute;
+  top: 47%;
+  transform: translateY(-63%);
+}
+
+.sale {
+	position: absolute;
+  top: 45%;
+  transform: translateY(-90%) !important;
+}
+
+.hey {
+	font-size: 36px;
+	font-size: 3vw;
+	text-shadow: 1px 0 0 #bbb;
+}
+
+.hey2 {
+	font-size: 36px;
+	font-size: 2vw;
 }
 
 
@@ -315,7 +340,8 @@ img {
 @media only screen and (max-width: 959px) {};
 
 /* Standard 960px: */
-@media only screen and (min-width:; 768px) and (max-width:; 959px) {};
+
+@media only screen and (min-width: 768px) and (max-width:; 959px) {};
 
 /* All mobile sizes */
 @media only screen and (max-width: 767px) {};
@@ -323,13 +349,10 @@ img {
 /* Mobile lanscape size */
 @media only screen and (min-width: 480px) and (max-width: 767px) {};
 
-/* Mobile portrait size */
+/* Mobile portrait size*/
 @media only screen and (max-width: 479px) {};
 
 @media only screen and (max-width: 320px) {};
 
 
-/* Experiment */
-@media (min-width: 576px) {
-	h3 {font-size: 1.25rem;}
-}
+

@@ -12,6 +12,24 @@ const path = require('path');
 const multer = require('multer');
 const crypto = require('crypto');
 const dbFuncs = require('../database/dbFuncs');
+const config = require('../config/config');
+
+
+
+
+//	Determine file location based on environment variable:
+let port = config.port;
+let location;
+let existing;
+
+if (port === 5947) {
+	location = '/home/ghs/app/great-human-skills/public/tempImages';
+	existing = '/home/ghs/app/great-human-skills/public/artImages';
+} else {
+	location = '/home/andy/Desktop/great-human-skills/public/tempImages';
+	existing = '/home/andy/Desktop/great-human-skills/puclic/artImages';
+};
+
 
 
 
@@ -24,7 +42,7 @@ exports = module.exports = function(app,) {
 //	Multer Function:
 let storage = multer.diskStorage({
 	destination: function(req, file, cb) {
-		cb(null, '/home/ghs/app/great-human-skills/public/tempImages');
+		cb(null, location);
 	},
 	filename: function(req, file, cb) {
 		//	Create a random 31 character string: 
@@ -62,10 +80,10 @@ const ObjectId = require('mongodb').ObjectId;
 //	********** File system manipulation code below ********************************************************
 
 		//	Locate the file that was updated:
-		let location = '/home/ghs/app/great-human-skills/public/tempImages/' + filename;
+		let newLocation = location + '/' + filename;
 
 		//	Analyze the file and perform various checks on the data:
-		let read = await fsAsync.read(location);
+		let read = await fsAsync.read(newLocation);
 
 		//	If there was an error, throw it.
 		if (!read) throw new Error({"Error": "Could not read uploaded file!"});
@@ -92,13 +110,13 @@ const ObjectId = require('mongodb').ObjectId;
 		//	Otherwise, the file has passed validations, so get the base directory you want to write it to:
 		let baseDir = path.join(__dirname, "/../public");
 
-		//	Open the directory, passing in newImage variableL
+		//	Open the directory, passing in newImage variable:
 		let open = await fsAsync.open(baseDir + '/artImages' + '/' + filename, 'wx');
 					
 		//	If err, throw it:
 		if (!open) throw new Error({"Error": "Could not get file descriptor!"});
 
-		//	Otherwise, write the file to profiles directory:
+		//	Otherwise, write the file to artImages directory:
 		let write = await fsAsync.write(open , read);
 
 		//	If err, throw error:
@@ -111,7 +129,7 @@ const ObjectId = require('mongodb').ObjectId;
 		if (!close) throw new Error({"Error": "Could not close file descriptor!"});
 
 		//	And then delete the uploaded file from the tempImages directory:
-		let unlink = await fsAsync.unlink(location);
+		let unlink = await fsAsync.unlink(newLocation);
 
 		//	If err, throw error:
 		if (!unlink) throw new Error({"Error": "Could not delete file from tempImages!"});
@@ -172,15 +190,15 @@ app.post("/artImageEditSave", upload.single('newImg'), async (req, res, next) =>
 //	********** File system manipulation code below ********************************************************
 
 			//	Locate the file that was updated:
-			let location = '/home/ghs/app/great-human-skills/public/tempImages/' + filename;
+			let newLocation = location + '/' + filename;
 
-			//	locate existing file in /profiles:
-			let existing = '/home/ghs/app/great-human-skills/public/profiles/' + check.image;
+			//	locate existing file in /artImages:
+			let newExisting = existing + '/' + check.image;
 
 			//	Analyze the file and perform various checks on the data:
 			
 			//	Read uploaded file, an image in this case:
-			let read = await fsAsync.read(location);
+			let read = await fsAsync.read(newLocation);
 
 			//	If there was an error, throw it.
 			if (!read) throw new Error({"Error": "Could not read uploaded file!"});
@@ -213,7 +231,7 @@ app.post("/artImageEditSave", upload.single('newImg'), async (req, res, next) =>
 			//	If err, throw it:
 			if (!open) throw new Error({"Error": "Could not get file descriptor!"});
 
-			//	Otherwise, write the file to profiles directory:
+			//	Otherwise, write the file to artImages directory:
 			let write = await fsAsync.write(open, read);
 
 			//	If err, throw error:
@@ -225,7 +243,7 @@ app.post("/artImageEditSave", upload.single('newImg'), async (req, res, next) =>
 			if (!open) throw new Error({"Error": "Could not close file descriptor!"});
 
 			//	And then delete the uploaded file from the tempImages directory:
-			let unlink = await fsAsync.unlink(location);
+			let unlink = await fsAsync.unlink(newLocation);
 
 			//	If err, throw Error:
 			if (!unlink) throw new Error({"Error": "Could not delete file from tempImages!"});
