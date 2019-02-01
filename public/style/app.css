@@ -160,6 +160,10 @@ img {
 	background-color: #000;
 }
 
+#headerId {
+	transform: translateX(2.5%);
+}
+
 #pic {
 	max-height: 200px !important;
 	max-width: 50%;
@@ -340,7 +344,6 @@ img {
 @media only screen and (max-width: 959px) {};
 
 /* Standard 960px: */
-
 @media only screen and (min-width: 768px) and (max-width:; 959px) {};
 
 /* All mobile sizes */
@@ -353,6 +356,7 @@ img {
 @media only screen and (max-width: 479px) {};
 
 @media only screen and (max-width: 320px) {};
+
 
 
 
