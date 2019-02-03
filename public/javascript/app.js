@@ -168,7 +168,7 @@ using Fetch api */
 
   //*************** Fetch Post To Server Here *********************
 
-  const rawResponse = fetch('http://localhost:3000/quillForm', {
+  const rawResponse = fetch('/quillForm', {
   	method: "POST",
   	// mode: "cors",
   	// cache: "no-cache",
