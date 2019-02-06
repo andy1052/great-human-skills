@@ -92,7 +92,7 @@ const ObjectId = require('mongodb').ObjectId;
 		const size = read.length / 1000000;
 
 		//	If file size is above 2mb, throw error:
-		if (size > 2.00000) throw new Error({"Error": "File size is too big!"});
+		if (size > 10.00000) throw new Error({"Error": "File size is too big!"});
 
 		//	Otherwise, determine the file's type by checking its binary magic number (first 4 bytes):
 		const magic = read.readUIntBE(0,4).toString(16);
@@ -207,7 +207,7 @@ app.post("/artImageEditSave", upload.single('newImg'), async (req, res, next) =>
 			const size = read.length / 1000000;
 
 			//	If file size is above 2mb, throw error:
-			if (size > 2.00000) throw new Error({"Error": "File size is too big!"});
+			if (size > 10.00000) throw new Error({"Error": "File size is too big!"});
 
 			//	Otherwise, determine the file's type by checking its binary magic number (first 4 bytes):
 			const magic = read.readUIntBE(0,4).toString(16);
