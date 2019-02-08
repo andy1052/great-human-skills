@@ -127,26 +127,14 @@ try {
 		//	If there was an error, throw a new error:
 		if (!read) throw new Error({"Error":"Could not read uploaded file!"});
 
-console.log("Size before transform: ", read.length / 1000000);
-
-		//	Use sharp module to resize image:
-		// let transform = sharp(read).resize({width: 300, height: 300}).toBuffer().then(data => {
-
-		// 	console.log("transform size: ", data.length / 1000000);
-		// 	return data;
-		// });
-
+		//	Resize image using sharp module:
 		let transform = await helpers2.resize(read);
-
 
 		// Check the file's size in megabytes, keep it under 2Mb maximum:
 		const size = transform.length / 1000000;
 
-
-
-
 		//	If file size is above 2mb, throw error:
-		if (size > 2.00000) throw new Error({"Error": "File size is too big!"});
+		if (size > 2.00000) return res.render('tooBig');
 
 		//	Otherwise, determine the file's type by checking its binary magic number (first 4 bytes):
 		const magic = read.readUIntBE(0,4).toString(16);
@@ -204,9 +192,6 @@ console.log("Size before transform: ", read.length / 1000000);
 			image,
 			"createdAt": Date()
 		};
-
-console.log("client: ", client);
-
 
 		//	At this point, Check is undefined and the user should be saved to the database in 'client' collection:
 		let save = await dbFuncs.insert(client, 'client');
@@ -343,6 +328,7 @@ try {
 		next(e);
 	}
 };
+
 
 
 //	Login Get Route:
