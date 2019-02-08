@@ -17,22 +17,11 @@ const multer = require('multer');
 const crypto = require('crypto');
 const path = require('path');
 const config = require('../config/config');
+const helpers2 = require('../lib/helpers2');
 
-
-
-
-//	Determine file location based on environment variable:
-let port = config.port;
-let location;
-let existing;
-
-if (port === 5947) {
-	location = '/home/ghs/app/great-human-skills/public/tempImages';
-	existing = '/home/ghs/app/great-human-skills/profiles';
-} else {
-	location = '/home/andy/Desktop/great-human-skills/public/tempImages';
-	existing = '/home/andy/Desktop/great-human-skills/profiles';
-};
+//	Determine file locations based on dirname for local computer and server functionality:
+let location = path.join(__dirname, '../public/tempImages');
+let existing = path.join(__dirname, '../public/profiles');
 
 
 
@@ -80,10 +69,16 @@ let upload = multer({storage: storage,
 
 //	*************************************************************************************************
 
-// let res = '';
 
 //	Sign-up Route:
 app.post('/sign-up', upload.single('profilePic'), async (req, res, next) => {
+
+try {
+
+	//	If there is no req.file passed, call function to use placeholder:
+	if (!req.file) {
+		return usePlaceholder(req, res, next);
+	}
 
 	//	Sanitize the data
 	let username = typeof(req.body.username) === "string" && req.body.username.trim().length > 0 && req.body.username.trim().length < 60 ? req.body.username.trim() : false;
@@ -92,8 +87,6 @@ app.post('/sign-up', upload.single('profilePic'), async (req, res, next) => {
 	let notification = typeof(req.body.notification) === 'string' && req.body.notification.trim().length > 0 && req.body.notification.trim().length < 40 ? req.body.notification.trim() : false;
 	let image = typeof(req.file.filename) === "string" && req.file.filename.trim().length > 0 && req.file.filename.trim().length < 80 ? req.file.filename.trim() : false;
 
-
-	try {
 
 	//	Make sure that a username, an email and a password were entered:
 	if (username && email && password && notification && image){
@@ -134,11 +127,26 @@ app.post('/sign-up', upload.single('profilePic'), async (req, res, next) => {
 		//	If there was an error, throw a new error:
 		if (!read) throw new Error({"Error":"Could not read uploaded file!"});
 
+console.log("Size before transform: ", read.length / 1000000);
+
+		//	Use sharp module to resize image:
+		// let transform = sharp(read).resize({width: 300, height: 300}).toBuffer().then(data => {
+
+		// 	console.log("transform size: ", data.length / 1000000);
+		// 	return data;
+		// });
+
+		let transform = await helpers2.resize(read);
+
+
 		// Check the file's size in megabytes, keep it under 2Mb maximum:
-		const size = read.length / 1000000;
+		const size = transform.length / 1000000;
+
+
+
 
 		//	If file size is above 2mb, throw error:
-		if (size > 10.00000) throw new Error({"Error": "File size is too big!"});
+		if (size > 2.00000) throw new Error({"Error": "File size is too big!"});
 
 		//	Otherwise, determine the file's type by checking its binary magic number (first 4 bytes):
 		const magic = read.readUIntBE(0,4).toString(16);
@@ -166,7 +174,7 @@ app.post('/sign-up', upload.single('profilePic'), async (req, res, next) => {
 		if (!openFile) throw new Error({"Error": "Could not open file and return descriptor!"});
 
 		//	Otherwise, write the file to profiles directory:
-		let writeToFile = await fsAsync.write(openFile , read);
+		let writeToFile = await fsAsync.write(openFile , transform);
 
 		//	If there is no writeToFile confirmation, throw new error:
 		if (!writeToFile) throw new Error({"Error": "Could not write to file!"});
@@ -187,6 +195,7 @@ app.post('/sign-up', upload.single('profilePic'), async (req, res, next) => {
 
 		//	If password "x", was hashed and image file passed the validation, then make the client model/object:
 
+		//	*** image here only saves the images path, the actual file is shrunk using sharp ***
 		const client = {
 			username,
 			email,
@@ -195,6 +204,8 @@ app.post('/sign-up', upload.single('profilePic'), async (req, res, next) => {
 			image,
 			"createdAt": Date()
 		};
+
+console.log("client: ", client);
 
 
 		//	At this point, Check is undefined and the user should be saved to the database in 'client' collection:
@@ -227,6 +238,111 @@ app.post('/sign-up', upload.single('profilePic'), async (req, res, next) => {
 	}
 });
 
+
+
+//	Alternate sign-up function to use placeholder instead of user submitted image:
+async function usePlaceholder(req, res, next) {
+
+try {
+
+
+	let filename = 'GHS-logo.jpg';
+	let src = path.join(__dirname, '../public/images/', filename);
+	let dest = path.join(__dirname, '../public/profiles/');
+	let newFile = helpers2.createRandomString(20);
+	let defaultImage;
+
+	//	Sanitize the data
+	let username = typeof(req.body.username) === "string" && req.body.username.trim().length > 0 && req.body.username.trim().length < 60 ? req.body.username.trim() : false;
+	let email = typeof(req.body.email) === "string" && req.body.email.trim().length > 0 && req.body.email.trim().length < 80 && req.body.email.trim().includes('@') ? req.body.email.trim() : false;
+	let password = typeof(req.body.password) === "string" && req.body.password.trim().length > 0 && req.body.password.trim().length < 60 ? req.body.password.trim() : false;
+	let notification = typeof(req.body.notification) === 'string' && req.body.notification.trim().length > 0 && req.body.notification.trim().length < 40 ? req.body.notification.trim() : false;
+	
+
+	//	Make sure that a username, an email and a password were entered:
+	if (username && email && password && notification){
+
+		//	Before doing anything, check to see if the email address already exists:
+		let check = await dbFuncs.find({"email": email}, 'client');
+
+		//	If check has a value, redirect to alreadyExists page:
+		if (check) return res.render('alreadyExists');
+
+		//	If no check value, then hash the password:
+		let x = await helpers.salt(password).then((y) => {
+			return y;
+		});
+
+		//	If error, throw error:
+		if (!x) throw new Error({"Error": "Password could not be hashed. Exiting."});
+
+
+// ****************** Setting Default Image to account *********************************************
+	//	First open a new file in the profiles directory with random name (helpers2):
+	let openFile = await fsAsync.open(dest + newFile + '.jpg', 'wx');
+
+	//	Initialize defaultImage variable with the new image's name and extension:
+	defaultImage = newFile + '.jpg';
+
+	//	If error, throw error:
+	if (!openFile) throw new Error("Could not open destination file!");
+
+	//	Now copy file from images directory to new randomly named file:
+	let copy = await fsAsync.copyFile(src, path.join(dest, newFile + '.jpg'));
+
+	//	If error, throw error:
+	if (!copy) throw new Error("Could not copy file to Profiles!");
+
+	//	Then close the file:
+	let close = await fsAsync.close(openFile);
+
+	//	If error, throw error:
+	if (!close) throw new Error("Could not close File!");
+// ********************************* End of setting default image *****************************************
+
+		//	If password "x", was hashed and image file passed the validation, then make the client model/object:
+
+		const client = {
+			username,
+			email,
+			password: x,
+			notification,
+			"image": defaultImage,
+			"createdAt": Date()
+		};
+
+
+		//	At this point, Check is undefined and the user should be saved to the database in 'client' collection:
+		let save = await dbFuncs.insert(client, 'client');
+
+		//	If error, redirect to sorry2:
+		if (!save) return res.render('sorry2');
+
+		//	If database confirms save redirect to homepage.
+		console.log("Saved to database!");
+
+		//	Generate web token:
+		let token = jwt.sign(client, process.env.SECRET, {expiresIn: 3600000});
+
+//	**** NOTE: In production, these cookie settings will have to change!!!! ***********************
+
+		//	Set cookie maxAge to 60 minutes - 3,600,000 milliseconds:
+		res.cookie('nToken', token, {maxAge: 3600000, httpOnly: true});
+
+		//	Redirect to homepage:
+		res.redirect('/');	
+
+	} else {
+		//	If !username, email, password, render sorry2:
+		res.render('sorry2');
+	};
+
+
+	} catch(e) {
+		console.error(e);
+		next(e);
+	}
+};
 
 
 //	Login Get Route:
@@ -530,7 +646,7 @@ app.post('/changeProfPic', upload.single("changedProf"), async (req, res, next) 
 			const size = read.length / 1000000;
 
 			//	If file size is above 2mb, throw error:
-			if (size > 10.00000) throw new Error({"Error": "File size is too big!"});
+			if (size > 2.00000) throw new Error({"Error": "File size is too big!"});
 
 			//	Otherwise, determine the file's type by checking its binary magic number (first 4 bytes):
 			const magic = read.readUIntBE(0,4).toString(16);
