@@ -7,14 +7,36 @@ body {
 }
 
 /* css for allYouveGot page */
-#section-1 {
+/*#section-1 {
 	margin: 0px;
 	padding: 0px;
 	background-image: url("/images/win.jpg");
 	background-repeat: no-repeat;
-	background-size: cover;
+	background-position: center;
+	background-size: 100% 100%;
+}*/
+
+.jumbotron {
+	background-image: url('/images/win.jpg');
 	height: 100%;
 	width: 100%;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+
+.wordsImg {
+	margin: 4% 0 0 15%;
+	width: 25%;
+	height: auto;
+}
+
+.headline {
+	margin: 0 0 0 3%;
+	font-size: 36px;
+	font-size: 4vw;
+	text-shadow: 1px 0 0 #000;
+	/*font-family: 'Diplomata SC', cursive;*/
 }
 
 #ul {
@@ -80,9 +102,9 @@ body {
 	color: #000;
 	font-size: 16px;
 	font-family: Arial, Helvetica, sans-serif;
-	width: 90%;
-	margin: 40px 5px 10px 0px;
-	background-color: rgba(255, 255, 255, 0.4);
+	/*width: 90%;*/
+	/*margin: 40px 5px 10px 0px;*/
+	/*background-color: rgba(255, 255, 255, 0.4);*/
 }
 
 
