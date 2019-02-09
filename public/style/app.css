@@ -12,7 +12,9 @@ body {
 	padding: 0px;
 	background-image: url("/images/win.jpg");
 	background-repeat: no-repeat;
-	background-size: 100% 100%;
+	background-size: cover;
+	height: 100%;
+	width: 100%;
 }
 
 #ul {

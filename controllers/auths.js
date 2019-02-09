@@ -628,8 +628,11 @@ app.post('/changeProfPic', upload.single("changedProf"), async (req, res, next) 
 			//	If there was an error, throw it.
 			if (!read) throw new Error({"Error": "Could not read uploaded file!"});
 
+			//	Resize image using sharp module:
+			let transform = await helpers2.resize(read);
+
 			// Check the file's size in megabytes, keep it under 2Mb maximum:
-			const size = read.length / 1000000;
+			const size = transform.length / 1000000;
 
 			//	If file size is above 2mb, throw error:
 			if (size > 2.00000) throw new Error({"Error": "File size is too big!"});
@@ -657,7 +660,7 @@ app.post('/changeProfPic', upload.single("changedProf"), async (req, res, next) 
 			if (!open) throw new Error({"Error": "Could not get file descriptor!"});
 
 			//	Otherwise, write the file to profiles directory:			
-			let write = await fsAsync.write(open, read);
+			let write = await fsAsync.write(open, transform);
 
 			//	If error, throw error:
 			if (!write) throw new Error({"Error": "Could not write to file"});
