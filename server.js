@@ -74,7 +74,15 @@ if (process.env.NODE_ENV === 'production') {
 	helpers.rotateLogs();
 
 	//	Then rotate logs every day after that:
-	helpers.logRotationLoop();
+	try {
+	setTimeout(() => {
+		helpers.rotateLogs();
+	}, 1000 * 60 * 60 * 24);
+
+	} catch(e) {
+		console.error(e);
+		return e;
+	};
 
 } else {
 	if (process.env.NODE_ENV === 'testing') {
