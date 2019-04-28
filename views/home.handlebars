@@ -44,7 +44,7 @@
 			<p class="text-left text-dark">&nbsp; &nbsp; &nbsp; &nbsp;To get you started on this exciting journey, we offer you this site, our home, to which you can come and learn from our articles, as well as <strong>Andy X. Ash's</strong> book: <a href="https://www.amazon.com/dp/B07MX5JYLS/ref=sr_1_fkmrnull_2?keywords=Words+are+all+you%27ve+got%21&qid=1547818159&s=Books&sr=1-2-fkmrnull" target="_blank">Words Are All You've Got!</a> from which you can learn all of the writing advice and grammar you NEED in order to be professional, and nothing more! It's a truly valuable resource that no serious professional should live without.</p>
  
 
-			<p class="text-left text-dark">&nbsp; &nbsp; &nbsp; &nbsp;So welcome, and if you'd like to help us to inspire, encourage, and excite people from all over the world, then your first step is to join our <a href="/sign-up">Community</a>, and follow us on <a href="https://twitter.com/greathumanskill?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-show-screen-name="false" data-dnt="true" data-show-count="false">Follow @greathumanskill</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+			<p class="text-left text-dark">&nbsp; &nbsp; &nbsp; &nbsp;So welcome, and if you'd like to help us to inspire, encourage, and excite people from all over the world, then your first step is to join our <a href="/sign-up">Community</a>, and follow us on Twitter: <a href="https://twitter.com/greathumanskill?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-show-screen-name="false" data-dnt="true" data-show-count="false">Follow @greathumanskill</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script></p>
 
 		<!--	<p class="text-left text-dark">&nbsp; &nbsp; &nbsp; &nbsp;Also be sure to check out our fantastic book <a href="/allYouveGot">Words Are All You've Got!</a>, a resource no professional should live without.</p> -->
 
@@ -56,7 +56,7 @@
 	{{#if find}}
 	{{#each find}}
 	<div class="card mb-4">
-		<img class="card-img-top" src="artImages/{{this.imagePath}}" alt="Blog post image">
+		<img class="card-img-top" id="cardImg" src="artImages/{{this.imagePath}}" alt="Blog post image">
 		<div class="card-body">
 			<h2 class="card-title text-primary"><a href="/posts/{{this._id}}">{{this.title}}</a></h2>
 			<p class="card-text">{{this.description}}</p>

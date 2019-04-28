@@ -6,6 +6,11 @@ body {
 	min-height: 100vh;
 }
 
+#cardImg {
+	height: 16rem;
+	object-fit: cover;
+}
+
 /* css for allYouveGot page */
 /*#section-1 {
 	margin: 0px;
