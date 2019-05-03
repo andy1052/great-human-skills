@@ -11,15 +11,6 @@ body {
 	object-fit: cover;
 }
 
-/* css for allYouveGot page */
-/*#section-1 {
-	margin: 0px;
-	padding: 0px;
-	background-image: url("/images/win.jpg");
-	background-repeat: no-repeat;
-	background-position: center;
-	background-size: 100% 100%;
-}*/
 
 .jumbotron {
 	background-image: url('/images/win.jpg');
@@ -44,22 +35,27 @@ body {
 	/*font-family: 'Diplomata SC', cursive;*/
 }
 
-#ul {
+.hook {
+	color: #c70000;
+	font-size: 15px;
+}
+
+/*#ul {
 	color: #c70000;
 	width: 100%;
 	margin: 30px;
 	/*text-shadow:1px 0px #000;*/
-	font-size: 16px;
-}
+	/*font-size: 16px;*/
+/*}
+*/
 
-
-#blurb {
+.blurb {
 	color: #000;
 	font-size: 18px;
 	font-family: Arial, Helvetica, sans-serif;
-	width: 50%;
-	margin: 5px 0px;
-	padding: 5px;
+	width: 80%;
+	margin: 5px auto;
+	/*padding: 5px;*/
 }
 
 #background {
@@ -103,14 +99,15 @@ body {
 	border: 1px solid #bbb;
 }
 
-#act {
+
+/*.act {
 	color: #000;
 	font-size: 16px;
 	font-family: Arial, Helvetica, sans-serif;
 	/*width: 90%;*/
 	/*margin: 40px 5px 10px 0px;*/
 	/*background-color: rgba(255, 255, 255, 0.4);*/
-}
+/*}*/
 
 
 /* css for homepage */
@@ -238,13 +235,13 @@ img {
 }
 
 .hey {
-	font-size: 36px;
+	/*font-size: 36px;*/
 	font-size: 3vw;
 	text-shadow: 1px 0 0 #bbb;
 }
 
 .hey2 {
-	font-size: 36px;
+	/*font-size: 36px;*/
 	font-size: 2vw;
 }
 
